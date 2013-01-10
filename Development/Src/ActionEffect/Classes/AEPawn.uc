@@ -8,4 +8,5 @@ function AddDefaultInventory()
 DefaultProperties
 {
 	InventoryManagerClass=class'AEInventoryManager'
+	//
 }
