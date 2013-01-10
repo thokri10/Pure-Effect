@@ -1,7 +1,10 @@
 class AEInventoryManager extends UTInventoryManager;
 
-DefaultProperties
+simulated function SwitchWeapon(byte NewGroup)
 {
-	PendingFire(0)=0
-	PendingFire(1)=0
+	`log("øjksdhføkjhadfjklhadflhsdlfkh");
+}
+
+defaultproperties
+{
 }

@@ -30,7 +30,7 @@ event Resolved( IpAddr Addr )
 	Addr.Port = TargetPort;
 
 	//dont comment out this log because it rungs the function bindport
-	`Log("[TcpLinkClient] Bound to port: " $BindPort() );
+	`Log("[TcpLinkClient] Bound to port: " $BindPort(TargetPort) );
 	if(!Open(Addr))
 	{
 		`Log("[TcpLinkClient] Open Failed");
@@ -54,18 +54,20 @@ event Opened()
     //char(13) and char(10) are carrage returns and new lines
 	if(!send)
 	{
-		//SendText("foo");
-		SendText( "GET /" $ path $ " HTTP/1.0" );
-		SendText( chr(13)$chr(10) );
+		//SendText(1);
+		SendText("1");
+		//SendText( "GET /" $ path $ " HTTP/1.0" );
+		//SendText( chr(13)$chr(10) );
 
-		SendText( "Host: " $ TargetHost );
-		SendText( chr(13)$chr(10) );
+		//SendText( "Host: " $ TargetHost );
+		//SendText( chr(13)$chr(10) );
 
-		SendText( "Connection: Close" );
-		SendText(chr(13)$chr(10) $ chr(13)$chr(10));
+		//SendText( "end" );
+		//SendText(chr(13)$chr(10) $ chr(13)$chr(10));
 	}
 	else if ( send && score > 0)
 	{
+		`log("fhaldkjfhglkjadhfgkljhadflkhglakdfg");
 		requestText = "value="$score$"&submit=10987";
 		
 		SendText("POST /"$path$" HTTP/1.0"); CarrageReturn();
@@ -101,7 +103,7 @@ event ReceivedText( string Text )
 	`log("[TcpLinkClient] ReceivedText:: " $Text);
 
 	//we dont want the header info, so we split the string after two new lines
-	Text = Split(Text, chr(13)$chr(10)$chr(13)$chr(10), true);
+	Text = Split(Text, "@", true);
 	`log("[TcpLinkClient] SplitText:: " $Text);
 
 	if(!send)
@@ -117,10 +119,10 @@ function CarrageReturn()
 
 DefaultProperties
 {
-	TargetHost = "www.geirhilmersen.com";
-	TargetPort = 80;
+	TargetHost = "10.21.26.77";
+	TargetPort = 8000;
 
-	path = "";
-	score = 0;
+	path = "Derp";
+	score = 1;
 	send = false;
 }

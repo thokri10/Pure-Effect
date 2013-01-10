@@ -2,6 +2,6 @@ class ActionEffectGame extends UTGame;
 
 defaultproperties
 {
-	PlayerControllerClass=class'AEPlayerController'
-	DefaultPawnClass=class'AEPawn'
+	PlayerControllerClass=class'ActionEffect.AEPlayerController'
+	DefaultPawnClass=class'ActionEffect.AEPawn'
 }
