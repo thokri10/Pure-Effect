@@ -2,7 +2,7 @@ class AEPlayerController extends UTPlayerController;
 
 var AETcpLinkClient myTcpLink;
 
-event PostBeginPlay()
+simulated event PostBeginPlay()
 {
 	super.PostBeginPlay();
 
