@@ -1,0 +1,7 @@
+Skin
+Damage*
+Damage type
+Projectile speed*
+Accuracy*
+Clip size*
+Magazine size*
