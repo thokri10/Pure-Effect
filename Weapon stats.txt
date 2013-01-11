@@ -1,7 +1,10 @@
+Weapon:
 Skin
-Damage*
-Damage type
-Projectile speed*
 Accuracy*
 Clip size*
 Magazine size*
+
+Projectile:
+Damage*
+Damage type
+Projectile speed*

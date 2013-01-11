@@ -55,15 +55,15 @@ event Opened()
 	if(!send)
 	{
 		//SendText(1);
-		SendText("1");
-		//SendText( "GET /" $ path $ " HTTP/1.0" );
-		//SendText( chr(13)$chr(10) );
+		//SendText("GET" $path);
+		SendText( "GET /" $ path $ " HTTP/1.1" );
+		SendText( chr(13)$chr(10) );
 
 		//SendText( "Host: " $ TargetHost );
 		//SendText( chr(13)$chr(10) );
 
-		//SendText( "end" );
-		//SendText(chr(13)$chr(10) $ chr(13)$chr(10));
+		SendText( "end" );
+		SendText(chr(13)$chr(10) $ chr(13)$chr(10));
 	}
 	else if ( send && score > 0)
 	{
@@ -103,7 +103,7 @@ event ReceivedText( string Text )
 	`log("[TcpLinkClient] ReceivedText:: " $Text);
 
 	//we dont want the header info, so we split the string after two new lines
-	Text = Split(Text, "@", true);
+	Text = Split(Text, "chr(13)$chr(10)chr(13)$chr(10)", true);
 	`log("[TcpLinkClient] SplitText:: " $Text);
 
 	if(!send)
@@ -119,10 +119,10 @@ function CarrageReturn()
 
 DefaultProperties
 {
-	TargetHost = "10.21.26.77";
-	TargetPort = 8000;
+	TargetHost = "www.geirhilmersen.com";
+	TargetPort = 8080;
 
-	path = "Derp";
+	path = "missions";
 	score = 1;
 	send = false;
 }
