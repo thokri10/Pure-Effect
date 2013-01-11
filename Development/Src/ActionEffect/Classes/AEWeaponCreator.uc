@@ -1,6 +1,50 @@
-class AEWeaponCreator extends Object;
+class AEWeaponCreator extends Actor;
 
 var array<class> weaponTypes;
+
+simulated function UTWeapon CreateWeapon(string type, float spread, int magazineSize)
+{
+	local UTWeapon returnWeapon;
+
+	returnWeapon = SpawnWeaponType(type);
+
+	returnWeapon = ChangeSpread(returnWeapon, spread);
+	returnWeapon = ChangeMagazineSize(returnWeapon, magazineSize);
+	returnWeapon = ChangeFireSpeed(returnWeapon, 0.1f);
+
+	return returnWeapon;
+}
+
+function UTWeapon ChangeFireSpeed(UTWeapon weap, float fireSpeed)
+{
+	weap.FireInterval[0]=firespeed;
+
+	return weap;
+}
+
+function UTWeapon ChangeMagazineSize(UTWeapon weap, int size)
+{
+	weap.AddAmmo(size);
+
+	return weap;
+}
+
+function UTWeapon ChangeSpread(UTWeapon weap, float spread)
+{
+	weap.Spread[weap.CurrentFireMode] = spread;
+
+	return weap;
+}
+
+function UTWeapon SpawnWeaponType(string Type)
+{
+	switch(Type)
+	{
+	case "linkgun": return Spawn(class'UTWeap_LinkGun'); break;
+	case "rocket" : return Spawn(class'UTWeap_RocketLauncher_Content'); break;
+	default: `log("No weapon of this type: " $Type); break;
+	};
+}
 
 DefaultProperties
 {
