@@ -15,9 +15,16 @@ simulated event PostBeginPlay()
 	myTcpLink.ResolveMe();
 }
 
-exec function getWeapon(string type, float spread, int magazineSize)
+exec function getWeapon(string type, float spread, int magazineSize, float reloadTime)
 {
-	myPawn.AddWeaponToInventory( myWeaponCreator.CreateWeapon(type, spread, magazineSize) );
+	myPawn.AddWeaponToInventory( myWeaponCreator.CreateWeapon(type, spread, magazineSize, reloadTime) );
+}
+
+exec function getServerWeapon()
+{
+	myPawn.AddWeaponToInventory( myWeaponCreator.CreateWeaponFromStruct( 
+											myTcpLink.parseStringToWeapon( 
+												myTcpLink.returnedMessage ) ) );
 }
 
 DefaultProperties

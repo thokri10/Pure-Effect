@@ -2,7 +2,12 @@ class AEWeaponCreator extends Actor;
 
 var array<class> weaponTypes;
 
-simulated function UTWeapon CreateWeapon(string type, float spread, int magazineSize)
+simulated function UTWeapon CreateWeaponFromStruct(WeaponStruct weap)
+{
+	return CreateWeapon(weap.type, weap.spread, weap.magsize, weap.reloadTime);
+}
+
+simulated function UTWeapon CreateWeapon(string type, float spread, int magazineSize, float reloadSpeed)
 {
 	local UTWeapon returnWeapon;
 
@@ -10,7 +15,7 @@ simulated function UTWeapon CreateWeapon(string type, float spread, int magazine
 
 	returnWeapon = ChangeSpread(returnWeapon, spread);
 	returnWeapon = ChangeMagazineSize(returnWeapon, magazineSize);
-	returnWeapon = ChangeFireSpeed(returnWeapon, 0.1f);
+	returnWeapon = ChangeFireSpeed(returnWeapon, reloadSpeed);
 
 	return returnWeapon;
 }
@@ -42,7 +47,8 @@ function UTWeapon SpawnWeaponType(string Type)
 	{
 	case "linkgun": return Spawn(class'UTWeap_LinkGun'); break;
 	case "rocket" : return Spawn(class'UTWeap_RocketLauncher_Content'); break;
-	default: `log("No weapon of this type: " $Type); break;
+	case "shockRifle": return Spawn(class'UTWeap_ShockRifle'); break;
+	default: `log("[WeaponSpawnError] No weapon of this type: " $Type); break;
 	};
 }
 
