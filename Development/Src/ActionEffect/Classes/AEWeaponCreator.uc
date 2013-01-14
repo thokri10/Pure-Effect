@@ -53,7 +53,7 @@ function UTWeapon SpawnWeaponType(string Type)
 	switch(Type)
 	{
 		case "linkgun":     return Spawn(class'UTWeap_LinkGun');                        break;
-		case "rocket" :     return Spawn(class'UTWeap_RocketLauncher_Content');         break;
+		case "Rocket" :     return Spawn(class'UTWeap_RocketLauncher_Content');         break;
 		case "shockRifle":  return Spawn(class'UTWeap_ShockRifle');                     break;
 		default:            `log("[WeaponSpawnError] No weapon of this type: " $Type);  break;
 	};
