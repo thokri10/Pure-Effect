@@ -7,11 +7,15 @@ simulated event PostBeginPlay()
 	super.PostBeginPlay();
 
 	EAPC = AEPlayerController(GetALocalPlayerController());
-	if(EAPC != None){
+	if (EAPC != None)
+	{
 		EAPC.myPawn = self;
 		`log("Setting pawn");
-	}else
+	}
+	else
+	{
 		`log("No controller to pawn");
+	}
 }
 
 function AddDefaultInventory()
