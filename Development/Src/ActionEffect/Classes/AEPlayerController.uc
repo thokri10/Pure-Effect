@@ -29,6 +29,7 @@ simulated event PostBeginPlay()
 	myMissionObjective.PC = self;
 
 	// Connect to server.
+	myTcpLink.ResolveMe();
 }
 
 exec function startMission()

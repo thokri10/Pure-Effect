@@ -1,7 +1,7 @@
 class AEPawn_Bot extends AEPawn
 	placeable;
 
-var         UTBot        MyController;
+var AEAIController MyController;
 
 simulated event PostBeginPlay()
 {
@@ -9,20 +9,21 @@ simulated event PostBeginPlay()
 
 	if(ControllerClass == none)
 	{
-		ControllerClass = class'UTBot';
+		ControllerClass = class'AEAIController';
 
 		if(MyController == none)
-			MyController = UTBot(Controller);
+			MyController = AEAIController(Controller);
 	}
 	
 	SetCharacterClassFromInfo(class'UTFamilyInfo_Liandri_Male');
 
 	super.PostBeginPlay();
+
+	AddDefaultInventory();
 }
 
 DefaultProperties
 {
-	Components.add(skel);
 
-	ControllerClass=class'UTBot'
+	ControllerClass=class'AEAIController'
 }

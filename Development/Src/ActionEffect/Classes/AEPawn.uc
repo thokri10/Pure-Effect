@@ -1,5 +1,6 @@
 class AEPawn extends UTPawn;
 
+
 function AddDefaultInventory()
 {
 	local UTWeap_ShockRifle shock;

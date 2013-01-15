@@ -25,6 +25,9 @@ var bool    send;
 // Information that the player receives from the server.
 var string  returnedMessage;
 
+// Token we use to connect to server.
+var string token;
+
 // Our WeaponStruct that will contain all the variables for our weapon. 
 // Default variables is now set by server.
 struct WeaponStruct
@@ -93,10 +96,13 @@ event Opened()
 		SendText( "GET /" $ databasePath);
 		SendText( chr(13)$chr(10) );
 
+		SendText( token );
+		SendText( chr(13)$chr(10) );
+
 		//SendText( "Host: " $ TargetHost );
 		//SendText( chr(13)$chr(10) );
 
-		SendText( "end" );
+		SendText("Connection: Close");
 		SendText(chr(13)$chr(10) $ chr(13)$chr(10));
 	}
 	else if ( send && score > 0)
@@ -200,10 +206,11 @@ DefaultProperties
 	TargetHost = "www.geirhilmersen.com";
 	TargetPort = 8080;
 
-	databasePath = "api/weapons/1.json";
+	databasePath = "api/weapons/1.json"
 
 	returnedMessage = "{\"created_at\":\"2013-01-12T00:16:44Z\",\"id\":1,\"magsize\":\"20\",\"reload_time\":\"0.1\",\"spread\":\"0.5\",\"updated_at\":\"2013-01-12T00:16:44Z\",\"weapon_type\":\"rocket\"}";
 
+	token = "Authorization: Basic 0d9cc5ab64b8e3d2edbc616ef255cc28=";
 	score = 1;
 	send = false;
 }
