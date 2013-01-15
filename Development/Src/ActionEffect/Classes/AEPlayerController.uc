@@ -12,7 +12,7 @@ simulated event PostBeginPlay()
 	myTcpLink = Spawn(class'AETcpLinkClient');
 	myTcpLink.PC = self;
 
-	myTcpLink.ResolveMe();
+	//myTcpLink.ResolveMe();
 }
 
 exec function getWeapon(string type, float spread, int magazineSize, float reloadTime)
