@@ -1,6 +1,9 @@
 // THIS CLASS IS RESPONSIBLE FOR CREATING CUSTOM WEAPONS.
 class AEWeaponCreator extends Actor;
 
+// Variable to easy use playercontroller
+var AEPlayerController PC;
+
 // Creates a custom-made weapon from server (main function)
 simulated function UTWeapon CreateWeaponFromStruct(WeaponStruct weap)
 {
@@ -53,7 +56,7 @@ function UTWeapon SpawnWeaponType(string Type)
 	switch(Type)
 	{
 		case "linkgun":     return Spawn(class'UTWeap_LinkGun');                        break;
-		case "Rocket" :     return Spawn(class'UTWeap_RocketLauncher_Content');         break;
+		case "Rocket" :     return Spawn(class'AEWeapon_RocketLauncher');               break;
 		case "shockRifle":  return Spawn(class'UTWeap_ShockRifle');                     break;
 		default:            `log("[WeaponSpawnError] No weapon of this type: " $Type);  break;
 	};

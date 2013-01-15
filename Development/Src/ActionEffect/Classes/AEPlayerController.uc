@@ -8,7 +8,10 @@ var AEWeaponCreator         myWeaponCreator;
 var AETcpLinkClient         myTcpLink;
 
 // Character that the player controls.
-var AEPawn                  myPawn;
+var AEPawn_Player           myPawn;
+
+// Mission module that initialize mission and spawns it's objectives.
+var AEMissionObjective      myMissionObjective;
 
 // Initializations before any pawns spawn on the map.
 simulated event PostBeginPlay()
@@ -16,11 +19,21 @@ simulated event PostBeginPlay()
 	// Initializations of various variables.
 	super.PostBeginPlay();
 
-	myWeaponCreator = Spawn(class'AEWeaponCreator');
 	myTcpLink = Spawn(class'AETcpLinkClient');
 	myTcpLink.PC = self;
 
+	myWeaponCreator = Spawn(class'AEWeaponCreator');
+	myWeaponCreator.PC = self;
+
+	myMissionObjective = Spawn(class'AEMissionObjective');
+	myMissionObjective.PC = self;
+
 	// Connect to server.
+}
+
+exec function startMission()
+{
+	myMissionObjective.Initialize("");
 }
 
 // CONSOLE COMMAND: Generates a weapon.
