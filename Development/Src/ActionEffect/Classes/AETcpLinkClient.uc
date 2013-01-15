@@ -1,15 +1,28 @@
+// THIS CLASS IS RESPONSIBLE FOR SERVER COMMUNICATION.
 class AETcpLinkClient extends TcpLink;
 
+// Reference to the player controller.
 var AEPlayerController  PC;
 
+// Server (hostname/IP-address)
 var string  TargetHost;
+
+// Server's port used for game communication.
 var int     TargetPort;
 
-var string  path;
+// Database path to the info needed to generate a weapon.
+var string  databasePath;
+
+// Message that the player sends to the server.
 var string  requestText;
+
+// The score the player has.
 var int     score;
+
+// Variable that checks if the player is ready to communicate with the server.
 var bool    send;
 
+// Information that the player receives from the server.
 var string  returnedMessage;
 
 // Our WeaponStruct that will contain all the variables for our weapon. 
@@ -20,36 +33,43 @@ struct WeaponStruct
 	var string  type;
 	var float   spread;
 	var float   reloadTime;
-	var int     magsize;
+	var int     magSize;
 };
 
-event PostBeginPlay()
+// Initializations before any pawns spawn on the map.
+simulated event PostBeginPlay()
 {
 	super.PostBeginPlay();
 }
 
+// Connect to server.
 function ResolveMe()
 {
 	Resolve(TargetHost);
 }
 
+// Successfully connected to a server.
 event Resolved( IpAddr Addr )
 {
-	// The hostname was resolved succefully
+	// Log that the hostname was resolved successfully.
 	`Log("[TcpClient] " $TargetHost$ " resolved to " $IpAddrToString(Addr));
 
-	// Make sure the correct remote port is set, resolving doesn't set
-    // the port value of the IpAddr structure
+	// Make sure the correct remote port is set. Resolving doesn't set
+    // the port value of the IpAddr structure.
 	Addr.Port = TargetPort;
 
-	//dont comment out this log because it rungs the function bindport
+	// Connects to a designated port (see DefaultProperties for which port)
+	// DO NOT comment out this log because it rungs the function bindport.
 	`Log("[TcpLinkClient] Bound to port: " $BindPort(TargetPort) );
+	
+	// Logs if player cannot connect to a server port.
 	if(!Open(Addr))
 	{
 		`Log("[TcpLinkClient] Open Failed");
 	}
 }
 
+// Failed to connect to the server.
 event ResolvedFailed()
 {
 	`Log("[TcpLinkClient] Unable to resolve "$TargetHost);
@@ -57,19 +77,20 @@ event ResolvedFailed()
     // remote host.
 }
 
+// Established a connection with the server's port.
 event Opened()
 {
 	// A connection was established
-    `Log("[TcpLinkClient] event opened");
-    `Log("[TcpLinkClient] Sending simple HTTP query");
+    `Log("[TcpLinkClient] Event opened.");
+    `Log("[TcpLinkClient] Sending simple HTTP query.");
      
     //The HTTP GET request
-    //char(13) and char(10) are carrage returns and new lines
+    //char(13) and char(10) are Carriage returns and new lines
 	if(!send)
 	{
 		//SendText(1);
-		//SendText("GET" $path);
-		SendText( "GET /" $ path);
+		//SendText("GET" $databasePath);
+		SendText( "GET /" $ databasePath);
 		SendText( chr(13)$chr(10) );
 
 		//SendText( "Host: " $ TargetHost );
@@ -83,17 +104,17 @@ event Opened()
 		`log("fhaldkjfhglkjadhfgkljhadflkhglakdfg");
 		requestText = "value="$score$"&submit=10987";
 		
-		SendText("POST /"$path$" HTTP/1.0"); CarrageReturn();
-		SendText("Host: "$TargetHost); CarrageReturn();
-		SendText("User-Agent: HTTPTool/1.0"); CarrageReturn();
-		SendText("Content-Type: application/x-www-form-urlencoded"); CarrageReturn();
+		SendText("POST /"$databasePath$" HTTP/1.0"); CarriageReturn();
+		SendText("Host: "$TargetHost); CarriageReturn();
+		SendText("User-Agent: HTTPTool/1.0"); CarriageReturn();
+		SendText("Content-Type: application/x-www-form-urlencoded"); CarriageReturn();
 		
-		SendText("Content-Length: "$len(requestText)); CarrageReturn();
-		CarrageReturn();
+		SendText("Content-Length: "$len(requestText)); CarriageReturn();
+		CarriageReturn();
 		SendText(requestText);
-		CarrageReturn();
+		CarriageReturn();
 		SendText("Connection: Close");
-		CarrageReturn(); CarrageReturn();
+		CarriageReturn(); CarriageReturn();
 
 	}
 
@@ -135,10 +156,13 @@ function WeaponStruct parseStringToWeapon(string in)
 	local array<string> tempString;
 	local array<string> tempString2;
 	local int i;
+	local string weaponDebugLog;
 
+	weaponDebugLog = "\n";
+
+	in = mid( in, 1, len( in ) - 1 );
 	// Splits the string to set categories
 	tempString = SplitString(in, ",");
-
 	for(i = 0; i < tempString.Length; i++)
 	{
 		// Now we split it one more time to get type and value 
@@ -147,29 +171,26 @@ function WeaponStruct parseStringToWeapon(string in)
 		tempString2[0] = mid( tempString2[0], 1, len( tempString2[0] ) - 2 );
 
 		// Now we check if any of the preset variables we have exist in this json
-		if     (tempString2[0] == "id")             Weap.id         = int   (       tempString2[1] );
-		else if(tempString2[0] == "magsize")        Weap.magsize    = int   (  mid( tempString2[1], 1, len( tempString2[1] ) - 1 ) );
-		else if(tempString2[0] == "reload_time")    Weap.reloadTime = float (  mid( tempString2[1], 1, len( tempString2[1] ) - 1 ) );
-		else if(tempString2[0] == "spread")         Weap.spread     = float (  mid( tempString2[1], 1, len( tempString2[1] ) - 1 ) );
-		else if(tempString2[0] == "weapon_type")    Weap.type       =          mid( tempString2[1], 1, len( tempString2[1] ) - 3 );
-
-		/* Some problems with switch did not work as intended
-		switch(tempString2[0])
-		{
-		case "id": Weap.id = int( tempString2[1] ); break;
-		case "magsize": `log( "asdasdasdasdasd " $ mid( tempString2[1], 1, len( tempString2[1] ) - 1 ) ); break; //Weap.magsize = int( mid( tempString2[1], 1, len( tempString2[1] ) - 1 ) ); break;
-		case "reload_time": Weap.reloadTime = int( mid( tempString2[1], 1, len( tempString2[1] ) - 1 ) ); break;
-		case "spread": Weap.spread = int( mid( tempString2[1], 1, len( tempString2[1] ) - 1 ) ); break;
-		case "weapon_type": Weap.type = tempString2[1];  break; //mid( tempString2[1], 1, len( tempString2[1] ) - 1 ); break;
-		}
-		*/
+		if      (tempString2[0] == "id")            Weap.id         = int   ( tempString2[1] );         
+		else if (tempString2[0] == "mag_size")      Weap.magSize    = int   ( tempString2[1] );
+		else if (tempString2[0] == "reload_time")   Weap.reloadTime = float ( tempString2[1] );
+		else if (tempString2[0] == "spread")        Weap.spread     = float ( tempString2[1] );
+		else if (tempString2[0] == "name")          Weap.type       = mid( tempString2[1], 1, len( tempString2[1] ) - 2 );    
 	}
+
+	weaponDebugLog = weaponDebugLog $ "Weapon ID: "                 $ Weap.id $             "\n"
+									$ "Magazine size: "             $ Weap.magSize $        "\n"
+									$ "Reload time (seconds): "     $ Weap.reloadTime $     "\n"
+									$ "Spread: "                    $ Weap.spread $         "\n"
+									$ "Weapon type: "               $ Weap.type $           "\n";
+
+	`Log("Weapon generated:" $ weaponDebugLog);
 
 	return Weap;
 }
 
 // return "space newline"
-function CarrageReturn()
+function CarriageReturn()
 {
 	SendText(chr(13)$chr(10));
 }
@@ -179,7 +200,7 @@ DefaultProperties
 	TargetHost = "www.geirhilmersen.com";
 	TargetPort = 8080;
 
-	path = "weapons/1.json";
+	databasePath = "api/weapons/1.json";
 
 	returnedMessage = "{\"created_at\":\"2013-01-12T00:16:44Z\",\"id\":1,\"magsize\":\"20\",\"reload_time\":\"0.1\",\"spread\":\"0.5\",\"updated_at\":\"2013-01-12T00:16:44Z\",\"weapon_type\":\"rocket\"}";
 
