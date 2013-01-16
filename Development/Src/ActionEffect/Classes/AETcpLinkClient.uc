@@ -116,7 +116,7 @@ event ReceivedText( string Text )
 	// receiving some text, note that the text includes line breaks
 	`log("[TcpLinkClient] ReceivedText:: " $Text);
 
-	returnedMessage = Text;
+	//returnedMessage = Text;
 
 	//we dont want the header info, so we split the string after two new lines
 	//Text = Split(Text, "chr(13)$chr(10)chr(13)$chr(10)", true);
@@ -181,7 +181,7 @@ DefaultProperties
 
 	path = "weapons/1.json";
 
-	returnedMessage = ""; //"{\"created_at\":\"2013-01-12T00:16:44Z\",\"id\":1,\"magsize\":\"20\",\"reload_time\":\"0.1\",\"spread\":\"0.5\",\"updated_at\":\"2013-01-12T00:16:44Z\",\"weapon_type\":\"rocket\"}"
+	returnedMessage = "{\"created_at\":\"2013-01-12T00:16:44Z\",\"id\":1,\"magsize\":\"20\",\"reload_time\":\"0.1\",\"spread\":\"0.5\",\"updated_at\":\"2013-01-12T00:16:44Z\",\"weapon_type\":\"rocket\"}"
 
 	score = 1;
 	send = false;
