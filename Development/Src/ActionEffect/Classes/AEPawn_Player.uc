@@ -18,7 +18,6 @@ simulated event PostBeginPlay()
 	}
 }
 
-
 function AddWeaponToInventory(UTWeapon type)
 {
 	UTInventoryManager(InvManager).AddInventory(type);
@@ -27,4 +26,6 @@ function AddWeaponToInventory(UTWeapon type)
 DefaultProperties
 {
 	InventoryManagerClass=class'ActionEffect.AEInventoryManager'
+
+	
 }

@@ -1,6 +1,24 @@
 // THIS CLASS IS RESPONSIBLE FOR SERVER COMMUNICATION.
 class AETcpLinkClient extends TcpLink;
 
+// Our WeaponStruct that will contain all the variables for our weapon. 
+// Default variables is now set by server.
+struct WeaponStruct
+{
+	var int     id;
+	var string  type;
+	var float   spread;
+	var float   reloadTime;
+	var int     magSize;
+};
+
+struct PlayerStruct
+{
+	var string name;
+	var string mail;
+	var int id;
+};
+
 // Reference to the player controller.
 var AEPlayerController  PC;
 
@@ -11,6 +29,7 @@ var string  TargetHost;
 var int     TargetPort;
 
 // Database path to the info needed to generate a weapon.
+var string  get;
 var string  databasePath;
 
 // Message that the player sends to the server.
@@ -23,21 +42,18 @@ var int     score;
 var bool    send;
 
 // Information that the player receives from the server.
-var string  returnedMessage;
+var string          returnedMessage;
+var array<string>   returnedArray;
 
 // Token we use to connect to server.
-var string token;
+var PlayerStruct    playerInfo;
+var bool            bLogedIn;
+var bool            bHavePlayerInfo;
+var string          token;
 
-// Our WeaponStruct that will contain all the variables for our weapon. 
-// Default variables is now set by server.
-struct WeaponStruct
-{
-	var int     id;
-	var string  type;
-	var float   spread;
-	var float   reloadTime;
-	var int     magSize;
-};
+var bool            bWaitingForMission;
+var bool            bWaitingForWeapon;
+var bool            bWaitingForReward;
 
 // Initializations before any pawns spawn on the map.
 simulated event PostBeginPlay()
@@ -83,48 +99,48 @@ event ResolvedFailed()
 // Established a connection with the server's port.
 event Opened()
 {
-	// A connection was established
-    `Log("[TcpLinkClient] Event opened.");
-    `Log("[TcpLinkClient] Sending simple HTTP query.");
-     
-    //The HTTP GET request
-    //char(13) and char(10) are Carriage returns and new lines
-	if(!send)
+	`Log("[TcpLinkClient] Event opened.");
+
+	if(bLogedIn)
 	{
-		//SendText(1);
-		//SendText("GET" $databasePath);
-		SendText( "GET /" $ databasePath);
-		SendText( chr(13)$chr(10) );
+		// A connection was established
+		`Log("[TcpLinkClient] Sending simple HTTP query.");
 
-		SendText( token );
-		SendText( chr(13)$chr(10) );
+		if(!send)
+		{
+			`log("Path::::::::::: " $ get $ databasePath );
+			SendText( get $ databasePath );
+			CarriageReturn();
 
-		//SendText( "Host: " $ TargetHost );
-		//SendText( chr(13)$chr(10) );
-
-		SendText("Connection: Close");
-		SendText(chr(13)$chr(10) $ chr(13)$chr(10));
-	}
-	else if ( send && score > 0)
-	{
-		`log("fhaldkjfhglkjadhfgkljhadflkhglakdfg");
-		requestText = "value="$score$"&submit=10987";
+			SendText("Connection: Close");
+			CarriageReturn(); CarriageReturn();
+			//The HTTP GET request
+			//char(13) and char(10) are Carriage returns and new lines
+		}
+		else if ( send && score > 0)
+		{
+			/*
+			requestText = "value="$score$"&submit=10987";
 		
-		SendText("POST /"$databasePath$" HTTP/1.0"); CarriageReturn();
-		SendText("Host: "$TargetHost); CarriageReturn();
-		SendText("User-Agent: HTTPTool/1.0"); CarriageReturn();
-		SendText("Content-Type: application/x-www-form-urlencoded"); CarriageReturn();
+			SendText("POST /"$databasePath$" HTTP/1.0"); CarriageReturn();
+			SendText("Host: "$TargetHost); CarriageReturn();
+			SendText("User-Agent: HTTPTool/1.0"); CarriageReturn();
+			SendText("Content-Type: application/x-www-form-urlencoded"); CarriageReturn();
 		
-		SendText("Content-Length: "$len(requestText)); CarriageReturn();
-		CarriageReturn();
-		SendText(requestText);
-		CarriageReturn();
-		SendText("Connection: Close");
-		CarriageReturn(); CarriageReturn();
+			SendText("Content-Length: "$len(requestText)); CarriageReturn();
+			CarriageReturn();
+			SendText(requestText);
+			CarriageReturn();
+			SendText("Connection: Close");
+			CarriageReturn(); CarriageReturn();
+			*/
 
+		}
+
+		`Log("[TcpLinkClient] end HTTP query");
+	}else{
+		`log("[TcpLinkClient] Please log in");
 	}
-
-	`Log("[TcpLinkClient] end HTTP query");
 }
 
 event Closed()
@@ -142,58 +158,120 @@ event ReceivedText( string Text )
 {
 	// receiving some text, note that the text includes line breaks
 	`log("[TcpLinkClient] ReceivedText:: " $Text);
-
-	returnedMessage = Text;
-
-	//we dont want the header info, so we split the string after two new lines
-	//Text = Split(Text, "chr(13)$chr(10)chr(13)$chr(10)", true);
-	//`log("[TcpLinkClient] SplitText:: " $Text);
-
-	if(!send)
+	
+	if(bLogedIn)
 	{
-		send = true;
+		returnedMessage = Text;
+		returnedArray = parseToArray(Text);
+
+		//we dont want the header info, so we split the string after two new lines
+		//Text = Split(Text, "chr(13)$chr(10)chr(13)$chr(10)", true);
+		//`log("[TcpLinkClient] SplitText:: " $Text);
+		
+		if(bWaitingForMission)
+		{
+			PC.myMissionObjective.Initialize(returnedArray);
+			bWaitingForMission = false;
+		}else if(bWaitingForWeapon)
+		{
+			PC.serverWeaponCreator(Text);
+			bWaitingForWeapon = false;
+		}else if(bWaitingForReward)
+		{
+			PC.mHUD.postError(Text);
+			bWaitingForReward = false;
+		}
+	}else{
+		setUserInfo(Text);
 	}
 }
 
-// Returns a weaponStruct from a json message from server
-function WeaponStruct parseStringToWeapon(string in)
+function logIn(string user, string password)
 {
-	local WeaponStruct  Weap;
-	local array<string> tempString;
-	local array<string> tempString2;
-	local int i;
-	local string weaponDebugLog;
+	SendText( "GET /api/accounts/" $ user $ ".json" );
+	CarriageReturn(); CarriageReturn();
+}
 
-	weaponDebugLog = "\n";
-
-	in = mid( in, 1, len( in ) - 1 );
-	// Splits the string to set categories
-	tempString = SplitString(in, ",");
-	for(i = 0; i < tempString.Length; i++)
+function getMission(int id)
+{
+	if(bLogedIn)
 	{
-		// Now we split it one more time to get type and value 
-		tempString2 = SplitString(tempString[i], ":");
-		// Removes both the ' " ' from the string so we can read it properly
-		tempString2[0] = mid( tempString2[0], 1, len( tempString2[0] ) - 2 );
+		databasePath = "missions/" $ id $ ".json";
+		bWaitingForMission = true;
 
-		// Now we check if any of the preset variables we have exist in this json
-		if      (tempString2[0] == "id")            Weap.id         = int   ( tempString2[1] );         
-		else if (tempString2[0] == "mag_size")      Weap.magSize    = int   ( tempString2[1] );
-		else if (tempString2[0] == "reload_time")   Weap.reloadTime = float ( tempString2[1] );
-		else if (tempString2[0] == "spread")        Weap.spread     = float ( tempString2[1] );
-		else if (tempString2[0] == "name")          Weap.type       = mid( tempString2[1], 1, len( tempString2[1] ) - 2 );    
+		ResolveMe();
+	}
+}
+
+function getWeapon(int id)
+{
+	if(bLogedIn)
+	{
+		databasePath = "weapons/" $ id $ ".json";
+		bWaitingForWeapon = true;
+
+		ResolveMe();
+	}
+}
+
+function getReward(int id)
+{
+	if(bLogedIn)
+	{
+		databasePath = "rewards/" $ id $ ".json";
+		bWaitingForReward = true;
+
+		ResolveMe();
+	}
+}
+
+function array<string> parseToArray(string jsonString)
+{
+	local array<string> returnString;
+	local int i;
+
+	jsonString = mid( jsonString, 1, len( jsonString ) - 1 );
+	// Splits the string to set categories
+	returnString = SplitString(jsonString, ",");
+
+	for(i = 0; i < returnString.Length; i++)
+	{
+		`log("[Parsing] " $returnString[i]);
 	}
 
-	weaponDebugLog = weaponDebugLog $ "Weapon ID: "                 $ Weap.id $             "\n"
-									$ "Magazine size: "             $ Weap.magSize $        "\n"
-									$ "Reload time (seconds): "     $ Weap.reloadTime $     "\n"
-									$ "Spread: "                    $ Weap.spread $         "\n"
-									$ "Weapon type: "               $ Weap.type $           "\n";
-
-	`Log("Weapon generated:" $ weaponDebugLog);
-
-	return Weap;
+	return returnString;
 }
+
+function setUserInfo(string info)
+{
+	local array<string> userInfo;
+	local array<string> splitted;
+	local int i;
+
+	userInfo = parseToArray(info);
+
+	for( i = 0; i < userInfo.Length; i++)
+	{
+		splitted = SplitString(userInfo[i], ":");
+
+		splitted[0] = mid(splitted[0], 1, len(splitted[0]) - 2 );
+
+		if(splitted[0] == "clan_name"){  playerInfo.name = mid( splitted[1], 1, len(splitted[1]) - 3); bLogedIn = true; }
+		else if(splitted[0] == "id")    playerInfo.id =   int( splitted[1] );
+		else if(splitted[0] == "email") playerInfo.mail = mid( splitted[1], 1, len(splitted[1]) - 2);
+	}
+
+	if(!bLogedIn){
+		`log("[TcpLinkClient] Log in failed");
+		ResolveMe();
+	}else{
+		`log("[TcpLinkClient] Log in accepted");
+		PC.mHUD.addUserInfo("Name : " $ playerInfo.name);
+	}
+
+}
+
+
 
 // return "space newline"
 function CarriageReturn()
@@ -206,9 +284,10 @@ DefaultProperties
 	TargetHost = "www.geirhilmersen.com";
 	TargetPort = 8080;
 
-	databasePath = "api/weapons/1.json"
+	databasePath = ""
+	get = "GET /api/"
 
-	returnedMessage = "{\"created_at\":\"2013-01-12T00:16:44Z\",\"id\":1,\"magsize\":\"20\",\"reload_time\":\"0.1\",\"spread\":\"0.5\",\"updated_at\":\"2013-01-12T00:16:44Z\",\"weapon_type\":\"rocket\"}";
+	returnedMessage = "";//"{\"created_at\":\"2013-01-12T00:16:44Z\",\"id\":1,\"magsize\":\"20\",\"reload_time\":\"0.1\",\"spread\":\"0.5\",\"updated_at\":\"2013-01-12T00:16:44Z\",\"weapon_type\":\"rocket\"}";
 
 	token = "Authorization: Basic 0d9cc5ab64b8e3d2edbc616ef255cc28=";
 	score = 1;

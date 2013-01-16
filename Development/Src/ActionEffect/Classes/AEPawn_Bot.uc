@@ -1,7 +1,8 @@
 class AEPawn_Bot extends AEPawn
 	placeable;
 
-var AEAIController MyController;
+var AEAIController      MyController;
+var AEMissionObjective  spawnOwner;
 
 simulated event PostBeginPlay()
 {
@@ -13,6 +14,11 @@ simulated event PostBeginPlay()
 
 		if(MyController == none)
 			MyController = AEAIController(Controller);
+
+		spawnOwner = AEMissionObjective(Owner);
+
+		if(spawnOwner == none)
+			`log("[AEPawn_Bot] Owner does not exist. Or can't be casted to AEMissionObjective");
 	}
 	
 	SetCharacterClassFromInfo(class'UTFamilyInfo_Liandri_Male');
@@ -20,6 +26,16 @@ simulated event PostBeginPlay()
 	super.PostBeginPlay();
 
 	AddDefaultInventory();
+}
+
+function bool Died(Controller Killer, class<DamageType> damageType, Vector HitLocation)
+{
+	if(spawnOwner == none)
+		spawnOwner = AEMissionObjective(Owner);
+
+	spawnOwner.botDied();
+
+	return super.Died(Killer, damageType, HitLocation);
 }
 
 DefaultProperties
