@@ -12,6 +12,12 @@ struct MissionObjectives
 	var int MOEnemies;
 };
 
+struct RewardStruct
+{
+	var int Credit;
+	var string Weapon;
+};
+
 var int botsKilled;
 var Console consolClient;
 
@@ -53,6 +59,25 @@ function MissionObjectives parseArrayToMissionStruct(array<string> missionArray)
 	}
 
 	return objectives;
+}
+
+function RewardStruct parseArrayToRewardStruct(array<string> rewardArray)
+{
+	local array<string>     splitted;
+	local RewardStruct      rewards;
+	local int i;
+
+	for(i = 0; i < rewardArray.Length; i++)
+	{
+		splitted = SplitString(rewardArray[i], ":");
+
+		splitted[0] = mid( splitted[0], 1, len( splitted[0] ) - 2);
+
+		if(splitted[0] == "cash") rewards.Credit = int( splitted[1] );
+		else if(splitted[0] == "weapon") rewards.Weapon = mid( splitted[1], 1, len( splitted[1] ) - 3);
+	}
+
+	return rewards;
 }
 
 // Initializes the missions wtih the string from server
@@ -116,7 +141,6 @@ function botDied()
 	}else{
 		printObjectiveMessage("Mission Complete");
 		PC.getReward(AEObjectives.id);
-		PC.getWeapon("rocket", 0.5, 1000, 0.1);
 	}
 }
 
@@ -136,6 +160,18 @@ function printObjectiveInfo(string message, optional bool bNoAddToMessage)
 	}else{
 		PC.mHUD.addMissionInfo(message);
 	}
+}
+
+function getReward(array<string> rewardArray)
+{
+	local RewardStruct reward;
+
+	reward = parseArrayToRewardStruct( rewardArray );
+
+	PC.credits = reward.Credit;
+	PC.getWeapon(reward.Weapon, 0.1, 500, 1);
+
+	PC.mHUD.postError( string( PC.credits ) );
 }
 
 function printObjectiveMessage(string message)

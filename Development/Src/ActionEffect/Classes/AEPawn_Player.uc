@@ -23,9 +23,14 @@ function AddWeaponToInventory(UTWeapon type)
 	UTInventoryManager(InvManager).AddInventory(type);
 }
 
+function bool Dodge(eDoubleClickDir DoubleClickMove){return false;}
+
 DefaultProperties
 {
 	InventoryManagerClass=class'ActionEffect.AEInventoryManager'
 
+	bCanDoubleJump = false
+	MaxMultiJump=0
+	MultiJumpRemaining=0
 	
 }

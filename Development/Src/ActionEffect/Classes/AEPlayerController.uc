@@ -3,6 +3,7 @@ class AEPlayerController extends UTPlayerController;
 
 var AEHUD                   mHUD;
 var HudLocalizedMessage     message;
+var int                     credits;
 
 // Responsible for generating weapons.
 var AEWeaponCreator         myWeaponCreator;
@@ -35,6 +36,30 @@ simulated event PostBeginPlay()
 	myTcpLink.ResolveMe();
 }
 
+
+function getReward(int id)
+{
+	myTcpLink.getReward(id);
+}
+
+function serverWeaponCreator(string weap)
+{
+	addWeaponToInventory( myWeaponCreator.CrateWeaponFromString( weap ) );
+}
+
+function addWeaponToInventory(UTWeapon weap)
+{
+	myPawn.AddWeaponToInventory( weap );
+}
+
+function addReward(array<string> rewardArray)
+{
+	myMissionObjective.getReward(rewardArray);
+}
+
+/*
+ * Console commands
+ */
 exec function logIn(string user, optional string password)
 {
 	if(mHUD == none)
@@ -43,6 +68,7 @@ exec function logIn(string user, optional string password)
 	myTcpLink.logIn(user, password);
 }
 
+// Tells the TCPConnection to get Mission with a ID
 exec function startMission(int id)
 {
 	myTcpLink.getMission(id);
@@ -62,21 +88,6 @@ exec function getWeapon(string type, float spread, int magazineSize, float reloa
 exec function getServerWeapon(int id)
 {
 	myTcpLink.getWeapon(id);
-}
-
-function getReward(int id)
-{
-	myTcpLink.getReward(id);
-}
-
-function serverWeaponCreator(string weap)
-{
-	addWeaponToInventory( myWeaponCreator.CrateWeaponFromString( weap ) );
-}
-
-function addWeaponToInventory(UTWeapon weap)
-{
-	myPawn.AddWeaponToInventory( weap );
 }
 
 DefaultProperties

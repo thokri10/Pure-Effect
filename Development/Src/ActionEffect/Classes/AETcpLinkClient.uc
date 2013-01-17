@@ -131,8 +131,6 @@ event Opened()
 			CarriageReturn();
 			SendText(requestText);
 			CarriageReturn();
-			SendText("Connection: Close");
-			CarriageReturn(); CarriageReturn();
 			*/
 
 		}
@@ -151,6 +149,45 @@ event Closed()
 
 	// After the connection was closed we could establish a new
     // connection using the same TcpLink instance.
+}
+
+function logIn(string user, string password)
+{
+	SendText( "GET /api/accounts/" $ user);
+	CarriageReturn(); CarriageReturn();
+}
+
+function getMission(int id)
+{
+	if(bLogedIn)
+	{
+		databasePath = "missions/" $ id;
+		bWaitingForMission = true;
+
+		ResolveMe();
+	}
+}
+
+function getWeapon(int id)
+{
+	if(bLogedIn)
+	{
+		databasePath = "weapons/" $ id;
+		bWaitingForWeapon = true;
+
+		ResolveMe();
+	}
+}
+
+function getReward(int id)
+{
+	if(bLogedIn)
+	{
+		databasePath = "rewards/" $ id;
+		bWaitingForReward = true;
+
+		ResolveMe();
+	}
 }
 
 // Receives the text from server. Runs automaticly when server send info to us.
@@ -179,6 +216,7 @@ event ReceivedText( string Text )
 		}else if(bWaitingForReward)
 		{
 			PC.mHUD.postError(Text);
+			PC.addReward(returnedArray);
 			bWaitingForReward = false;
 		}
 	}else{
@@ -186,58 +224,14 @@ event ReceivedText( string Text )
 	}
 }
 
-function logIn(string user, string password)
-{
-	SendText( "GET /api/accounts/" $ user $ ".json" );
-	CarriageReturn(); CarriageReturn();
-}
-
-function getMission(int id)
-{
-	if(bLogedIn)
-	{
-		databasePath = "missions/" $ id $ ".json";
-		bWaitingForMission = true;
-
-		ResolveMe();
-	}
-}
-
-function getWeapon(int id)
-{
-	if(bLogedIn)
-	{
-		databasePath = "weapons/" $ id $ ".json";
-		bWaitingForWeapon = true;
-
-		ResolveMe();
-	}
-}
-
-function getReward(int id)
-{
-	if(bLogedIn)
-	{
-		databasePath = "rewards/" $ id $ ".json";
-		bWaitingForReward = true;
-
-		ResolveMe();
-	}
-}
-
 function array<string> parseToArray(string jsonString)
 {
 	local array<string> returnString;
-	local int i;
 
 	jsonString = mid( jsonString, 1, len( jsonString ) - 1 );
+
 	// Splits the string to set categories
 	returnString = SplitString(jsonString, ",");
-
-	for(i = 0; i < returnString.Length; i++)
-	{
-		`log("[Parsing] " $returnString[i]);
-	}
 
 	return returnString;
 }
@@ -270,8 +264,6 @@ function setUserInfo(string info)
 	}
 
 }
-
-
 
 // return "space newline"
 function CarriageReturn()
