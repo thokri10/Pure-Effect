@@ -5,6 +5,10 @@ var AEHUD                   mHUD;
 var HudLocalizedMessage     message;
 var int                     credits;
 
+// Inventory for different items we are using
+var class<AEInventory>      AEInv;
+var AEInventory             myItemInventory;
+
 // Responsible for generating weapons.
 var AEWeaponCreator         myWeaponCreator;
 
@@ -32,10 +36,14 @@ simulated event PostBeginPlay()
 	myMissionObjective = Spawn(class'AEMissionObjective');
 	myMissionObjective.PC = self;
 
-	// Connect to server.
-	myTcpLink.ResolveMe();
-}
+	myItemInventory = Spawn(class'AEInventory');
+	myItemInventory.PC = self;
+	myItemInventory.AddItem(Spawn(class'AEInventory_Item_HealthPack'));
 
+	// Connect to server.
+	//myTcpLink.ResolveMe();
+
+}
 
 function getReward(int id)
 {
@@ -62,10 +70,12 @@ function addReward(array<string> rewardArray)
  */
 exec function logIn(string user, optional string password)
 {
-	if(mHUD == none)
+	if(mHUD == none){
 		mHUD = AEHUD(myHUD);
+	}
 
 	myTcpLink.logIn(user, password);
+	mHUD.postError("Loging in...");
 }
 
 // Tells the TCPConnection to get Mission with a ID
@@ -88,6 +98,15 @@ exec function getWeapon(string type, float spread, int magazineSize, float reloa
 exec function getServerWeapon(int id)
 {
 	myTcpLink.getWeapon(id);
+}
+
+exec function UseHealthPack()
+{
+	if(mHUD == none){
+		mHUD = AEHUD(myHUD);
+	}
+
+	myItemInventory.Use(0);
 }
 
 DefaultProperties

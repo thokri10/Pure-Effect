@@ -5,6 +5,8 @@ var HudLocalizedMessage         Message;
 var array<HudLocalizedMessage>  MissionInfo;
 var array<HudLocalizedMessage>  UserInfo;
 
+var int ErrorCounter;
+
 function DrawMessageText(HudLocalizedMessage LocalMessage, float ScreenX, float ScreenY)
 {
 	super.DrawMessageText(LocalMessage, ScreenX, ScreenY);
@@ -30,12 +32,16 @@ event PostRender()
 		DrawMessageText(UserInfo[i], 20, 20+i);
 	}
 
-	DrawMessageText(ErrorMessage, 350, 350);
+	if(ErrorCounter < 100){
+		DrawMessageText(ErrorMessage, 350, 350);
+		++ErrorCounter;
+	}
 }
 
 function postError(string msg)
 {
 	ErrorMessage.StringMessage = msg;
+	ErrorCounter=0;
 }
 
 function addUserInfo(string msg)
@@ -67,5 +73,5 @@ function resetMissionInfo()
 
 DefaultProperties
 {
-	
+	ErrorCounter=0
 }
