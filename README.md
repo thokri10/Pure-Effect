@@ -1,5 +1,3 @@
-Pure-Effect
-===========
-Niggers niggers niggers
+Pure Effect
 
-MEGADICK!
+<readme>
