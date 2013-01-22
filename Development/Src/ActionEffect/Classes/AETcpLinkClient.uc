@@ -215,7 +215,6 @@ event ReceivedText( string Text )
 			bWaitingForWeapon = false;
 		}else if(bWaitingForReward)
 		{
-			PC.mHUD.postError(Text);
 			PC.addReward(returnedArray);
 			bWaitingForReward = false;
 		}
