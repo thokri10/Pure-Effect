@@ -25,10 +25,12 @@ function AddItem(AEInventory_Item item)
 		if( ItemList[i] == item )
 		{
 			ItemList[i].add();
+			return;
 		}
-		if( ItemList[i] == none )
+		else if( ItemList[i] == none )
 		{
 			ItemList[i] = item;
+			return;
 		}
 	}
 }

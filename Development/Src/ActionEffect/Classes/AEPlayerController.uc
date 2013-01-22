@@ -39,9 +39,10 @@ simulated event PostBeginPlay()
 	myItemInventory = Spawn(class'AEInventory');
 	myItemInventory.PC = self;
 	myItemInventory.AddItem(Spawn(class'AEInventory_Item_HealthPack'));
+	myItemInventory.AddItem(Spawn(class'AEInventory_Item_Granade'));
 
 	// Connect to server.
-	//myTcpLink.ResolveMe();
+	myTcpLink.ResolveMe();
 
 }
 
@@ -100,16 +101,16 @@ exec function getServerWeapon(int id)
 	myTcpLink.getWeapon(id);
 }
 
-exec function UseHealthPack()
+exec function UseItem(int slot)
 {
 	if(mHUD == none){
 		mHUD = AEHUD(myHUD);
 	}
 
-	myItemInventory.Use(0);
+	myItemInventory.Use(slot);
 }
 
 DefaultProperties
 {
-	
+	InputClass=class'AEPlayerInput'
 }
