@@ -1,5 +1,15 @@
 class AEWeapon_LinkGun extends UTWeap_LinkGun;
 
+// Variables for making custom projectiles.
+var float customDamage;
+var float customSpeed;
+var string customProjectileType;
+
+simulated function PostBeginPlay()
+{
+	super.PostBeginPlay();
+}
+
 simulated function FireAmmunition()
 {
 	// Use ammunition to fire
@@ -14,7 +24,7 @@ simulated function FireAmmunition()
 
 		case EWFT_Projectile:
 			// TESTING. Make more dynamic.
-			CustomProjectileFire("rocket", 500.0f, 100000.0f);
+			CustomProjectileFire();
 			break;
 
 		case EWFT_Custom:
@@ -25,9 +35,7 @@ simulated function FireAmmunition()
 	NotifyWeaponFired( CurrentFireMode );
 }
 
-simulated function Projectile CustomProjectileFire(string projectileType,
-												   float damage,
-												   float speed)
+simulated function Projectile CustomProjectileFire()
 {
 	local vector		StartTrace, EndTrace, RealStartLoc, AimDir;
 	local ImpactInfo	TestImpact;
@@ -61,22 +69,28 @@ simulated function Projectile CustomProjectileFire(string projectileType,
 		if( SpawnedProjectile != None && !SpawnedProjectile.bDeleteMe )
 		{
 			// Changes the projectile's properties.
-			SpawnedProjectile.Damage = damage;
-			SpawnedProjectile.Speed = speed;
+			SpawnedProjectile.Damage = customDamage;
+			SpawnedProjectile.Speed = customSpeed;
 			
-			switch (projectileType)
+			switch (customProjectileType)
 			{
 				case "linkgun":
 					SpawnedProjectile.MyDamageType = class'UTDmgType_LinkPlasma';
+					WeaponProjectiles[0] = class'UTProj_LinkPlasma';
 					break;
+
 				case "rocket":
 					SpawnedProjectile.MyDamageType = class'UTDmgType_Rocket';
+					WeaponProjectiles[0] = class'UTProj_Rocket';
 					break;
+
 				case "shockRifle":
 					SpawnedProjectile.MyDamageType = class'UTDmgType_ShockPrimary';
+					WeaponProjectiles[0] = class'UTProj_ShockBall';
 					break;
+
 				default:
-					`log("Linkgun projectileType failed to set!");
+					`log("[AEWeapon_LinkGun] Linkgun projectileType failed to set!");
 					break;
 			}
 
@@ -100,4 +114,8 @@ DefaultProperties
 	WeaponProjectiles(0)=class'UTProj_ShockBall'
 
 	InstantHitDamageTypes(1)=class'UTDmgType_ShockPrimary'
+
+	customDamage = 50.0f;
+	customSpeed = 1000.0f;
+	customProjectileType = "linkgun";
 }

@@ -169,7 +169,7 @@ function getReward(array<string> rewardArray)
 	reward = parseArrayToRewardStruct( rewardArray );
 
 	PC.credits = reward.Credit;
-	PC.getWeapon(reward.Weapon, 0.1, 500, 1);
+	PC.getWeapon(reward.Weapon, 0.1, 500, 1, 1337, 2000);
 
 	PC.mHUD.postError( string( PC.credits ) );
 }

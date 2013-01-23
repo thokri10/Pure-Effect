@@ -10,6 +10,8 @@ struct WeaponStruct
 	var float   spread;
 	var float   reloadTime;
 	var int     magSize;
+	var float   damage;
+	var float   speed;
 };
 
 // PlayerStruct holds various information about the player
@@ -179,7 +181,7 @@ function getWeapon(int id)
 {
 	if (bLogedIn)
 	{
-		databasePath = "weapons/" $ id;
+		databasePath = "items/McDonald/Terminator/" $ id;
 		bWaitingForWeapon = true;
 
 		ResolveMe();

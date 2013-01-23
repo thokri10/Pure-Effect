@@ -86,10 +86,10 @@ exec function startMission(int id)
 }
 
 // CONSOLE COMMAND: Generates a weapon.
-exec function getWeapon(string type, float spread, int magazineSize, float reloadTime)
+exec function getWeapon(string type, float spread, int magazineSize, float reloadTime, float damage, float speed)
 {
 	local UTWeapon wep;
-	wep = myWeaponCreator.CreateWeapon(type, spread, magazineSize, reloadTime);
+	wep = myWeaponCreator.CreateWeapon(type, spread, magazineSize, reloadTime, damage, speed);
 
 	if(wep != none)
 		AddWeaponToInventory( wep );

@@ -12,15 +12,15 @@ function UTWeapon CrateWeaponFromString(string weap)
 // Creates a custom-made weapon from server (main function)
 function UTWeapon CreateWeaponFromStruct(WeaponStruct weap)
 {
-	return CreateWeapon(weap.type, weap.spread, weap.magsize, weap.reloadTime);
+	return CreateWeapon(weap.type, weap.spread, weap.magsize, weap.reloadTime, weap.damage, weap.speed);
 }
 
 // Creates a custom-made weapon from server (sub-function)
-function UTWeapon CreateWeapon(string type, float spread, int magazineSize, float reloadSpeed)
+function UTWeapon CreateWeapon(string type, float spread, int magazineSize, float reloadSpeed, float damage, float speed)
 {
 	// Initializes a weapon.
 	local UTWeapon returnWeapon;
-	returnWeapon = SpawnWeaponType(type);
+	returnWeapon = SpawnWeaponType(type, damage, speed);
 
 	if(returnWeapon != none)
 	{
@@ -28,9 +28,6 @@ function UTWeapon CreateWeapon(string type, float spread, int magazineSize, floa
 		returnWeapon = ChangeSpread(returnWeapon, spread);
 		returnWeapon = ChangeMagazineSize(returnWeapon, magazineSize);
 		returnWeapon = ChangeFiringSpeed(returnWeapon, reloadSpeed);
-
-		// TODO: Creates custom projectile.
-		// Attach the custom projectile to the returnWeapon.
 	}
 
 	return returnWeapon;
@@ -65,11 +62,17 @@ function WeaponStruct parseStringToWeaponStruct(string in)
 		else if (tempString2[0] == "name")          Weap.type       = mid( tempString2[1], 1, len( tempString2[1] ) - 2 );    
 	}
 
+	// TESTING PURPOSES. Fix this later.
+	Weap.damage = 1337.0f;
+	Weap.speed = 1500.0f;
+
 	weaponDebugLog = weaponDebugLog $ "Weapon ID: "                 $ Weap.id $             "\n"
 									$ "Magazine size: "             $ Weap.magSize $        "\n"
 									$ "Reload time (seconds): "     $ Weap.reloadTime $     "\n"
 									$ "Spread: "                    $ Weap.spread $         "\n"
-									$ "Weapon type: "               $ Weap.type $           "\n";
+									$ "Weapon type: "               $ Weap.type $           "\n"
+									$ "Damage: "                    $ Weap.damage $         "\n"
+									$ "Speed: "                     $ Weap.speed $          "\n";
 
 	`Log("Weapon generated:" $ weaponDebugLog);
 
@@ -102,14 +105,41 @@ function UTWeapon ChangeSpread(UTWeapon weap, float spread)
 }
 
 // Sets a weapon to be a specific type.
-function UTWeapon SpawnWeaponType(string Type)
+function UTWeapon SpawnWeaponType(string Type, float damage, float speed)
 {
+	local AEWeapon_LinkGun linkgun;
+	local AEWeapon_RocketLauncher rocketLauncher;
+	local AEWeapon_ShockRifle shockRifle;
+
 	switch(Type)
 	{
-		case "linkgun":     return Spawn(class'AEWeapon_LinkGun');                      break;
-		case "Rocket" :     return Spawn(class'AEWeapon_RocketLauncher');               break;
-		case "shockRifle":  return Spawn(class'AEWeapon_ShockRifle');                   break;
-		default:            `log("[WeaponSpawnError] No weapon of this type: " $Type);  break;
+		case "linkgun":
+			linkgun = Spawn(class'AEWeapon_LinkGun');
+			linkgun.customDamage = damage;
+			linkgun.customSpeed = speed;
+			linkgun.customProjectileType = Type;
+			return linkgun;                   
+			break;
+
+		case "Rocket" :     
+			rocketLauncher = Spawn(class'AEWeapon_RocketLauncher');
+			rocketLauncher.customDamage = damage;
+			rocketLauncher.customSpeed = speed;
+			rocketLauncher.customProjectileType = Type;
+			return rocketLauncher;
+			break;
+
+		case "shockRifle":  
+			shockRifle = Spawn(class'AEWeapon_ShockRifle'); 
+			shockRifle.customDamage = damage;
+			shockRifle.customSpeed = speed;
+			shockRifle.customProjectileType = Type;
+			return shockRifle;
+			break;
+
+		default:            
+			`log("[WeaponSpawnError] No weapon of this type: " $ Type); 
+			break;
 	};
 
 	return none;
