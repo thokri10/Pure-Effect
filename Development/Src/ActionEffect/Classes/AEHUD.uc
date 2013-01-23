@@ -56,19 +56,28 @@ function postError(string msg)
 	ErrorCounter=0;
 }
 
-function addToMenu(string msg, optional bool bNoAddToMenu)
+function addMenuSelections(string msg, optional bool bNoAdd)
 {
 	local HudLocalizedMessage nullMsg;
-	local array<HudLocalizedMessage> temp;
-
-	temp.AddItem(nullMsg);
-
-
-	if(bNoAddToMenu)
-		Menu = temp;
 
 	nullMsg.StringMessage = "[ ] " $ msg;
+
+	if( bNoAdd )
+		Menu.Length = 0;
+
 	Menu.AddItem(nullMsg);
+}
+
+function addMissionInfo(string msg, optional bool bNoAdd)
+{
+	local HudLocalizedMessage nullMsg;
+
+	nullMsg.StringMessage = "[MissionInfo] " $ msg;
+
+	if( bNoAdd )
+		MissionInfo.Length = 0;
+		
+	MissionInfo.AddItem(nullMsg);
 }
 
 function setMenuActive(int slot)
@@ -90,14 +99,6 @@ function addUserInfo(string msg)
 
 	nullMsg.StringMessage = "[UserInfo] " $ msg;
 	UserInfo.AddItem(nullMsg);
-}
-
-function addMissionInfo(string msg)
-{
-	local HudLocalizedMessage nullMsg;
-
-	nullMsg.StringMessage = "[MissionInfo] " $ msg;
-	MissionInfo.AddItem(nullMsg);
 }
 
 function resetMissionInfo()
