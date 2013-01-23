@@ -5,6 +5,10 @@ var HudLocalizedMessage         Message;
 var array<HudLocalizedMessage>  MissionInfo;
 var array<HudLocalizedMessage>  UserInfo;
 
+// Menu variables
+var array<HudLocalizedMessage>  Menu;
+var int activeMenuSlot;
+
 var int ErrorCounter;
 
 function DrawMessageText(HudLocalizedMessage LocalMessage, float ScreenX, float ScreenY)
@@ -15,6 +19,7 @@ function DrawMessageText(HudLocalizedMessage LocalMessage, float ScreenX, float 
 event PostRender()
 {
 	local int i;
+	local HudLocalizedMessage menuTag;
 	super.PostRender();
 
 	Canvas.Font = GetFontSizeIndex(1);
@@ -32,6 +37,13 @@ event PostRender()
 		DrawMessageText(UserInfo[i], 20, 20+i);
 	}
 
+	for(i = 0; i < Menu.Length; i++)
+	{
+		menuTag.StringMessage = "MENU ";
+		DrawMessageText(menuTag, 10, 280);
+		DrawMessageText(Menu[i], 10, 300 + (i * 20));
+	}
+
 	if(ErrorCounter < 100){
 		DrawMessageText(ErrorMessage, 350, 350);
 		++ErrorCounter;
@@ -44,20 +56,49 @@ function postError(string msg)
 	ErrorCounter=0;
 }
 
+function addMenuSelections(string msg, optional bool bNoAdd)
+{
+	local HudLocalizedMessage nullMsg;
+
+	nullMsg.StringMessage = "[ ] " $ msg;
+
+	if( bNoAdd )
+		Menu.Length = 0;
+
+	Menu.AddItem(nullMsg);
+}
+
+function addMissionInfo(string msg, optional bool bNoAdd)
+{
+	local HudLocalizedMessage nullMsg;
+
+	nullMsg.StringMessage = "[MissionInfo] " $ msg;
+
+	if( bNoAdd )
+		MissionInfo.Length = 0;
+		
+	MissionInfo.AddItem(nullMsg);
+}
+
+function setMenuActive(int slot)
+{
+	if(slot > menu.Length)
+		return;
+
+	Menu[activeMenuSlot].StringMessage = mid( Menu[activeMenuSlot].StringMessage, 3);
+	Menu[activeMenuSlot].StringMessage = "[ ]" $ Menu[activeMenuSlot].StringMessage;
+
+	Menu[slot].StringMessage = mid( Menu[slot].StringMessage, 3);
+	Menu[slot].StringMessage = "[>]" $ Menu[slot].StringMessage;
+	activeMenuSlot = slot;
+}
+
 function addUserInfo(string msg)
 {
 	local HudLocalizedMessage nullMsg;
 
 	nullMsg.StringMessage = "[UserInfo] " $ msg;
 	UserInfo.AddItem(nullMsg);
-}
-
-function addMissionInfo(string msg)
-{
-	local HudLocalizedMessage nullMsg;
-
-	nullMsg.StringMessage = "[MissionInfo] " $ msg;
-	MissionInfo.AddItem(nullMsg);
 }
 
 function resetMissionInfo()

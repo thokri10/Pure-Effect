@@ -59,6 +59,7 @@ var string          token;
 var bool            bWaitingForMission;
 var bool            bWaitingForWeapon;
 var bool            bWaitingForReward;
+var bool            bWaitingForPath;
 
 // Initializations before any pawns spawn on the map.
 simulated event PostBeginPlay()
@@ -199,6 +200,14 @@ function getReward(int id)
 	}
 }
 
+function getMenuSelections(string path)
+{
+	databasePath = path;
+	bWaitingForPath = true;
+
+	ResolveMe();
+}
+
 // Receives the text from server. Runs automaticly when server send info to us.
 event ReceivedText(string Text)
 {
@@ -228,6 +237,10 @@ event ReceivedText(string Text)
 		{
 			PC.addReward(returnedArray);
 			bWaitingForReward = false;
+		}
+		else if (bWaitingForPath)
+		{
+			PC.myMenu.stringFromServer(returnedMessage);
 		}
 	}
 	else
