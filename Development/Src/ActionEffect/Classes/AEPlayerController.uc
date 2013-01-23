@@ -5,8 +5,10 @@ var AEHUD                   mHUD;
 var HudLocalizedMessage     message;
 var int                     credits;
 
+// Print out our textmenu on the screen
+var AEHUDMenu               myMenu;
+
 // Inventory for different items we are using
-var class<AEInventory>      AEInv;
 var AEInventory             myItemInventory;
 
 // Responsible for generating weapons.
@@ -41,9 +43,29 @@ simulated event PostBeginPlay()
 	myItemInventory.AddItem(Spawn(class'AEInventory_Item_HealthPack'));
 	myItemInventory.AddItem(Spawn(class'AEInventory_Item_Granade'));
 
-	// Connect to server.
-	myTcpLink.ResolveMe();
+	myMenu = Spawn(class'AEHUDMenu');
+	myMenu.PC = self;
 
+	// Connect to server.
+	//myTcpLink.ResolveMe();
+
+}
+
+function Tick(float DeltaTime)
+{
+	if(myHUD != none)
+	{
+		if(mHUD == none)
+		{
+			mHUD = AEHUD( myHUD );
+		}
+	}
+}
+
+exec function ppp()
+{
+	mHUD = AEHUD( myHUD );
+	myMenu.ppp();
 }
 
 function getReward(int id)
