@@ -28,6 +28,9 @@ function UTWeapon CreateWeapon(string type, float spread, int magazineSize, floa
 		returnWeapon = ChangeSpread(returnWeapon, spread);
 		returnWeapon = ChangeMagazineSize(returnWeapon, magazineSize);
 		returnWeapon = ChangeFiringSpeed(returnWeapon, reloadSpeed);
+
+		// TODO: Creates custom projectile.
+		// Attach the custom projectile to the returnWeapon.
 	}
 
 	return returnWeapon;

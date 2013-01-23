@@ -12,6 +12,8 @@ struct WeaponStruct
 	var int     magSize;
 };
 
+// PlayerStruct holds various information about the player
+// from the server.
 struct PlayerStruct
 {
 	var string name;
@@ -51,6 +53,7 @@ var bool            bLogedIn;
 var bool            bHavePlayerInfo;
 var string          token;
 
+// Booleans needed to not spam the server for requests.
 var bool            bWaitingForMission;
 var bool            bWaitingForWeapon;
 var bool            bWaitingForReward;
@@ -101,12 +104,12 @@ event Opened()
 {
 	`Log("[TcpLinkClient] Event opened.");
 
-	if(bLogedIn)
+	if (bLogedIn)
 	{
 		// A connection was established
 		`Log("[TcpLinkClient] Sending simple HTTP query.");
 
-		if(!send)
+		if (!send)
 		{
 			`log("Path::::::::::: " $ get $ databasePath );
 			SendText( get $ databasePath );
@@ -132,11 +135,12 @@ event Opened()
 			SendText(requestText);
 			CarriageReturn();
 			*/
-
 		}
 
 		`Log("[TcpLinkClient] end HTTP query");
-	}else{
+	}
+	else
+	{
 		`log("[TcpLinkClient] Please log in");
 	}
 }
@@ -153,13 +157,16 @@ event Closed()
 
 function logIn(string user, string password)
 {
-	SendText( "GET /api/accounts/" $ user);
+	// The clan name "McDonald" is hardcoded, and this bit of code
+	// should be more dynamic to allow players from other clans
+	// to also log in.
+	SendText( "GET /api/action_effect/soldiers/McDonald/" $ user);
 	CarriageReturn(); CarriageReturn();
 }
 
 function getMission(int id)
 {
-	if(bLogedIn)
+	if (bLogedIn)
 	{
 		databasePath = "missions/" $ id;
 		bWaitingForMission = true;
@@ -170,7 +177,7 @@ function getMission(int id)
 
 function getWeapon(int id)
 {
-	if(bLogedIn)
+	if (bLogedIn)
 	{
 		databasePath = "weapons/" $ id;
 		bWaitingForWeapon = true;
@@ -181,7 +188,7 @@ function getWeapon(int id)
 
 function getReward(int id)
 {
-	if(bLogedIn)
+	if (bLogedIn)
 	{
 		databasePath = "rewards/" $ id;
 		bWaitingForReward = true;
@@ -191,12 +198,12 @@ function getReward(int id)
 }
 
 // Receives the text from server. Runs automaticly when server send info to us.
-event ReceivedText( string Text )
+event ReceivedText(string Text)
 {
 	// receiving some text, note that the text includes line breaks
 	`log("[TcpLinkClient] ReceivedText:: " $Text);
 	
-	if(bLogedIn)
+	if (bLogedIn)
 	{
 		returnedMessage = Text;
 		returnedArray = parseToArray(Text);
@@ -205,20 +212,24 @@ event ReceivedText( string Text )
 		//Text = Split(Text, "chr(13)$chr(10)chr(13)$chr(10)", true);
 		//`log("[TcpLinkClient] SplitText:: " $Text);
 		
-		if(bWaitingForMission)
+		if (bWaitingForMission)
 		{
 			PC.myMissionObjective.Initialize(returnedArray);
 			bWaitingForMission = false;
-		}else if(bWaitingForWeapon)
+		}
+		else if (bWaitingForWeapon)
 		{
 			PC.serverWeaponCreator(Text);
 			bWaitingForWeapon = false;
-		}else if(bWaitingForReward)
+		}
+		else if (bWaitingForReward)
 		{
 			PC.addReward(returnedArray);
 			bWaitingForReward = false;
 		}
-	}else{
+	}
+	else
+	{
 		setUserInfo(Text);
 	}
 }
@@ -249,22 +260,25 @@ function setUserInfo(string info)
 
 		splitted[0] = mid(splitted[0], 1, len(splitted[0]) - 2 );
 
-		if(splitted[0] == "clan_name"){  playerInfo.name = mid( splitted[1], 1, len(splitted[1]) - 3); bLogedIn = true; }
-		else if(splitted[0] == "id")    playerInfo.id =   int( splitted[1] );
-		else if(splitted[0] == "email") playerInfo.mail = mid( splitted[1], 1, len(splitted[1]) - 2);
+		if          (splitted[0] == "name")         {  playerInfo.name =    mid( splitted[1], 1, len(splitted[1]) - 3); bLogedIn = true; }
+		else if     (splitted[0] == "account_id")   {  playerInfo.id   =    int( splitted[1] ); }
+		else if     (splitted[0] == "email")        {  playerInfo.mail =    mid( splitted[1], 1, len(splitted[1]) - 2); }
 	}
 
-	if(!bLogedIn){
+	if (!bLogedIn)
+	{
 		`log("[TcpLinkClient] Log in failed");
 		ResolveMe();
-	}else{
+	}
+	else
+	{
 		`log("[TcpLinkClient] Log in accepted");
 		PC.mHUD.addUserInfo("Name : " $ playerInfo.name);
 	}
 
 }
 
-// return "space newline"
+// Returns "space newline"
 function CarriageReturn()
 {
 	SendText(chr(13)$chr(10));
@@ -276,9 +290,9 @@ DefaultProperties
 	TargetPort = 8080;
 
 	databasePath = ""
-	get = "GET /api/"
+	get = "GET /api/action_effect/"
 
-	returnedMessage = "";//"{\"created_at\":\"2013-01-12T00:16:44Z\",\"id\":1,\"magsize\":\"20\",\"reload_time\":\"0.1\",\"spread\":\"0.5\",\"updated_at\":\"2013-01-12T00:16:44Z\",\"weapon_type\":\"rocket\"}";
+	returnedMessage = "";
 
 	token = "Authorization: Basic 0d9cc5ab64b8e3d2edbc616ef255cc28=";
 	score = 1;
