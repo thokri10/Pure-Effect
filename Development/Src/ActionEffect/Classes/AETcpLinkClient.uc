@@ -153,7 +153,10 @@ event Closed()
 
 function logIn(string user, string password)
 {
-	SendText( "GET /api/accounts/" $ user);
+	// The clan name "McDonald" is hardcoded, and this bit of code
+	// should be more dynamic to allow players from other clans
+	// to also log in.
+	SendText( "GET /api/action_effect/soldiers/McDonald/" $ user);
 	CarriageReturn(); CarriageReturn();
 }
 
@@ -249,8 +252,8 @@ function setUserInfo(string info)
 
 		splitted[0] = mid(splitted[0], 1, len(splitted[0]) - 2 );
 
-		if(splitted[0] == "clan_name"){  playerInfo.name = mid( splitted[1], 1, len(splitted[1]) - 3); bLogedIn = true; }
-		else if(splitted[0] == "id")    playerInfo.id =   int( splitted[1] );
+		if(splitted[0] == "name"){  playerInfo.name = mid( splitted[1], 1, len(splitted[1]) - 3); bLogedIn = true; }
+		else if(splitted[0] == "account_id")    playerInfo.id =   int( splitted[1] );
 		else if(splitted[0] == "email") playerInfo.mail = mid( splitted[1], 1, len(splitted[1]) - 2);
 	}
 
@@ -276,7 +279,7 @@ DefaultProperties
 	TargetPort = 8080;
 
 	databasePath = ""
-	get = "GET /api/"
+	get = "GET /api/action_effect/"
 
 	returnedMessage = "";//"{\"created_at\":\"2013-01-12T00:16:44Z\",\"id\":1,\"magsize\":\"20\",\"reload_time\":\"0.1\",\"spread\":\"0.5\",\"updated_at\":\"2013-01-12T00:16:44Z\",\"weapon_type\":\"rocket\"}";
 
