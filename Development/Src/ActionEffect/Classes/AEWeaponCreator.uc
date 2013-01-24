@@ -59,7 +59,9 @@ function WeaponStruct parseStringToWeaponStruct(string in)
 		else if (tempString2[0] == "mag_size")      Weap.magSize    = int   ( tempString2[1] );
 		else if (tempString2[0] == "reload_time")   Weap.reloadTime = float ( tempString2[1] );
 		else if (tempString2[0] == "spread")        Weap.spread     = float ( tempString2[1] );
-		else if (tempString2[0] == "name")          Weap.type       = mid( tempString2[1], 1, len( tempString2[1] ) - 2 );    
+		else if (tempString2[0] == "name")          Weap.type       = mid( tempString2[1], 1, len( tempString2[1] ) - 2 );   
+		else if (tempString2[0] == "damage")        Weap.damage     = float ( tempString2[1] );
+		else if (tempString2[0] == "speed")         Weap.speed      = float ( tempString2[1] );
 	}
 
 	// TESTING PURPOSES. Fix this later.
@@ -107,6 +109,7 @@ function UTWeapon ChangeSpread(UTWeapon weap, float spread)
 // Sets a weapon to be a specific type.
 function UTWeapon SpawnWeaponType(string Type, float damage, float speed)
 {
+	// Declares weapons, where one will be returned depending on the Type.
 	local AEWeapon_LinkGun linkgun;
 	local AEWeapon_RocketLauncher rocketLauncher;
 	local AEWeapon_ShockRifle shockRifle;
