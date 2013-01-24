@@ -1,21 +1,27 @@
+// PURPOSE: Custom HUD (based on an old HUD from UDK).
 class AEHUD extends UTHUD;
 
+// Varibles that hold various HUD information.
 var HudLocalizedMessage         ErrorMessage;
 var HudLocalizedMessage         Message;
 var array<HudLocalizedMessage>  MissionInfo;
 var array<HudLocalizedMessage>  UserInfo;
 
-// Menu variables
+// Menu variables that show what choices you can browse and current "active"
+// choice.
 var array<HudLocalizedMessage>  Menu;
 var int activeMenuSlot;
 
+// Not sure what this is used for... :p
 var int ErrorCounter;
 
+// Draws a message on the screen (can be part of the menu).
 function DrawMessageText(HudLocalizedMessage LocalMessage, float ScreenX, float ScreenY)
 {
 	super.DrawMessageText(LocalMessage, ScreenX, ScreenY);
 }
 
+// Draws the HUD.
 event PostRender()
 {
 	local int i;
@@ -27,63 +33,84 @@ event PostRender()
 
 	DrawMessageText(Message, 10, 300);
 
-	for(i = 0; i < MissionInfo.Length; i++)
+	// Draws the mission info if needed (Length > 0).
+	// Draws at about center top.
+	for (i = 0; i < MissionInfo.Length; i++)
 	{
-		DrawMessageText(MissionInfo[i], 300, 20*i);
+		DrawMessageText(MissionInfo[i], 300, 20 * i);
 	}
 
-	for(i = 0; i < UserInfo.Length; i++)
+	// Draws the user info if needed (Length > 0).
+	// Draws in the upper-left corner.
+	for (i = 0; i < UserInfo.Length; i++)
 	{
-		DrawMessageText(UserInfo[i], 20, 20+i);
+		DrawMessageText(UserInfo[i], 20, 20 + i);
 	}
 
-	for(i = 0; i < Menu.Length; i++)
+	// Draws the menu items if needed (Length > 0).
+	// Draws at center-left.
+	for (i = 0; i < Menu.Length; i++)
 	{
 		menuTag.StringMessage = "MENU ";
 		DrawMessageText(menuTag, 10, 280);
 		DrawMessageText(Menu[i], 10, 300 + (i * 20));
 	}
 
-	if(ErrorCounter < 100){
+	// Unsure... :p
+	if (ErrorCounter < 100)
+	{
 		DrawMessageText(ErrorMessage, 350, 350);
 		++ErrorCounter;
 	}
 }
 
+
+// Posts errors.
 function postError(string msg)
 {
 	ErrorMessage.StringMessage = msg;
-	ErrorCounter=0;
+	ErrorCounter = 0;
 }
 
+// Adds menu entries (selections) to the menu.
 function addMenuSelections(string msg, optional bool bNoAdd)
 {
 	local HudLocalizedMessage nullMsg;
 
 	nullMsg.StringMessage = "[ ] " $ msg;
 
-	if( bNoAdd )
+	// Checks if we need to see the menu.
+	if ( bNoAdd )
+	{
 		Menu.Length = 0;
+	}
 
 	Menu.AddItem(nullMsg);
 }
 
+// Adds entries to the HUD for mission info.
 function addMissionInfo(string msg, optional bool bNoAdd)
 {
 	local HudLocalizedMessage nullMsg;
 
 	nullMsg.StringMessage = "[MissionInfo] " $ msg;
 
-	if( bNoAdd )
+	// Checks if we need to see the mission info (mission is active).
+	if ( bNoAdd )
+	{
 		MissionInfo.Length = 0;
+	}
 		
 	MissionInfo.AddItem(nullMsg);
 }
 
+// Set menu entry active with an "[>]". "Inactive" entries are marked with "[ ]". 
 function setMenuActive(int slot)
 {
-	if(slot > menu.Length)
+	if (slot > menu.Length)
+	{
 		return;
+	}
 
 	Menu[activeMenuSlot].StringMessage = mid( Menu[activeMenuSlot].StringMessage, 3);
 	Menu[activeMenuSlot].StringMessage = "[ ]" $ Menu[activeMenuSlot].StringMessage;
@@ -93,6 +120,7 @@ function setMenuActive(int slot)
 	activeMenuSlot = slot;
 }
 
+// Adds entries to the HUD containing the player info.
 function addUserInfo(string msg)
 {
 	local HudLocalizedMessage nullMsg;
@@ -101,6 +129,7 @@ function addUserInfo(string msg)
 	UserInfo.AddItem(nullMsg);
 }
 
+// Resets all mission info.
 function resetMissionInfo()
 {
 	local array<HudLocalizedMessage> tmp;
@@ -114,5 +143,5 @@ function resetMissionInfo()
 
 DefaultProperties
 {
-	ErrorCounter=0
+	ErrorCounter = 0;
 }

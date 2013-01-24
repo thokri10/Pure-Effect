@@ -20,6 +20,14 @@ exec function MenuEnter()
 	myMenu.Select();
 }
 
+// Press O to sprint, cuz why not, lulz.
+simulated exec function Sprint()
+{
+	isSprinting = true;
+	`log("Yo brah, I'm SPRINTING!!!!!!");
+}
+
 DefaultProperties
 {
+	
 }

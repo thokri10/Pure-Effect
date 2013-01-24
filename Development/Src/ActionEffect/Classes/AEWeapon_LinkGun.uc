@@ -71,7 +71,7 @@ simulated function Projectile CustomProjectileFire()
 			// Changes the projectile's properties.
 			SpawnedProjectile.Damage = customDamage;
 			SpawnedProjectile.Speed = customSpeed;
-			
+
 			switch (customProjectileType)
 			{
 				case "linkgun":
@@ -93,10 +93,10 @@ simulated function Projectile CustomProjectileFire()
 					`log("[AEWeapon_LinkGun] Linkgun projectileType failed to set!");
 					break;
 			}
-
+			
 			SpawnedProjectile.Init( AimDir );
 		}
-
+		
 		// Return it up the line
 		return SpawnedProjectile;
 	}

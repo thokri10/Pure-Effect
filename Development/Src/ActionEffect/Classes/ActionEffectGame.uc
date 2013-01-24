@@ -1,10 +1,13 @@
+// PURPOSE: Main game class.
 class ActionEffectGame extends UTGame;
 
 defaultproperties
 {
-	PlayerControllerClass=class'ActionEffect.AEPlayerController'
-	DefaultPawnClass=class'ActionEffect.AEPawn_Player'
-	HUDType=class'AEHUD'
+	// Initializes the player and the belonging controller.
+	PlayerControllerClass = class'ActionEffect.AEPlayerController';
+	DefaultPawnClass = class'ActionEffect.AEPawn_Player';
 
-	bUseClassicHUD=true
+	// Intializes the HUD.
+	HUDType = class'AEHUD';
+	bUseClassicHUD = true;
 }

@@ -23,6 +23,9 @@ var AEPawn_Player           myPawn;
 // Mission module that initialize mission and spawns it's objectives.
 var AEMissionObjective      myMissionObjective;
 
+// Boolean that checks if we are sprinting.
+var bool                    isSprinting;
+
 // Initializations before any pawns spawn on the map.
 simulated event PostBeginPlay()
 {
@@ -93,12 +96,13 @@ function addReward(array<string> rewardArray)
  */
 exec function logIn(string user, optional string password)
 {
-	if(mHUD == none){
+	if (mHUD == none)
+	{
 		mHUD = AEHUD(myHUD);
 	}
 
 	myTcpLink.logIn(user, password);
-	mHUD.postError("Loging in...");
+	mHUD.postError("Logging in...");
 }
 
 // Tells the TCPConnection to get Mission with a ID
@@ -128,11 +132,12 @@ exec function UseItem(int slot)
 	if(mHUD == none){
 		mHUD = AEHUD(myHUD);
 	}
-
 	myItemInventory.Use(slot);
 }
 
 DefaultProperties
 {
-	InputClass=class'AEPlayerInput'
+	InputClass=class'AEPlayerInput';
+
+	isSprinting = false;
 }
