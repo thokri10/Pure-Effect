@@ -20,11 +20,19 @@ exec function MenuEnter()
 	myMenu.Select();
 }
 
-// Press O to sprint, cuz why not, lulz.
+// Press LeftShift to sprint.
 simulated exec function Sprint()
 {
 	isSprinting = true;
-	`log("Yo brah, I'm SPRINTING!!!!!!");
+	myPawn.GroundSpeed = 1000.0f;
+	Acceleration.Y = 600.0f;
+}
+
+// Release LeftShift to stop sprinting.
+simulated exec function StopSprinting()
+{
+	isSprinting = false;
+	myPawn.GroundSpeed = 600.0f;
 }
 
 DefaultProperties

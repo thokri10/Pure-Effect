@@ -135,6 +135,8 @@ exec function UseItem(int slot)
 	myItemInventory.Use(slot);
 }
 
+
+
 DefaultProperties
 {
 	InputClass=class'AEPlayerInput';

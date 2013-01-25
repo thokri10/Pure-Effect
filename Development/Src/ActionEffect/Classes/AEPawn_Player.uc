@@ -32,5 +32,5 @@ DefaultProperties
 	bCanDoubleJump = false
 	MaxMultiJump=0
 	MultiJumpRemaining=0
-	
+	GroundSpeed = 600.0f;
 }
