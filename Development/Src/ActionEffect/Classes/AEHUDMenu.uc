@@ -24,6 +24,10 @@ var int     selectedMenuSlot;
 var string  DBSTRING;
 var int     BACK;
 
+// Booleans to check what menu we are wxpecting to create on the next answer from server
+var bool    bMenuSelection;
+var bool    bMenuInfo;
+
 /**
  * INITIALIZINGS!
  */
@@ -81,7 +85,12 @@ function setMainMenu()
 
 function stringFromServer(string menuString)
 {
+	if( bMenuSelection )
+		parseMissionArrayToMenu( parseStringForMenu( menuString ) );
+	else if( bMenuInfo )
+		return;
 
+	resetMenuSelection();
 }
 
 /**
@@ -90,8 +99,8 @@ function stringFromServer(string menuString)
 exec function ppp()
 {
 	//menuPath[0] = "Missions";
-	//setMainMenu();
-	parseMissionArrayToMenu( parseStringForMenu(DBSTRING) );
+	setMainMenu();
+	//parseMissionArrayToMenu( parseStringForMenu(DBSTRING) );
 }
 
 
@@ -99,6 +108,25 @@ exec function ppp()
  * MENU SELECT FUNCTIONS
  */
 
+// Updates the menu with the menuPath variable in this class
+function UpdateMenuFromPath()
+{
+	local int i;
+
+	PC.myTcpLink.databasePath = "";
+
+	for( i = 0; i < menuPath.Length; i++)
+	{
+		PC.myTcpLink.databasePath = PC.myTcpLink.databasePath $ menuPath[i];
+
+		if(i != menuPath.Length - 1)
+			PC.myTcpLink.databasePath = PC.myTcpLink.databasePath $ "/";
+	}
+
+	PC.myTcpLink.getMenuSelections();
+}
+
+// Jumps down in the menu.
 function nextMenuSlot()
 {
 	if(selectedMenuSlot >= menuSelections.Length)
@@ -109,6 +137,7 @@ function nextMenuSlot()
 	PC.mHUD.setMenuActive(selectedMenuSlot);
 }
 
+// Jumps up in the menu
 function preMenuSlot()
 {
 	if( selectedMenuSlot < 1 )
@@ -119,40 +148,49 @@ function preMenuSlot()
 	PC.mHUD.setMenuActive(selectedMenuSlot);
 }
 
+// Selects the selected choice in the menu.
 function Select()
 {
 	if(selectedMenuSlot == BACK)
 	{
-		if( menuSelections[0].name == "Show missions" ){
+		if( menuPath.Length == 0 ){
 			ConsoleCommand("quit");
 		}
-		else if(MenuPath[menuPath.Length] != "")
-		{
-			resetMenuSelection();
+		if(menuPath.Length == 1){
 			MenuPath.Length = menuPath.Length - 1;
-			ppp();
-		}else{
 			setMainMenu();
 		}
-	}
-	else if( MenuPath[0] == "Missions" )
-	{
-		MenuPath[1] = String( menuSelections[selectedMenuSlot].id );
-		resetMenuSelection();
-		showMissionInfo(menuMissions[selectedMenuSlot]);
-	}
-	else if( menuSelections[selectedMenuSlot].name == "Show missions" )
-	{
-		resetMenuSelection();
-		parseMissionArrayToMenu( parseStringForMenu(DBSTRING) );
-		MenuPath[0] = "Missions";
+		else if(MenuPath[menuPath.Length - 1] != "")
+		{
+			MenuPath.Length = menuPath.Length - 1;
+
+			parseMissionArrayToMenu( parseStringForMenu(DBSTRING) );
+		}
 	}
 	else
 	{
-		setMainMenu();
+		// Main menu choices. Add more under here when you add more.
+		if( menuPath.Length == 0 )
+		{
+			if( menuSelections[selectedMenuSlot].name == "Show missions" )
+			{
+				MenuPath[0] = "missions";
+				parseMissionArrayToMenu( parseStringForMenu(DBSTRING) );
+			}
+		}
+		// The second menu you get to. Should be splitted up after all the choices you have in main menu selections.
+		else if ( menuPath.Length == 1)
+		{
+			if( MenuPath[0] == "missions" )
+			{
+				MenuPath[1] = String( menuSelections[selectedMenuSlot].id );
+				showMissionInfo(menuMissions[selectedMenuSlot]);
+			}
+		}
 	}
 }
 
+// Set the back button on the bottom of the selection.
 function setBack(int i)
 {
 	BACK = i;
@@ -163,6 +201,7 @@ function setBack(int i)
 		PC.mHUD.addMenuSelections("QUIT");
 }
 
+// Puts out the missions info to the screen
 function showMissionInfo(MissionObjectives objective)
 {
 	local SelectStruct selection;
@@ -177,7 +216,6 @@ function showMissionInfo(MissionObjectives objective)
 
 	menuSelections.Length = 0;
 	menuSelections.AddItem(selection);
-	MenuPath.AddItem( String(objective.id) );
 
 	initMenu();
 }
@@ -193,6 +231,8 @@ function parseMissionArrayToMenu(array<string> MenuArray)
 	local MissionObjectives objective;
 	local SelectStruct      selection;
 	local int i;
+
+	menuSelections.Length = 0;
 
 	for(i = 1; i < MenuArray.Length; i++)
 	{

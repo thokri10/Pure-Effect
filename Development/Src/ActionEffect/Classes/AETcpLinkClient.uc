@@ -26,6 +26,9 @@ struct PlayerStruct
 // Reference to the player controller.
 var AEPlayerController  PC;
 
+// 
+var string UserNameAndPassword;
+
 // Server (hostname/IP-address)
 var string  TargetHost;
 
@@ -70,6 +73,7 @@ simulated event PostBeginPlay()
 // Connect to server.
 function ResolveMe()
 {
+	PC.mHUD.postError(databasePath);
 	Resolve(TargetHost);
 }
 
@@ -107,7 +111,7 @@ event Opened()
 {
 	`Log("[TcpLinkClient] Event opened.");
 
-	if (bLogedIn)
+	if (true)
 	{
 		// A connection was established
 		`Log("[TcpLinkClient] Sending simple HTTP query.");
@@ -115,10 +119,11 @@ event Opened()
 		if (!send)
 		{
 			`log("Path::::::::::: " $ get $ databasePath );
-			SendText( get $ databasePath );
+			SendText(get $ databasePath );
 			CarriageReturn();
 
-			SendText("Connection: Close");
+
+			SendText( "Authorization: McDonald secret" );
 			CarriageReturn(); CarriageReturn();
 			//The HTTP GET request
 			//char(13) and char(10) are Carriage returns and new lines
@@ -200,9 +205,8 @@ function getReward(int id)
 	}
 }
 
-function getMenuSelections(string path)
+function getMenuSelections()
 {
-	databasePath = path;
 	bWaitingForPath = true;
 
 	ResolveMe();
@@ -214,7 +218,7 @@ event ReceivedText(string Text)
 	// receiving some text, note that the text includes line breaks
 	`log("[TcpLinkClient] ReceivedText:: " $Text);
 	
-	if (bLogedIn)
+	if (true)
 	{
 		returnedMessage = Text;
 		returnedArray = parseToArray(Text);
@@ -241,6 +245,7 @@ event ReceivedText(string Text)
 		else if (bWaitingForPath)
 		{
 			PC.myMenu.stringFromServer(returnedMessage);
+			bWaitingForPath = false;
 		}
 	}
 	else
@@ -301,11 +306,13 @@ function CarriageReturn()
 
 DefaultProperties
 {
+	UserNameAndPassword="McDonald:secret@"
+	
 	TargetHost = "www.geirhilmersen.com";
 	TargetPort = 8080;
 
 	databasePath = ""
-	get = "GET /api/action_effect/"
+	get = "GET /api/"
 
 	returnedMessage = "";
 

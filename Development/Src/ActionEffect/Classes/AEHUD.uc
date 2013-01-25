@@ -107,13 +107,15 @@ function addMissionInfo(string msg, optional bool bNoAdd)
 // Set menu entry active with an "[>]". "Inactive" entries are marked with "[ ]". 
 function setMenuActive(int slot)
 {
-	if (slot > menu.Length)
+	if (slot > menu.Length || menu.Length == 0)
 	{
 		return;
 	}
-
-	Menu[activeMenuSlot].StringMessage = mid( Menu[activeMenuSlot].StringMessage, 3);
-	Menu[activeMenuSlot].StringMessage = "[ ]" $ Menu[activeMenuSlot].StringMessage;
+	
+	if(Menu.Length != 1){
+		Menu[activeMenuSlot].StringMessage = mid( Menu[activeMenuSlot].StringMessage, 3);
+		Menu[activeMenuSlot].StringMessage = "[ ]" $ Menu[activeMenuSlot].StringMessage;
+	}
 
 	Menu[slot].StringMessage = mid( Menu[slot].StringMessage, 3);
 	Menu[slot].StringMessage = "[>]" $ Menu[slot].StringMessage;
