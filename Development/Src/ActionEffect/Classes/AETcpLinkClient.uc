@@ -258,6 +258,7 @@ function array<string> parseToArray(string jsonString)
 {
 	local array<string> returnString;
 
+	// Removes the first character of the text and keeps the rest.
 	jsonString = mid( jsonString, 1, len( jsonString ) - 1 );
 
 	// Splits the string to set categories
@@ -272,12 +273,17 @@ function setUserInfo(string info)
 	local array<string> splitted;
 	local int i;
 
+	// Parses the properties of the JSON objects into elements in an array.
 	userInfo = parseToArray(info);
 
 	for( i = 0; i < userInfo.Length; i++)
 	{
+		// Parses each element into two sub-elements.
+		// EXAMPLE: name: McLeod
+		// splitted[0] = name, splitted[1] = McLeod
 		splitted = SplitString(userInfo[i], ":");
 
+		// Gets the first sub-element, such as "name" from "name: "
 		splitted[0] = mid(splitted[0], 1, len(splitted[0]) - 2 );
 
 		if          (splitted[0] == "name")         {  playerInfo.name =    mid( splitted[1], 1, len(splitted[1]) - 3); bLogedIn = true; }
