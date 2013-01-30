@@ -27,10 +27,10 @@ function bool Dodge(eDoubleClickDir DoubleClickMove){return false;}
 
 DefaultProperties
 {
-	InventoryManagerClass=class'ActionEffect.AEInventoryManager'
+	InventoryManagerClass = class'ActionEffect.AEInventoryManager';
 
-	bCanDoubleJump = false
-	MaxMultiJump=0
-	MultiJumpRemaining=0
+	bCanDoubleJump = false;
+	MaxMultiJump = 0;
+	MultiJumpRemaining = 0;
 	GroundSpeed = 600.0f;
 }
