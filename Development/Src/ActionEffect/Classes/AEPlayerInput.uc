@@ -25,7 +25,6 @@ simulated exec function Sprint()
 {
 	isSprinting = true;
 	myPawn.GroundSpeed = 1000.0f;
-	Acceleration.Y = 600.0f;
 }
 
 // Release LeftShift to stop sprinting.
@@ -33,6 +32,20 @@ simulated exec function StopSprinting()
 {
 	isSprinting = false;
 	myPawn.GroundSpeed = 600.0f;
+}
+
+// Hold Space to use jetpack.
+simulated exec function UseJetpack()
+{
+	`Log("JETPACK: ON");
+	myPawn.usingJetpack = true;
+}
+
+// Release Space to stop using the jetpack.
+simulated exec function StopUsingJetpack()
+{
+	`Log("JETPACK: OFF");
+	myPawn.usingJetpack = false;
 }
 
 DefaultProperties

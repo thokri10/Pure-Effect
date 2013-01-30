@@ -106,14 +106,14 @@ simulated function Projectile CustomProjectileFire()
 
 DefaultProperties
 {
-	MaxAmmoCount = 1000
-	LockerAmmoCount = 1000
-	WeaponRange = 10000
-	WeaponLinkDistance = 10000
+	MaxAmmoCount = 1000;
+	LockerAmmoCount = 1000;
+	WeaponRange = 10000;
+	WeaponLinkDistance = 10000;
 
-	WeaponProjectiles(0)=class'UTProj_ShockBall'
+	WeaponProjectiles(0)=class'UTProj_LinkPlasma';
 
-	InstantHitDamageTypes(1)=class'UTDmgType_ShockPrimary'
+	InstantHitDamageTypes(1)=class'UTDmgType_LinkPlasma';
 
 	customDamage = 50.0f;
 	customSpeed = 1000.0f;

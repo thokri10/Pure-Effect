@@ -106,10 +106,10 @@ simulated function Projectile CustomProjectileFire()
 
 DefaultProperties
 {
-	WeaponColor=(R=255,G=255,B=255,A=255)
+	WeaponColor = (R=255,G=255,B=255,A=255);
 
-	MaxLoadCount = 20
+	MaxLoadCount = 20;
 	
-	MaxAmmoCount=1000
-	LockerAmmoCount=1000
+	MaxAmmoCount = 1000;
+	LockerAmmoCount = 1000;
 }
