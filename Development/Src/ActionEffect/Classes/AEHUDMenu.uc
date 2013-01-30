@@ -7,6 +7,9 @@ struct SelectStruct
 	var string  name;
 };
 
+var int numberOfServerStrings;
+var int ServerCounter;
+
 // Path of the menu. Set together by adding all the stringarray together. 
 // Easy to remove the last path and go back in menu
 var array<string>               menuPath;
@@ -83,14 +86,31 @@ function setMainMenu()
 	initMenu();
 }
 
+function numberOfStringFromServer(int number)
+{
+	numberOfServerStrings = number;
+}
+
 function stringFromServer(string menuString)
 {
 	if( bMenuSelection )
-		parseMissionArrayToMenu( parseStringForMenu( menuString ) );
-	else if( bMenuInfo )
-		return;
+	{
+		parseMissionArrayToMenu( PC.myTcpLink.parseToArray( menuString ) );
+		++ServerCounter;
 
-	resetMenuSelection();
+		`log(numberOfServerStrings $ " : " $ ServerCounter);
+		if(numberOfServerStrings == ServerCounter)
+		{
+			bMenuSelection = false;
+			initMenu();
+		}
+	}
+	else if( bMenuInfo )
+	{
+		return;
+	}
+
+	
 }
 
 /**
@@ -122,6 +142,8 @@ function UpdateMenuFromPath()
 		if(i != menuPath.Length - 1)
 			PC.myTcpLink.databasePath = PC.myTcpLink.databasePath $ "/";
 	}
+
+	`log("PATH: " $ PC.myTcpLink.databasePath);
 
 	PC.myTcpLink.getMenuSelections();
 }
@@ -163,8 +185,8 @@ function Select()
 		else if(MenuPath[menuPath.Length - 1] != "")
 		{
 			MenuPath.Length = menuPath.Length - 1;
-
-			parseMissionArrayToMenu( parseStringForMenu(DBSTRING) );
+			bMenuSelection = true;
+			UpdateMenuFromPath();
 		}
 	}
 	else
@@ -175,7 +197,8 @@ function Select()
 			if( menuSelections[selectedMenuSlot].name == "Show missions" )
 			{
 				MenuPath[0] = "missions";
-				parseMissionArrayToMenu( parseStringForMenu(DBSTRING) );
+				bMenuSelection = true;
+				UpdateMenuFromPath();
 			}
 		}
 		// The second menu you get to. Should be splitted up after all the choices you have in main menu selections.
@@ -184,6 +207,7 @@ function Select()
 			if( MenuPath[0] == "missions" )
 			{
 				MenuPath[1] = String( menuSelections[selectedMenuSlot].id );
+
 				showMissionInfo(menuMissions[selectedMenuSlot]);
 			}
 		}
@@ -225,7 +249,6 @@ function showMissionInfo(MissionObjectives objective)
  * Parsing functions
  */
 
-
 function parseMissionArrayToMenu(array<string> MenuArray)
 {
 	local MissionObjectives objective;
@@ -236,16 +259,14 @@ function parseMissionArrayToMenu(array<string> MenuArray)
 
 	for(i = 1; i < MenuArray.Length; i++)
 	{
-		objective = PC.myMissionObjective.parseArrayToMissionStruct( PC.myTcpLink.parseToArray( MenuArray[i] ) );
+		objective = PC.myMissionObjective.parseArrayToMissionStruct( MenuArray );
 
 		selection.id = objective.id;
 		selection.name = objective.title;
 		menuSelections.AddItem(selection);
 
-		menuMissions.InsertItem(objective.id - 1, objective);
+		menuMissions.AddItem(objective);
 	}
-
-	initMenu();
 }
 
 function array<string> parseStringForMenu(string menuString)
