@@ -1,6 +1,19 @@
 // THIS CLASS IS RESPONSIBLE FOR CREATING CUSTOM WEAPONS.
 class AEWeaponCreator extends Actor;
 
+// Our WeaponStruct that will contain all the variables for our weapon. 
+// Default variables is now set by server.
+struct WeaponStruct
+{
+	var int     id;
+	var string  type;
+	var float   spread;
+	var float   reloadTime;
+	var int     magSize;
+	var float   damage;
+	var float   speed;
+};
+
 // Variable to easy use playercontroller
 var AEPlayerController PC;
 

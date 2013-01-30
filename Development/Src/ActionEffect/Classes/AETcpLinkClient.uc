@@ -1,19 +1,6 @@
 // THIS CLASS IS RESPONSIBLE FOR SERVER COMMUNICATION.
 class AETcpLinkClient extends TcpLink;
 
-// Our WeaponStruct that will contain all the variables for our weapon. 
-// Default variables is now set by server.
-struct WeaponStruct
-{
-	var int     id;
-	var string  type;
-	var float   spread;
-	var float   reloadTime;
-	var int     magSize;
-	var float   damage;
-	var float   speed;
-};
-
 // PlayerStruct holds various information about the player
 // from the server.
 struct PlayerStruct
@@ -26,8 +13,13 @@ struct PlayerStruct
 // Reference to the player controller.
 var AEPlayerController  PC;
 
+var WebRequest Request;
+
 // 
+var string UserName;
+var string Password;
 var string UserNameAndPassword;
+var string AuthenticationKey;
 
 // Server (hostname/IP-address)
 var string  TargetHost;
@@ -68,6 +60,10 @@ var bool            bWaitingForPath;
 simulated event PostBeginPlay()
 {
 	super.PostBeginPlay();
+
+	//CreateResponseObject();
+
+	Request = new(None) class'WebRequest';
 }
 
 // Connect to server.
@@ -111,47 +107,53 @@ event Opened()
 {
 	`Log("[TcpLinkClient] Event opened.");
 
-	if (true)
+	// A connection was established
+	`Log("[TcpLinkClient] Sending simple HTTP query.");
+
+	if (!send)
 	{
-		// A connection was established
-		`Log("[TcpLinkClient] Sending simple HTTP query.");
+		//SendText("Accept-Language: en-US"$Chr(13)$Chr(10));
+		//SendText("Authorization: Basic McDonald:secret"$Chr(13)$Chr(10));
+		//SendText(get $ databasePath $ "?username=McDonald&password=secret");
+		SendText(get $ databasePath $ "?username=" $ UserName $ "&password=" $ Password );
+		CarriageReturn(); 
 
-		if (!send)
-		{
-			`log("Path::::::::::: " $ get $ databasePath );
-			SendText(get $ databasePath );
-			CarriageReturn();
+		SendText( "Connection: close" );
+		CarriageReturn(); CarriageReturn();
 
+		/*
+		`log( "Path::::::::::: " $ get $ databasePath );
+		SendText( get $ databasePath );
+		CarriageReturn();
 
-			SendText( "Authorization: McDonald secret" );
-			CarriageReturn(); CarriageReturn();
-			//The HTTP GET request
-			//char(13) and char(10) are Carriage returns and new lines
-		}
-		else if ( send && score > 0)
-		{
-			/*
-			requestText = "value="$score$"&submit=10987";
+		Request.ProcessHeaderString("McDonald:secret");
+		SendText( "Authorization: McDonald:secret" );
+		CarriageReturn(); CarriageReturn();
+		*/
+		//The HTTP GET request
+		//char(13) and char(10) are Carriage returns and new lines
 		
-			SendText("POST /"$databasePath$" HTTP/1.0"); CarriageReturn();
-			SendText("Host: "$TargetHost); CarriageReturn();
-			SendText("User-Agent: HTTPTool/1.0"); CarriageReturn();
-			SendText("Content-Type: application/x-www-form-urlencoded"); CarriageReturn();
-		
-			SendText("Content-Length: "$len(requestText)); CarriageReturn();
-			CarriageReturn();
-			SendText(requestText);
-			CarriageReturn();
-			*/
-		}
-
-		`Log("[TcpLinkClient] end HTTP query");
 	}
-	else
+	else if ( send && score > 0)
 	{
-		`log("[TcpLinkClient] Please log in");
+		/*
+		requestText = "value="$score$"&submit=10987";
+		
+		SendText("POST /"$databasePath$" HTTP/1.0"); CarriageReturn();
+		SendText("Host: "$TargetHost); CarriageReturn();
+		SendText("User-Agent: HTTPTool/1.0"); CarriageReturn();
+		SendText("Content-Type: application/x-www-form-urlencoded"); CarriageReturn();
+		
+		SendText("Content-Length: "$len(requestText)); CarriageReturn();
+		CarriageReturn();
+		SendText(requestText);
+		CarriageReturn();
+		*/
 	}
+
+	`Log("[TcpLinkClient] end HTTP query");
 }
+
 
 event Closed()
 {
@@ -163,46 +165,49 @@ event Closed()
     // connection using the same TcpLink instance.
 }
 
-function logIn(string user, string password)
+
+function logIn(string user, string pw)
 {
 	// The clan name "McDonald" is hardcoded, and this bit of code
 	// should be more dynamic to allow players from other clans
 	// to also log in.
-	SendText( "GET /api/action_effect/soldiers/McDonald/" $ user);
-	CarriageReturn(); CarriageReturn();
+	databasePath = "soliders";
+	Username = user;
+	Password = pw;
+
+	UserNameAndPassword = user $ ":" $ password;
+	AuthenticationKey = Request.EncodeBase64(UserNameAndPassword);
+
+	//databasePath = "soldiers/0";
+
+	ResolveMe();
+
+	//SendText( "GET /api/action_effect/soldiers/McDonald/" $ user);
+	//CarriageReturn(); CarriageReturn();
 }
 
 function getMission(int id)
 {
-	if (bLogedIn)
-	{
-		databasePath = "missions/" $ id;
-		bWaitingForMission = true;
+	databasePath = "missions/" $ id;
+	bWaitingForMission = true;
 
-		ResolveMe();
-	}
+	ResolveMe();
 }
 
 function getWeapon(int id)
 {
-	if (bLogedIn)
-	{
-		databasePath = "items/McDonald/Terminator/" $ id;
-		bWaitingForWeapon = true;
+	databasePath = "items/McDonald/Terminator/" $ id;
+	bWaitingForWeapon = true;
 
-		ResolveMe();
-	}
+	ResolveMe();
 }
 
 function getReward(int id)
 {
-	if (bLogedIn)
-	{
-		databasePath = "rewards/" $ id;
-		bWaitingForReward = true;
+	databasePath = "rewards/" $ id;
+	bWaitingForReward = true;
 
-		ResolveMe();
-	}
+	ResolveMe();
 }
 
 function getMenuSelections()
@@ -212,20 +217,23 @@ function getMenuSelections()
 	ResolveMe();
 }
 
+
 // Receives the text from server. Runs automaticly when server send info to us.
 event ReceivedText(string Text)
 {
 	// receiving some text, note that the text includes line breaks
 	`log("[TcpLinkClient] ReceivedText:: " $Text);
-	
-	if (true)
+
+	if(Text == "HTTP Basic: Access denied.\n"){
+		`log("[TcpLinkClient] Wrong username or password");
+		return;
+	}
+	else
 	{
 		returnedMessage = Text;
 		returnedArray = parseToArray(Text);
 
 		//we dont want the header info, so we split the string after two new lines
-		//Text = Split(Text, "chr(13)$chr(10)chr(13)$chr(10)", true);
-		//`log("[TcpLinkClient] SplitText:: " $Text);
 		
 		if (bWaitingForMission)
 		{
@@ -244,14 +252,65 @@ event ReceivedText(string Text)
 		}
 		else if (bWaitingForPath)
 		{
-			PC.myMenu.stringFromServer(returnedMessage);
+			PC.myMenu.stringFromServer( parseString(Text) );
+			
 			bWaitingForPath = false;
 		}
 	}
-	else
+}
+
+function string parseString(string jsonString)
+{
+	local array<string> stringArray;
+	local string temp;
+
+	jsonString = mid( jsonString, 1 );
+	stringArray = SplitString( jsonString, "},{" );
+	PC.myMenu.numberOfStringFromServer( stringArray.Length );
+
+	foreach stringArray(temp)
 	{
-		setUserInfo(Text);
+		`log("asd: " $ temp);
+		PC.myMenu.stringFromServer( parseString2(temp) );
 	}
+}
+
+function string parseString2(string jsonString)
+{
+	local array<string> splitted;
+	local int leftBracket;
+	local int rightBracket;
+	local int i;
+
+	//jsonString = mid ( jsonString, 1, len(jsonString) - 1);
+	if( inStr( jsonString, "{" ) == 0 )
+		leftBracket = 1;
+	else
+		leftBracket = 0;
+
+	rightBracket = inStr( jsonString, "[{" );
+
+	splitted[0] = mid( jsonString, leftBracket , rightBracket - leftBracket );
+
+	leftBracket = rightBracket + 2;
+	rightBracket = inStr( jsonString, "{",,, leftBracket + 1 );
+
+	splitted[1] = mid( jsonString, leftBracket, rightBracket - leftBracket );
+
+	leftBracket = rightBracket + 1;
+	rightBracket = inStr( jsonString, "}",,, leftBracket + 1 );
+
+	splitted[2] = mid( jsonString, leftBracket, rightBracket - leftBracket );
+
+	splitted[3] = mid( jsonString, rightBracket + 2 );
+
+	`log( ":::::::::::::::::::::");
+	`log( ":    " $ splitted[0] );
+	`log( "::   " $ splitted[1] );
+	`log( ":::  " $ splitted[2] );
+	`log( ":::: " $ splitted[3] );
+
+	return splitted[0];
 }
 
 function array<string> parseToArray(string jsonString)
@@ -306,12 +365,13 @@ function CarriageReturn()
 
 DefaultProperties
 {
-	UserNameAndPassword="McDonald:secret@"
+	UserNameAndPassword="McDonald:secret"
+	AuthenticationKey=""
 	
 	TargetHost = "www.geirhilmersen.com";
 	TargetPort = 8080;
 
-	databasePath = ""
+	databasePath = "[{\"category\":\"Search and destroy\",\"city_id\":1,\"created_at\":\"2013-01-25T13:30:34Z\",\"description\":\"Regain loot\",\"id\":1,\"title\":\"Marauders\",\"updated_at\":\"2013-01-25T13:30:34Z\",\"items\":[{\"created_at\":\"2013-01-25T13:30:34Z\",\"id\":1,\"name\":\"Rocket launcher\",\"owner_id\":1,\"owner_type\":\"Mission\",\"properties\":{\"damage\":150,\"speed\":400,\"range\":1000,\"spread\":1.5,\"fire_rate\":3,\"clip_size\":1,\"reload_speed\":3,\"ammo_pool\":8},\"slot\":\"weapon\",\"updated_at\":\"2013-01-25T13:30:34Z\"}]},"
 	get = "GET /api/"
 
 	returnedMessage = "";

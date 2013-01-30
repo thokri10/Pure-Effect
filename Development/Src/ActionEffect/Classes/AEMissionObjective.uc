@@ -50,7 +50,7 @@ function MissionObjectives parseArrayToMissionStruct(array<string> missionArray)
 		splitted[0] = mid( splitted[0], 1, len( splitted[0] ) - 2 );
 
 		if     (splitted[0] == "id")            objectives.id           = int( splitted[1] );
-		else if(splitted[0] == "category")      objectives.category     = mid( splitted[1], 1, len( splitted[1] ) - 2 );
+		else if(splitted[0] == "ategory")       objectives.category     = mid( splitted[1], 1, len( splitted[1] ) - 2 ); // Doned fucked up. But works
 		else if(splitted[0] == "city_name")     objectives.mapName      = mid( splitted[1], 1, len( splitted[1] ) - 2 );
 		else if(splitted[0] == "description" )  objectives.description  = mid( splitted[1], 1, len( splitted[1] ) - 2 );
 		else if(splitted[0] == "reward")        objectives.reward       = mid( splitted[1], 1, len( splitted[1] ) - 2 );
