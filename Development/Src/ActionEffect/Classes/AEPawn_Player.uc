@@ -8,7 +8,6 @@ var bool isInTheAir;
 simulated event PostBeginPlay()
 {
 	super.PostBeginPlay();
-	SetPhysics(PHYS_Interpolating);
 
 	AEPC = AEPlayerController(GetALocalPlayerController());
 	if (AEPC != None)
@@ -52,8 +51,8 @@ function bool DoJump( bool bUpdating )
 		else if ( bIsWalking )
 			Velocity.Z = Default.JumpZ;
 		else
-			Velocity.Z = 2000.0f;
-			// Velocity.Z = JumpZ;
+			Velocity.Z = JumpZ;
+
 		if (Base != None && !Base.bWorldGeometry && Base.Velocity.Z > 0.f)
 		{
 			if ( (WorldInfo.WorldGravityZ != WorldInfo.DefaultGravityZ) && (GetGravityZ() == WorldInfo.WorldGravityZ) )

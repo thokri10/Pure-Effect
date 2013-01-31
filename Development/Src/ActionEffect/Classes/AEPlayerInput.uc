@@ -39,6 +39,7 @@ simulated exec function UseJetpack()
 {
 	`Log("JETPACK: ON");
 	myPawn.usingJetpack = true;
+	myPawn.CustomGravityScaling = -1.0f;
 }
 
 // Release Space to stop using the jetpack.
@@ -46,6 +47,7 @@ simulated exec function StopUsingJetpack()
 {
 	`Log("JETPACK: OFF");
 	myPawn.usingJetpack = false;
+	myPawn.CustomGravityScaling = 1.0f;
 }
 
 DefaultProperties
