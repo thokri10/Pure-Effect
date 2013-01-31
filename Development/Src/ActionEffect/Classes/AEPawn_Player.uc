@@ -8,7 +8,7 @@ var bool isInTheAir;
 simulated event PostBeginPlay()
 {
 	super.PostBeginPlay();
-
+	
 	AEPC = AEPlayerController(GetALocalPlayerController());
 	if (AEPC != None)
 	{
