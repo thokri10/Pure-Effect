@@ -85,7 +85,7 @@ simulated function Projectile CustomProjectileFire()
 					break;
 
 				case "shockRifle":
-					SpawnedProjectile.MyDamageType = class'UTDmgType_ShockPrimary';
+					SpawnedProjectile.MyDamageType = class'UTDmgType_ShockBall';
 					WeaponProjectiles[0] = class'UTProj_ShockBall';
 					break;
 
@@ -112,7 +112,6 @@ DefaultProperties
 	WeaponLinkDistance = 10000;
 
 	WeaponProjectiles(0)=class'UTProj_LinkPlasma';
-
 	InstantHitDamageTypes(1)=class'UTDmgType_LinkPlasma';
 
 	customDamage = 50.0f;

@@ -8,6 +8,7 @@ var bool isInTheAir;
 simulated event PostBeginPlay()
 {
 	super.PostBeginPlay();
+	SetPhysics(PHYS_Interpolating);
 
 	AEPC = AEPlayerController(GetALocalPlayerController());
 	if (AEPC != None)
@@ -51,7 +52,7 @@ function bool DoJump( bool bUpdating )
 		else if ( bIsWalking )
 			Velocity.Z = Default.JumpZ;
 		else
-			Velocity.Z = 1000.0f;
+			Velocity.Z = 2000.0f;
 			// Velocity.Z = JumpZ;
 		if (Base != None && !Base.bWorldGeometry && Base.Velocity.Z > 0.f)
 		{
@@ -68,7 +69,10 @@ function bool DoJump( bool bUpdating )
 		bReadyToDoubleJump = true;
 		bDodging = false;
 		if ( !bUpdating )
-		    PlayJumpingSound();
+		{
+			PlayJumpingSound();
+		}
+		    
 		return true;
 	}
 	return false;
@@ -138,13 +142,32 @@ simulated function TakeFallingDamage()
 	// No fall damage. Remove this function to regain fall damage.
 }
 
+function DoDoubleJump( bool bUpdating )
+{
+	if ( !bIsCrouched && !bWantsToCrouch )
+	{
+		if ( !IsLocallyControlled() || AIController(Controller) != None )
+		{
+			MultiJumpRemaining -= 1;
+		}
+		Velocity.Z = JumpZ + MultiJumpBoost;
+		UTInventoryManager(InvManager).OwnerEvent('MultiJump');
+		SetPhysics(PHYS_Falling);
+		BaseEyeHeight = DoubleJumpEyeHeight;
+		if (!bUpdating)
+		{
+			//SoundGroupClass.Static.PlayDoubleJumpSound(self);
+		}
+	}
+}
+
 DefaultProperties
 {
 	InventoryManagerClass = class'ActionEffect.AEInventoryManager';
 
 	bCanDoubleJump = true;
 	MaxMultiJump = 1000;
-	MultiJumpRemaining = 0;
+	
 	GroundSpeed = 600.0f;
 
 	usingJetpack = false;

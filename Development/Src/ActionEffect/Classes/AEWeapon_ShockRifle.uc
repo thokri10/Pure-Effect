@@ -1,8 +1,8 @@
 class AEWeapon_ShockRifle extends UTWeap_ShockRifle;
 
+// Variables for making custom projectiles.
 var float customDamage;
 var float customSpeed;
-
 var string customProjectileType;
 
 simulated function PostBeginPlay()
@@ -10,6 +10,8 @@ simulated function PostBeginPlay()
 	super.PostBeginPlay();
 }
 
+// WARNING: WEAPON CURRENTLY DOESN'T SUPPORT PROJECTILE-BASED FIRE.
+// ONLY INSTANTHIT FIRE IS SUPPORTED AT THE MOMENT.
 simulated function FireAmmunition()
 {
 	// Use ammunition to fire
@@ -85,12 +87,12 @@ simulated function Projectile CustomProjectileFire()
 					break;
 
 				case "shockRifle":
-					SpawnedProjectile.MyDamageType = class'UTDmgType_ShockPrimary';
+					SpawnedProjectile.MyDamageType = class'UTDmgType_ShockBall';
 					WeaponProjectiles[0] = class'UTProj_ShockBall';
 					break;
 
 				default:
-					`log("[AEWeapon_LinkGun] Linkgun projectileType failed to set!");
+					`log("[AEWeapon_ShockRifle] ShockRifle projectileType failed to set!");
 					break;
 			}
 			
@@ -110,7 +112,7 @@ DefaultProperties
 	LockerAmmoCount = 1000;
 	DrawScale = 1;
 
-	customDamage = 10.0f;
-	customSpeed = 100.0f;
-	customProjectileType = "";
+	customDamage = 50.0f;
+	customSpeed = 1000.0f;
+	customProjectileType = "shockRifle";
 }
