@@ -47,10 +47,6 @@ function initMenu()
 
 	for( i = 0; i < menuSelections.Length; i++)
 	{
-		if(i == 0)
-			reset = true;
-		else
-			reset = false;
 		PC.mHUD.addMenuSelections(menuSelections[i].name, reset);
 	}
 	
@@ -109,8 +105,6 @@ function stringFromServer(string menuString)
 	{
 		return;
 	}
-
-	
 }
 
 /**
@@ -238,8 +232,7 @@ function showMissionInfo(MissionObjectives objective)
 	selection.id = 0;
 	selection.name = "Accept";
 
-	menuSelections.Length = 0;
-	menuSelections.AddItem(selection);
+	menuSelections.AddItem( selection );
 
 	initMenu();
 }
@@ -255,18 +248,15 @@ function parseMissionArrayToMenu(array<string> MenuArray)
 	local SelectStruct      selection;
 	local int i;
 
-	menuSelections.Length = 0;
+	objective = PC.myMissionObjective.parseArrayToMissionStruct( MenuArray );
 
-	for(i = 1; i < MenuArray.Length; i++)
-	{
-		objective = PC.myMissionObjective.parseArrayToMissionStruct( MenuArray );
+	selection.id = objective.id;
+	selection.name = objective.title;
 
-		selection.id = objective.id;
-		selection.name = objective.title;
-		menuSelections.AddItem(selection);
+	`log(selection.name);
+	menuSelections.AddItem(selection);
 
-		menuMissions.AddItem(objective);
-	}
+	menuMissions.AddItem(objective);
 }
 
 function array<string> parseStringForMenu(string menuString)
