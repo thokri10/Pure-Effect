@@ -171,7 +171,7 @@ function logIn(string user, string pw)
 	// The clan name "McDonald" is hardcoded, and this bit of code
 	// should be more dynamic to allow players from other clans
 	// to also log in.
-	databasePath = "soliders";
+	databasePath = "soldiers";
 	Username = user;
 	Password = pw;
 
@@ -224,7 +224,8 @@ event ReceivedText(string Text)
 	// receiving some text, note that the text includes line breaks
 	`log("[TcpLinkClient] ReceivedText:: " $Text);
 
-	if(Text == "HTTP Basic: Access denied.\n"){
+	if (Text == "HTTP Basic: Access denied.\n")
+	{
 		`log("[TcpLinkClient] Wrong username or password");
 		return;
 	}
@@ -371,8 +372,8 @@ function CarriageReturn()
 
 DefaultProperties
 {
-	UserNameAndPassword="McDonald:secret"
-	AuthenticationKey=""
+	UserNameAndPassword = "McDonald:secret";
+	AuthenticationKey = "";
 	
 	TargetHost = "www.geirhilmersen.com";
 	TargetPort = 8080;

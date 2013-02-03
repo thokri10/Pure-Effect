@@ -1,8 +1,8 @@
 class AEWeapon_RocketLauncher extends UTWeap_RocketLauncher_Content;
 
+// Variables for making custom projectiles.
 var float customDamage;
 var float customSpeed;
-
 var string customProjectileType;
 
 simulated function PostBeginPlay()
@@ -90,7 +90,7 @@ simulated function Projectile CustomProjectileFire()
 					break;
 
 				default:
-					`log("[AEWeapon_ShockRifle] ShockRifle projectileType failed to set!");
+					`log("[AEWeapon_RocketLauncher] RocketLauncher projectileType failed to set!");
 					break;
 			}
 
@@ -106,10 +106,10 @@ simulated function Projectile CustomProjectileFire()
 
 DefaultProperties
 {
-	WeaponColor=(R=255,G=255,B=255,A=255)
+	WeaponColor = (R=255,G=255,B=255,A=255);
 
-	MaxLoadCount = 20
+	MaxLoadCount = 20;
 	
-	MaxAmmoCount=1000
-	LockerAmmoCount=1000
+	MaxAmmoCount = 1000;
+	LockerAmmoCount = 1000;
 }

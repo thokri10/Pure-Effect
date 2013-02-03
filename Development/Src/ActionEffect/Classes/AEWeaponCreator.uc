@@ -137,7 +137,7 @@ function UTWeapon SpawnWeaponType(string Type, float damage, float speed)
 			return linkgun;                   
 			break;
 
-		case "Rocket" :     
+		case "rocket" :     
 			rocketLauncher = Spawn(class'AEWeapon_RocketLauncher');
 			rocketLauncher.customDamage = damage;
 			rocketLauncher.customSpeed = speed;

@@ -85,7 +85,7 @@ simulated function Projectile CustomProjectileFire()
 					break;
 
 				case "shockRifle":
-					SpawnedProjectile.MyDamageType = class'UTDmgType_ShockPrimary';
+					SpawnedProjectile.MyDamageType = class'UTDmgType_ShockBall';
 					WeaponProjectiles[0] = class'UTProj_ShockBall';
 					break;
 
@@ -106,14 +106,13 @@ simulated function Projectile CustomProjectileFire()
 
 DefaultProperties
 {
-	MaxAmmoCount = 1000
-	LockerAmmoCount = 1000
-	WeaponRange = 10000
-	WeaponLinkDistance = 10000
+	MaxAmmoCount = 1000;
+	LockerAmmoCount = 1000;
+	WeaponRange = 10000;
+	WeaponLinkDistance = 10000;
 
-	WeaponProjectiles(0)=class'UTProj_ShockBall'
-
-	InstantHitDamageTypes(1)=class'UTDmgType_ShockPrimary'
+	WeaponProjectiles(0)=class'UTProj_LinkPlasma';
+	InstantHitDamageTypes(1)=class'UTDmgType_LinkPlasma';
 
 	customDamage = 50.0f;
 	customSpeed = 1000.0f;
