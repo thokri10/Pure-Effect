@@ -45,8 +45,13 @@ function initMenu()
 	local int i;
 	local bool reset;
 
+	reset = true;
+
 	for( i = 0; i < menuSelections.Length; i++)
 	{
+		if( i == 1 )
+			reset = false;
+
 		PC.mHUD.addMenuSelections(menuSelections[i].name, reset);
 	}
 	
@@ -85,16 +90,19 @@ function setMainMenu()
 function numberOfStringFromServer(int number)
 {
 	numberOfServerStrings = number;
+	ServerCounter = 0;
 }
 
 function stringFromServer(string menuString)
 {
+	if(ServerCounter == 0)
+		resetMenuSelection();
+
 	if( bMenuSelection )
 	{
 		parseMissionArrayToMenu( PC.myTcpLink.parseToArray( menuString ) );
 		++ServerCounter;
 
-		`log(numberOfServerStrings $ " : " $ ServerCounter);
 		if(numberOfServerStrings == ServerCounter)
 		{
 			bMenuSelection = false;
@@ -112,11 +120,8 @@ function stringFromServer(string menuString)
  */
 exec function ppp()
 {
-	//menuPath[0] = "Missions";
 	setMainMenu();
-	//parseMissionArrayToMenu( parseStringForMenu(DBSTRING) );
 }
-
 
 /**
  * MENU SELECT FUNCTIONS
@@ -246,7 +251,6 @@ function parseMissionArrayToMenu(array<string> MenuArray)
 {
 	local MissionObjectives objective;
 	local SelectStruct      selection;
-	local int i;
 
 	objective = PC.myMissionObjective.parseArrayToMissionStruct( MenuArray );
 

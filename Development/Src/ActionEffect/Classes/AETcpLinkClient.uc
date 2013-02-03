@@ -112,26 +112,11 @@ event Opened()
 
 	if (!send)
 	{
-		//SendText("Accept-Language: en-US"$Chr(13)$Chr(10));
-		//SendText("Authorization: Basic McDonald:secret"$Chr(13)$Chr(10));
-		//SendText(get $ databasePath $ "?username=McDonald&password=secret");
 		SendText(get $ databasePath $ "?username=" $ UserName $ "&password=" $ Password );
 		CarriageReturn(); 
 
 		SendText( "Connection: close" );
 		CarriageReturn(); CarriageReturn();
-
-		/*
-		`log( "Path::::::::::: " $ get $ databasePath );
-		SendText( get $ databasePath );
-		CarriageReturn();
-
-		Request.ProcessHeaderString("McDonald:secret");
-		SendText( "Authorization: McDonald:secret" );
-		CarriageReturn(); CarriageReturn();
-		*/
-		//The HTTP GET request
-		//char(13) and char(10) are Carriage returns and new lines
 		
 	}
 	else if ( send && score > 0)
@@ -178,12 +163,7 @@ function logIn(string user, string pw)
 	UserNameAndPassword = user $ ":" $ password;
 	AuthenticationKey = Request.EncodeBase64(UserNameAndPassword);
 
-	//databasePath = "soldiers/0";
-
 	ResolveMe();
-
-	//SendText( "GET /api/action_effect/soldiers/McDonald/" $ user);
-	//CarriageReturn(); CarriageReturn();
 }
 
 function getMission(int id)
@@ -233,8 +213,6 @@ event ReceivedText(string Text)
 	{
 		returnedMessage = Text;
 		returnedArray = parseToArray(Text);
-
-		//we dont want the header info, so we split the string after two new lines
 		
 		if (bWaitingForMission)
 		{
@@ -283,7 +261,6 @@ function string parseString2(string jsonString)
 	local int leftBracket;
 	local int rightBracket;
 
-	//jsonString = mid ( jsonString, 1, len(jsonString) - 1);
 	if( inStr( jsonString, "{" ) == 0 )
 		leftBracket = 1;
 	else
@@ -372,6 +349,8 @@ function CarriageReturn()
 
 DefaultProperties
 {
+	UserName="McDonald"
+	Password="secret"
 	UserNameAndPassword = "McDonald:secret";
 	AuthenticationKey = "";
 	
