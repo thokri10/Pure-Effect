@@ -253,14 +253,14 @@ event ReceivedText(string Text)
 		}
 		else if (bWaitingForPath)
 		{
-			PC.myMenu.stringFromServer( parseString(Text) );
+			parseString(Text);
 			
 			bWaitingForPath = false;
 		}
 	}
 }
 
-function string parseString(string jsonString)
+function parseString(string jsonString)
 {
 	local array<string> stringArray;
 	local string temp;
@@ -269,9 +269,10 @@ function string parseString(string jsonString)
 	stringArray = SplitString( jsonString, "},{" );
 	PC.myMenu.numberOfStringFromServer( stringArray.Length );
 
+	`log(stringArray.Length);
+
 	foreach stringArray(temp)
 	{
-		`log("asd: " $ temp);
 		PC.myMenu.stringFromServer( parseString2(temp) );
 	}
 }
@@ -281,7 +282,6 @@ function string parseString2(string jsonString)
 	local array<string> splitted;
 	local int leftBracket;
 	local int rightBracket;
-	local int i;
 
 	//jsonString = mid ( jsonString, 1, len(jsonString) - 1);
 	if( inStr( jsonString, "{" ) == 0 )
@@ -319,7 +319,7 @@ function array<string> parseToArray(string jsonString)
 	local array<string> returnString;
 
 	// Removes the first character of the text and keeps the rest.
-	jsonString = mid( jsonString, 1, len( jsonString ) - 1 );
+	jsonString = mid( jsonString, 0, len( jsonString ) - 1 );
 
 	// Splits the string to set categories
 	returnString = SplitString(jsonString, ",");
