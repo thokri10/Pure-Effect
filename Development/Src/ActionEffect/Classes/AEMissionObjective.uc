@@ -1,4 +1,5 @@
-class AEMissionObjective extends Actor;
+class AEMissionObjective extends Actor
+	dependson(AEWeaponCreator);
 
 // Strcut for to hold all the mission objectives. This is created with a string parser in this class.
 struct MissionObjectives
@@ -17,6 +18,12 @@ struct RewardStruct
 	var int Credit;
 	var string Weapon;
 };
+
+// This is set trough AEtcpLink when the string is parsed.
+// QuickFix find a better solution.
+var string rewardString;
+// Array that contains our rewards for our mission.
+var array<string> rewardArray;
 
 var int botsKilled;
 var Console consolClient;
@@ -49,35 +56,32 @@ function MissionObjectives parseArrayToMissionStruct(array<string> missionArray)
 
 		splitted[0] = mid( splitted[0], 1, len( splitted[0] ) - 2 );
 
-		if     (splitted[0] == "id"){            objectives.id           = int( splitted[1] ); `log("asdljasdlkjalskd"); }
-		else if(splitted[0] == "category")       objectives.category     = mid( splitted[1], 1, len( splitted[1] ) - 2 ); // Doned fucked up. But works
+		if     (splitted[0] == "id")            objectives.id           = int( splitted[1] );
+		else if(splitted[0] == "category")      objectives.category     = mid( splitted[1], 1, len( splitted[1] ) - 2 );
 		else if(splitted[0] == "city_name")     objectives.mapName      = mid( splitted[1], 1, len( splitted[1] ) - 2 );
 		else if(splitted[0] == "description" )  objectives.description  = mid( splitted[1], 1, len( splitted[1] ) - 2 );
 		else if(splitted[0] == "reward")        objectives.reward       = mid( splitted[1], 1, len( splitted[1] ) - 2 );
 		else if(splitted[0] == "title")         objectives.title        = mid( splitted[1], 1, len( splitted[1] ) - 2 );
+		else if(splitted[0] == "items")         addMissionReward(rewardString);
 		else `log("[MissionArrayParse] No known name of this type: " $ splitted[0]);
 	}
 
 	return objectives;
 }
 
-function RewardStruct parseArrayToRewardStruct(array<string> rewardArray)
+// This is runned when the mission string is parsed to a struct.
+function addMissionReward( string itemString )
 {
-	local array<string>     splitted;
-	local RewardStruct      rewards;
-	local int i;
+	rewardArray.AddItem( itemString );
+}
 
-	for(i = 0; i < rewardArray.Length; i++)
-	{
-		splitted = SplitString(rewardArray[i], ":");
+function WeaponStruct parseStringToRewardStruct(string rewardArray)
+{
+	local WeaponStruct weap;
 
-		splitted[0] = mid( splitted[0], 1, len( splitted[0] ) - 2);
+	weap = PC.myWeaponCreator.parseStringToWeaponStruct(rewardArray);
 
-		if(splitted[0] == "cash") rewards.Credit = int( splitted[1] );
-		else if(splitted[0] == "weapon") rewards.Weapon = mid( splitted[1], 1, len( splitted[1] ) - 3);
-	}
-
-	return rewards;
+	return weap;
 }
 
 // Initializes the missions wtih the string from server
@@ -95,7 +99,7 @@ function activateObjectives(MissionObjectives objectives)
 		AEObjectives = objectives;
 
 	// For testing purposes. Sets how many enemies we should spawn
-	objectives.MOEnemies = objectives.MOEnemies;
+	objectives.MOEnemies = 1;
 
 	printObjectiveMessage("BotsKilled: " $ botsKilled $ " / " $ AEObjectives.MOEnemies);
 	createObjectiveInfo();
@@ -139,7 +143,7 @@ function botDied()
 		printObjectiveMessage("BotsKilled: " $ botsKilled $ " / " $ AEObjectives.MOEnemies);
 	}else{
 		printObjectiveMessage("Mission Complete");
-		PC.getReward(AEObjectives.id);
+		getReward(AEObjectives.id);
 	}
 }
 
@@ -161,16 +165,13 @@ function printObjectiveInfo(string message, optional bool bNoAddToMessage)
 	}
 }
 
-function getReward(array<string> rewardArray)
+function getReward(int missionID)
 {
-	local RewardStruct reward;
+	local WeaponStruct weap;
 
-	reward = parseArrayToRewardStruct( rewardArray );
+	weap = parseStringToRewardStruct( rewardArray[missionID] );
 
-	PC.credits = reward.Credit;
-	PC.getWeapon(reward.Weapon, 0.1, 500, 1, 1337, 2000);
-
-	PC.mHUD.postError( string( PC.credits ) );
+	PC.addWeaponToInventory( PC.myWeaponCreator.CreateWeaponFromStruct( weap ) );
 }
 
 function printObjectiveMessage(string message)

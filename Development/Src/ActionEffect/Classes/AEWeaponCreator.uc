@@ -57,7 +57,7 @@ function WeaponStruct parseStringToWeaponStruct(string in)
 
 	weaponDebugLog = "\n";
 
-	in = mid( in, 1, len( in ) - 1 );
+	in = mid( in, 0, len( in ) - 1 );
 	// Splits the string to set categories
 	tempString = SplitString(in, ",");
 	for(i = 0; i < tempString.Length; i++)
@@ -69,17 +69,18 @@ function WeaponStruct parseStringToWeaponStruct(string in)
 
 		// Now we check if any of the preset variables we have exist in this json
 		if      (tempString2[0] == "id")            Weap.id         = int   ( tempString2[1] );         
-		else if (tempString2[0] == "mag_size")      Weap.magSize    = int   ( tempString2[1] );
-		else if (tempString2[0] == "reload_time")   Weap.reloadTime = float ( tempString2[1] );
+		else if (tempString2[0] == "ammo_pool")     Weap.magSize    = int   ( tempString2[1] );
+		else if (tempString2[0] == "fire_rate")     Weap.reloadTime = float ( tempString2[1] );
 		else if (tempString2[0] == "spread")        Weap.spread     = float ( tempString2[1] );
-		else if (tempString2[0] == "name")          Weap.type       = mid( tempString2[1], 1, len( tempString2[1] ) - 2 );   
+		else if (tempString2[0] == "type")          Weap.type       = mid( tempString2[1], 1, len( tempString2[1] ) - 2 );   
 		else if (tempString2[0] == "damage")        Weap.damage     = float ( tempString2[1] );
 		else if (tempString2[0] == "speed")         Weap.speed      = float ( tempString2[1] );
+		else `log("[WeaponStructCreator] No known variable of this type: " $ tempString2[0] );
 	}
 
 	// TESTING PURPOSES. Fix this later.
-	Weap.damage = 1337.0f;
-	Weap.speed = 1500.0f;
+	//Weap.damage = 1337.0f;
+	//Weap.speed = 1500.0f;
 
 	weaponDebugLog = weaponDebugLog $ "Weapon ID: "                 $ Weap.id $             "\n"
 									$ "Magazine size: "             $ Weap.magSize $        "\n"

@@ -89,7 +89,7 @@ function addWeaponToInventory(UTWeapon weap)
 
 function addReward(array<string> rewardArray)
 {
-	myMissionObjective.getReward(rewardArray);
+	myMissionObjective.getReward(0);
 }
 
 /*

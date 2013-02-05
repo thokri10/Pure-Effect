@@ -287,6 +287,9 @@ function string parseString2(string jsonString)
 	`log( ":::  " $ splitted[2] );
 	`log( ":::: " $ splitted[3] );
 	*/
+	
+	if(splitted[2] != "")
+		PC.myMissionObjective.rewardString = splitted[2];
 
 	return splitted[0];
 }
