@@ -63,6 +63,7 @@ function initMenu()
 
 function resetMenuSelection()
 {
+	PC.mHUD.addMenuSelections("", true);
 	menuSelections.Length = 0;
 	PC.mHUD.setMenuActive(0);
 	selectedMenuSlot=0;
@@ -105,6 +106,7 @@ function stringFromServer(string menuString)
 
 		if(numberOfServerStrings == ServerCounter)
 		{
+			ServerCounter = 0;
 			bMenuSelection = false;
 			initMenu();
 		}
@@ -141,8 +143,6 @@ function UpdateMenuFromPath()
 		if(i != menuPath.Length - 1)
 			PC.myTcpLink.databasePath = PC.myTcpLink.databasePath $ "/";
 	}
-
-	`log("PATH: " $ PC.myTcpLink.databasePath);
 
 	PC.myTcpLink.getMenuSelections();
 }
@@ -201,13 +201,23 @@ function Select()
 			}
 		}
 		// The second menu you get to. Should be splitted up after all the choices you have in main menu selections.
-		else if ( menuPath.Length == 1)
+		else if ( menuPath.Length == 1 )
 		{
 			if( MenuPath[0] == "missions" )
 			{
-				MenuPath[1] = String( menuSelections[selectedMenuSlot].id );
+				`log(selectedMenuSlot);
+				MenuPath[1] = string( selectedMenuSlot );
 
 				showMissionInfo(menuMissions[selectedMenuSlot]);
+			}
+		}
+
+		else if( menuPath.Length == 2 )
+		{
+			if( menuSelections[selectedMenuSlot].name == "Accept" )
+			{
+				PC.myMissionObjective.activateObjectives( menuMissions[ int(MenuPath[1]) ] );
+				resetMenuSelection();
 			}
 		}
 	}
@@ -229,6 +239,8 @@ function showMissionInfo(MissionObjectives objective)
 {
 	local SelectStruct selection;
 
+	resetMenuSelection();
+
 	PC.mHUD.addMissionInfo( "Name        : " $ objective.title, true );
 	PC.mHUD.addMissionInfo( "Map         : " $ objective.mapName );
 	PC.mHUD.addMissionInfo( "Reward      : " $ objective.reward );
@@ -241,7 +253,6 @@ function showMissionInfo(MissionObjectives objective)
 
 	initMenu();
 }
-
 
 /**
  * Parsing functions
@@ -257,7 +268,6 @@ function parseMissionArrayToMenu(array<string> MenuArray)
 	selection.id = objective.id;
 	selection.name = objective.title;
 
-	`log(selection.name);
 	menuSelections.AddItem(selection);
 
 	menuMissions.AddItem(objective);

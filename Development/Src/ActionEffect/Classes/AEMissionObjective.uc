@@ -49,7 +49,7 @@ function MissionObjectives parseArrayToMissionStruct(array<string> missionArray)
 
 		splitted[0] = mid( splitted[0], 1, len( splitted[0] ) - 2 );
 
-		if     (splitted[0] == "id")            objectives.id           = int( splitted[1] );
+		if     (splitted[0] == "id"){            objectives.id           = int( splitted[1] ); `log("asdljasdlkjalskd"); }
 		else if(splitted[0] == "category")       objectives.category     = mid( splitted[1], 1, len( splitted[1] ) - 2 ); // Doned fucked up. But works
 		else if(splitted[0] == "city_name")     objectives.mapName      = mid( splitted[1], 1, len( splitted[1] ) - 2 );
 		else if(splitted[0] == "description" )  objectives.description  = mid( splitted[1], 1, len( splitted[1] ) - 2 );
@@ -83,21 +83,22 @@ function RewardStruct parseArrayToRewardStruct(array<string> rewardArray)
 // Initializes the missions wtih the string from server
 function Initialize(array<string> missionArray)
 {
-	// For testing purposes. Sets how many enemies we should spawn
 	AEObjectives = parseArrayToMissionStruct(missionArray);
 
-	AEObjectives.MOEnemies = 5;
-	activateObjectives(AEObjectives);
-
-	printObjectiveMessage("BotsKilled: " $ botsKilled $ " / " $ AEObjectives.MOEnemies);
-	createObjectiveInfo();
+	activateObjectives( AEObjectives );
 }
 
 // Activates all the objectives. Check through a list and adds all the active objectives. 
 function activateObjectives(MissionObjectives objectives)
 {
-	// Saves the default variables.
-	AEObjectives = objectives;
+	if(objectives != AEObjectives)
+		AEObjectives = objectives;
+
+	// For testing purposes. Sets how many enemies we should spawn
+	objectives.MOEnemies = objectives.MOEnemies;
+
+	printObjectiveMessage("BotsKilled: " $ botsKilled $ " / " $ AEObjectives.MOEnemies);
+	createObjectiveInfo();
 
 	// Long "if section" for all the objectives. 
 	if(objectives.MOEnemies > 0)
@@ -113,8 +114,6 @@ function SpawnEnemies(int enemyNumber)
 	local vector loc;
 
 	loc.X = 300; loc.Y = 400; loc.Z = 200;
-
-	`log("[MissionObjective] Spawned Enemies: " $enemyNumber);
 	
 	for(i = 0; i < enemyNumber; i++)
 	{

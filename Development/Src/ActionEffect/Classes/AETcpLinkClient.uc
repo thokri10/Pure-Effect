@@ -247,8 +247,6 @@ function parseString(string jsonString)
 	stringArray = SplitString( jsonString, "},{" );
 	PC.myMenu.numberOfStringFromServer( stringArray.Length );
 
-	`log(stringArray.Length);
-
 	foreach stringArray(temp)
 	{
 		PC.myMenu.stringFromServer( parseString2(temp) );
@@ -282,11 +280,13 @@ function string parseString2(string jsonString)
 
 	splitted[3] = mid( jsonString, rightBracket + 2 );
 
+	/*
 	`log( ":::::::::::::::::::::");
 	`log( ":    " $ splitted[0] );
 	`log( "::   " $ splitted[1] );
 	`log( ":::  " $ splitted[2] );
 	`log( ":::: " $ splitted[3] );
+	*/
 
 	return splitted[0];
 }
