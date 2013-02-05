@@ -37,7 +37,7 @@ simulated exec function StopSprinting()
 // Hold Space to use jetpack.
 simulated exec function UseJetpack()
 {
-	`Log("JETPACK: ON");
+	//`Log("JETPACK: ON");
 	myPawn.usingJetpack = true;
 	myPawn.CustomGravityScaling = -1.0f;
 }
@@ -45,7 +45,7 @@ simulated exec function UseJetpack()
 // Release Space to stop using the jetpack.
 simulated exec function StopUsingJetpack()
 {
-	`Log("JETPACK: OFF");
+	//`Log("JETPACK: OFF");
 	myPawn.usingJetpack = false;
 	myPawn.CustomGravityScaling = 1.0f;
 }
