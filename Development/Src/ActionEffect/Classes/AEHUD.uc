@@ -84,8 +84,9 @@ function addMenuSelections(string msg, optional bool bNoAdd)
 	{
 		Menu.Length = 0;
 	}
-
-	Menu.AddItem(nullMsg);
+	if(msg != ""){
+		Menu.AddItem(nullMsg);
+	}
 }
 
 // Adds entries to the HUD for mission info.
