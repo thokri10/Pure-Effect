@@ -105,6 +105,7 @@ function stringFromServer(string menuString)
 
 		if(numberOfServerStrings == ServerCounter)
 		{
+			ServerCounter = 0;
 			bMenuSelection = false;
 			initMenu();
 		}
@@ -228,6 +229,8 @@ function setBack(int i)
 function showMissionInfo(MissionObjectives objective)
 {
 	local SelectStruct selection;
+
+	resetMenuSelection();
 
 	PC.mHUD.addMissionInfo( "Name        : " $ objective.title, true );
 	PC.mHUD.addMissionInfo( "Map         : " $ objective.mapName );
