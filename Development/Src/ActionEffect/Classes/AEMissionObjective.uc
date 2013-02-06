@@ -80,7 +80,7 @@ function addMissionReward( string itemString )
 // When missions is done this is runned with the mission ID to give you the correct reward
 function getReward(int missionID)
 {
-	parseStringToReward( rewardArray[2] );
+	parseStringToReward( rewardArray[missionID - 1] );
 }
 
 // Gives the reward to player from reward string. You can only retrieve weapon at this time.

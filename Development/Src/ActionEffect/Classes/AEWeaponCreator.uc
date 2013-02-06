@@ -19,7 +19,6 @@ var AEPlayerController PC;
 
 function UTWeapon CrateWeaponFromString(string weap)
 {
-	`log("asdkjaklsdjklasjdlkasjdlkajslkd: " $ weap);
 	return CreateWeaponFromStruct( parseArrayToWeaponStruct( PC.myTcpLink.parseToArray( weap ) ) );
 }
 
@@ -64,8 +63,6 @@ function WeaponStruct parseArrayToWeaponStruct(array<string> in)
 		// Removes both the ' " ' from the string so we can read it properly
 		tempString2[0] = mid( tempString2[0], 1, len( tempString2[0] ) - 2 );
 
-		`log(tempString2[0] $ " : " $ tempString2[1] );
-
 		// Now we check if any of the preset variables we have exist in this json
 		if      (tempString2[0] == "id")            Weap.id         = int   ( tempString2[1] );         
 		else if (tempString2[0] == "ammo_pool")     Weap.magSize    = int   ( tempString2[1] );
@@ -88,6 +85,7 @@ function WeaponStruct parseArrayToWeaponStruct(array<string> in)
 									$ "Weapon type: "               $ Weap.type $           "\n"
 									$ "Damage: "                    $ Weap.damage $         "\n"
 									$ "Speed: "                     $ Weap.speed $          "\n";
+									
 
 	`Log("Weapon generated:" $ weaponDebugLog);
 

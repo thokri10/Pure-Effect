@@ -9,7 +9,6 @@ function AEPawn_Bot spawnBot(class<AEPawn_Bot> bot, AEMissionObjective spawnOwne
 
 	foreach spawnPoints( point )
 	{
-		`log("dereirjkljgksjdf"); 
 		if(!point.bInUse){ point.bInUse=true; break; }
 	}
 
