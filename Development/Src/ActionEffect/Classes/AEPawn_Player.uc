@@ -2,7 +2,7 @@ class AEPawn_Player extends AEPawn;
 
 var AEPlayerController AEPC;
 
-var bool usingJetpack;
+var bool isUsingJetPack;
 var bool isInTheAir;
 
 simulated event PostBeginPlay()
@@ -169,6 +169,6 @@ DefaultProperties
 	
 	GroundSpeed = 600.0f;
 
-	usingJetpack = false;
+	isUsingJetPack = false;
 	isInTheAir = false;
 }

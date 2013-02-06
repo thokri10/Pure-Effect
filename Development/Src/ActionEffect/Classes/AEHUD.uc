@@ -15,10 +15,18 @@ var int activeMenuSlot;
 // Not sure what this is used for... :p
 var int ErrorCounter;
 
+var float barLength;
+var float barHeight;
+
 // Draws a message on the screen (can be part of the menu).
 function DrawMessageText(HudLocalizedMessage LocalMessage, float ScreenX, float ScreenY)
 {
 	super.DrawMessageText(LocalMessage, ScreenX, ScreenY);
+}
+
+event Tick(float DeltaTime)
+{
+	// Override if necessary.
 }
 
 // Draws the HUD.
@@ -84,7 +92,9 @@ function addMenuSelections(string msg, optional bool bNoAdd)
 	{
 		Menu.Length = 0;
 	}
-	if(msg != ""){
+
+	if (msg != "")
+	{
 		Menu.AddItem(nullMsg);
 	}
 }
@@ -144,7 +154,98 @@ function resetMissionInfo()
 	MissionInfo = tmp;
 }
 
+function DrawBar(String barTitle, float barValue, float barMaxValue,
+	int x, int y, int textValueR, int textValueG, int textValueB)
+{
+    local int posX;
+    local int numberOfBarSquares;
+    local int i;
+	local float barLengthFilled;
+	
+
+	// Where we should draw the next rectangle
+    posX = x;
+
+	// Number of active rectangles to draw
+    numberOfBarSquares = 10 * barValue / barMaxValue;
+    i = 0; // Number of rectangles already drawn
+
+	barLengthFilled = barValue / barMaxValue;
+
+    /* Displays active rectangles */
+  //  while ( (i < numberOfBarSquares) && (i < 10) )
+  //  {
+  //      Canvas.SetPos(posX, y);
+  //      Canvas.SetDrawColor(textValueR, textValueG, textValueB, 200);
+  //      Canvas.DrawRect(16, 24);
+		//// Canvas.DrawRect(8, 12);
+
+  //      posX += 18;
+  //      i++;
+  //  }
+
+	Canvas.SetPos(posX, y);
+	Canvas.SetDrawColor(textValueR, textValueG, textValueB, 200);
+	Canvas.DrawRect(barLength * barLengthFilled, 24);
+
+    /* Displays unactive rectangles */
+  //  while (i < 10)
+  //  {
+  //      Canvas.SetPos(posX, y);
+  //      Canvas.SetDrawColor(255, 255, 255, 80);
+  //      Canvas.DrawRect(16, 24);
+		//// Canvas.DrawRect(8, 12);
+
+  //      posX += 18;
+  //      i++;
+  //  }
+
+    /* Displays a title of the bar */
+    Canvas.SetPos(posX + 5, y);
+    Canvas.SetDrawColor(255.0, 255.0, 255.0, 200);
+    Canvas.Font = class'Engine'.static.GetMediumFont();
+    Canvas.DrawText(barTitle);
+}
+
+function DrawHealthBar()
+{
+    if ( !PlayerOwner.IsDead() && !UTPlayerOwner.IsInState('Spectating'))
+    {
+        DrawBar("Health", PlayerOwner.Pawn.Health, PlayerOwner.Pawn.HealthMax, 
+        	Canvas.SizeX - (Canvas.SizeX * 0.990f), 
+        	Canvas.SizeY - (Canvas.SizeY * 0.050f),
+        	200, 80, 80);
+
+		Canvas.SetPos(Canvas.SizeX - (Canvas.SizeX * 0.990f), Canvas.SizeY - (Canvas.SizeY * 0.050f));
+		Canvas.SetDrawColor(200, 80, 80, 200);
+		Canvas.DrawBox(178, 24);
+    }
+}
+
+function DrawAmmoBar()
+{
+	if ( !PlayerOwner.IsDead() && !UTPlayerOwner.IsInState('Spectating'))
+    {
+		//DrawBar("Ammo", UTWeapon(PawnOwner.Weapon).AmmoCount, UTWeapon(PawnOwner.Weapon).MaxAmmoCount ,20,40,80,80,200);
+		DrawBar("Ammo", UTWeapon(PawnOwner.Weapon).AmmoCount, UTWeapon(PawnOwner.Weapon).MaxAmmoCount ,
+			Canvas.SizeX - (Canvas.SizeX * 0.990f),
+			Canvas.SizeY - (Canvas.SizeY * 0.090f),
+			80,80,200);
+    }
+}
+
+// Overrode this function to make our custom HUD.
+function DrawLivingHud()
+{
+	DisplayAmmo(UTWeapon(PawnOwner.Weapon));
+
+	DrawHealthBar();
+	//DrawAmmoBar();
+}
+
 DefaultProperties
 {
 	ErrorCounter = 0;
+	barLength = 200.0f;
+	barHeight = 25.0f;
 }
