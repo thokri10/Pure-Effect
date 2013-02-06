@@ -1,6 +1,6 @@
 class AEHUDMenu extends Actor
 	dependson(AEMissionObjective);
-
+ 
 struct SelectStruct
 {
 	var int     id;
@@ -32,7 +32,7 @@ var bool    bMenuSelection;
 var bool    bMenuInfo;
 
 /**
- * INITIALIZINGS!
+ * Initializing functions
  */
 
 simulated function PostBeginPlay()
@@ -88,6 +88,27 @@ function setMainMenu()
 	initMenu();
 }
 
+// Updates the menu with the menuPath variable in this class
+function UpdateMenuFromPath()
+{
+	local int i;
+
+	PC.myTcpLink.databasePath = "";
+
+	for( i = 0; i < menuPath.Length; i++)
+	{
+		PC.myTcpLink.databasePath = PC.myTcpLink.databasePath $ menuPath[i];
+
+		if(i != menuPath.Length - 1)
+			PC.myTcpLink.databasePath = PC.myTcpLink.databasePath $ "/";
+	}
+
+	PC.myTcpLink.getMenuSelections();
+}
+
+/**
+ * Functions that this class do not use. Often called from TCP
+ **/
 function numberOfStringFromServer(int number)
 {
 	numberOfServerStrings = number;
@@ -128,24 +149,6 @@ exec function ppp()
 /**
  * MENU SELECT FUNCTIONS
  */
-
-// Updates the menu with the menuPath variable in this class
-function UpdateMenuFromPath()
-{
-	local int i;
-
-	PC.myTcpLink.databasePath = "";
-
-	for( i = 0; i < menuPath.Length; i++)
-	{
-		PC.myTcpLink.databasePath = PC.myTcpLink.databasePath $ menuPath[i];
-
-		if(i != menuPath.Length - 1)
-			PC.myTcpLink.databasePath = PC.myTcpLink.databasePath $ "/";
-	}
-
-	PC.myTcpLink.getMenuSelections();
-}
 
 // Jumps down in the menu.
 function nextMenuSlot()

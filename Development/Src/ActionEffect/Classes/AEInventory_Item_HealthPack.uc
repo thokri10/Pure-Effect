@@ -1,7 +1,7 @@
 class AEInventory_Item_HealthPack extends AEInventory_Item;
 
 var int HealAmount;
-
+ 
 simulated function bool Use()
 {
 	if( !super.Use() )

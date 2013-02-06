@@ -44,6 +44,7 @@ simulated event PostBeginPlay()
 	super.PostBeginPlay();
 }
 
+// Parses the array to a mission struct so we have controll over the objectives.
 function MissionObjectives parseArrayToMissionStruct(array<string> missionArray)
 {
 	local array<string>     splitted;
@@ -70,18 +71,31 @@ function MissionObjectives parseArrayToMissionStruct(array<string> missionArray)
 }
 
 // This is runned when the mission string is parsed to a struct.
+// You should not use this
 function addMissionReward( string itemString )
 {
 	rewardArray.AddItem( itemString );
 }
 
-function WeaponStruct parseStringToRewardStruct(string rewardArray)
+// When missions is done this is runned with the mission ID to give you the correct reward
+function getReward(int missionID)
 {
+	parseStringToReward( rewardArray[2] );
+}
+
+// Gives the reward to player from reward string. You can only retrieve weapon at this time.
+function parseStringToReward(string in)
+{
+	local array<string> reward;
 	local WeaponStruct weap;
 
-	weap = PC.myWeaponCreator.parseStringToWeaponStruct(rewardArray);
+	in = in $ "}";
 
-	return weap;
+	reward = PC.myTcpLink.parseToArray( in );
+
+	weap = PC.myWeaponCreator.parseArrayToWeaponStruct( reward );
+
+	PC.addWeaponToInventory( PC.myWeaponCreator.CreateWeaponFromStruct( weap ) );
 }
 
 // Initializes the missions wtih the string from server
@@ -99,42 +113,37 @@ function activateObjectives(MissionObjectives objectives)
 		AEObjectives = objectives;
 
 	// For testing purposes. Sets how many enemies we should spawn
-	objectives.MOEnemies = 1;
+	objectives.MOEnemies = 5;
+	AEObjectives.MOEnemies = 5;
 
-	printObjectiveMessage("BotsKilled: " $ botsKilled $ " / " $ AEObjectives.MOEnemies);
+	printObjectiveMessage("BotsKilled: " $ botsKilled $ " / " $ objectives.MOEnemies);
 	createObjectiveInfo();
 
 	// Long "if section" for all the objectives. 
-	if(objectives.MOEnemies > 0)
-	{
-		SpawnEnemies(objectives.MOEnemies);
-	}
+
+	SpawnEnemies(objectives.MOEnemies);
 }
 
-// Spawns an enemy at a set location.
+// Spawns an enemy at a set location in the map.
 function SpawnEnemies(int enemyNumber)
 {
+	local AEVolume_BotSpawn spawnPoint; 
+	local AEVolume_BotSpawn target;
 	local int i;
-	local vector loc;
 
-	loc.X = 300; loc.Y = 400; loc.Z = 200;
-	
+	foreach WorldInfo.AllActors( class'AEVolume_BotSpawn', target )
+	{
+		`log("SpawnPoitnLAlskdalskd: " $ spawnPoint.spawnPoints.Length);
+		spawnPoint = target;
+	}
+
 	for(i = 0; i < enemyNumber; i++)
 	{
-		if(i == 1)
-			loc.X += 100;
-		else if(i == 2)
-			loc.X -= 200;
-		else if(i == 3){
-			loc.X -= 100;
-			loc.Y += 300;
-		}else{
-			loc.X += 50;
-		}
-		SpawnedBots[i] = Spawn(class'AEPawn_Bot', self,, loc,,,true);
+		SpawnedBots.AddItem( spawnPoint.spawnBot(class'AEPawn_Bot', self) );
 	}
 }
 
+// When a bot dies he runs this method to update the bots killed.
 function botDied()
 {
 	++botsKilled;
@@ -142,11 +151,18 @@ function botDied()
 	if(botsKilled < AEObjectives.MOEnemies){
 		printObjectiveMessage("BotsKilled: " $ botsKilled $ " / " $ AEObjectives.MOEnemies);
 	}else{
-		printObjectiveMessage("Mission Complete");
+		printObjectiveMessage("", true);
+		PC.mHUD.postError("Mission complete: Reward added to inventory");
+		printObjectiveInfo("", true);
 		getReward(AEObjectives.id);
 	}
 }
 
+/**
+ * Menu functions
+ **/
+
+// Print mission info to screen
 function createObjectiveInfo()
 {
 	printObjectiveInfo( "Category: "    $   AEObjectives.category, true);
@@ -156,6 +172,7 @@ function createObjectiveInfo()
 	printObjectiveInfo( "Description: " $   AEObjectives.description);
 }
 
+// Prints the objective info to screen
 function printObjectiveInfo(string message, optional bool bNoAddToMessage)
 {
 	if(bNoAddToMessage){
@@ -165,20 +182,14 @@ function printObjectiveInfo(string message, optional bool bNoAddToMessage)
 	}
 }
 
-function getReward(int missionID)
-{
-	local WeaponStruct weap;
-
-	weap = parseStringToRewardStruct( rewardArray[missionID] );
-
-	PC.addWeaponToInventory( PC.myWeaponCreator.CreateWeaponFromStruct( weap ) );
-}
-
-function printObjectiveMessage(string message)
+function printObjectiveMessage(string message, optional bool bReset)
 {
 	local HudLocalizedMessage msg;
 
-	msg.StringMessage = "[Objectives] " $ message;
+	if(bReset)
+		msg.StringMessage = "";
+	else
+		msg.StringMessage = "[Objectives] " $ message;
 
 	PC.mHUD.Message = msg;
 }
