@@ -4,6 +4,11 @@ class AEPawn_Bot extends AEPawn
 var AEAIController      MyController;
 var AEMissionObjective  spawnOwner;
 
+function SpawnDefaultController()
+{
+	Super.SpawnDefaultController();
+}
+
 simulated event PostBeginPlay()
 {
 	SetPhysics(PHYS_Walking);
@@ -40,6 +45,5 @@ function bool Died(Controller Killer, class<DamageType> damageType, Vector HitLo
 
 DefaultProperties
 {
-
 	ControllerClass=class'AEAIController'
 }

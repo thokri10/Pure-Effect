@@ -4,7 +4,7 @@ simulated function SwitchWeapon(byte NewGroup)
 {
 	`log("øjksdhføkjhadfjklhadflhsdlfkh");
 }
-
+ 
 defaultproperties
 {
 }

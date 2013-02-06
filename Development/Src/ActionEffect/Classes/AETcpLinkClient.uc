@@ -202,7 +202,7 @@ function getMenuSelections()
 event ReceivedText(string Text)
 {
 	// receiving some text, note that the text includes line breaks
-	`log("[TcpLinkClient] ReceivedText:: " $Text);
+	//`log("[TcpLinkClient] ReceivedText:: " $Text);
 
 	if (Text == "HTTP Basic: Access denied.\n")
 	{

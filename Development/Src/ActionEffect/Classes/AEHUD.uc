@@ -39,7 +39,7 @@ event PostRender()
 	Canvas.Font = GetFontSizeIndex(1);
 	Canvas.DrawColor = WhiteColor;
 
-	DrawMessageText(Message, 10, 300);
+	DrawMessageText(Message, 600, 300);
 
 	// Draws the mission info if needed (Length > 0).
 	// Draws at about center top.

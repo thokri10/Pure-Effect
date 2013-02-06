@@ -1,6 +1,6 @@
 class AEInventory_Item extends Actor
 	placeable;
-
+ 
 var AEPlayerController PC;
 
 var int StackCounter;

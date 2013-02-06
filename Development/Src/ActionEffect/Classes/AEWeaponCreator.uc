@@ -19,7 +19,7 @@ var AEPlayerController PC;
 
 function UTWeapon CrateWeaponFromString(string weap)
 {
-	return CreateWeaponFromStruct( parseStringToWeaponStruct( weap ) );
+	return CreateWeaponFromStruct( parseArrayToWeaponStruct( PC.myTcpLink.parseToArray( weap ) ) );
 }
 
 // Creates a custom-made weapon from server (main function)
@@ -47,23 +47,19 @@ function UTWeapon CreateWeapon(string type, float spread, int magazineSize, floa
 }
 
 // Returns a weaponStruct from a json message from server
-function WeaponStruct parseStringToWeaponStruct(string in)
+function WeaponStruct parseArrayToWeaponStruct(array<string> in)
 {
 	local WeaponStruct  Weap;
-	local array<string> tempString;
 	local array<string> tempString2;
 	local int i;
 	local string weaponDebugLog;
 
 	weaponDebugLog = "\n";
 
-	in = mid( in, 0, len( in ) - 1 );
-	// Splits the string to set categories
-	tempString = SplitString(in, ",");
-	for(i = 0; i < tempString.Length; i++)
+	for(i = 0; i < in.Length; i++)
 	{
 		// Now we split it one more time to get type and value 
-		tempString2 = SplitString(tempString[i], ":");
+		tempString2 = SplitString(in[i], ":");
 		// Removes both the ' " ' from the string so we can read it properly
 		tempString2[0] = mid( tempString2[0], 1, len( tempString2[0] ) - 2 );
 
@@ -89,6 +85,7 @@ function WeaponStruct parseStringToWeaponStruct(string in)
 									$ "Weapon type: "               $ Weap.type $           "\n"
 									$ "Damage: "                    $ Weap.damage $         "\n"
 									$ "Speed: "                     $ Weap.speed $          "\n";
+									
 
 	`Log("Weapon generated:" $ weaponDebugLog);
 

@@ -1,5 +1,5 @@
 class AEInventory extends Actor;
-
+ 
 var AEInventory_Item ItemList[3];
 
 var AEPlayerController PC;
