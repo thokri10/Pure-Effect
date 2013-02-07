@@ -26,7 +26,7 @@ function DrawMessageText(HudLocalizedMessage LocalMessage, float ScreenX, float 
 
 event Tick(float DeltaTime)
 {
-	// Override if necessary.
+	// Override if necessary.	
 }
 
 // Draws the HUD.
@@ -123,7 +123,8 @@ function setMenuActive(int slot)
 		return;
 	}
 	
-	if(Menu.Length != 1){
+	if (Menu.Length != 1)
+	{
 		Menu[activeMenuSlot].StringMessage = mid( Menu[activeMenuSlot].StringMessage, 3);
 		Menu[activeMenuSlot].StringMessage = "[ ]" $ Menu[activeMenuSlot].StringMessage;
 	}
@@ -158,49 +159,16 @@ function DrawBar(String barTitle, float barValue, float barMaxValue,
 	int x, int y, int textValueR, int textValueG, int textValueB)
 {
     local int posX;
-    local int numberOfBarSquares;
-    local int i;
 	local float barLengthFilled;
 	
-
 	// Where we should draw the next rectangle
     posX = x;
 
-	// Number of active rectangles to draw
-    numberOfBarSquares = 10 * barValue / barMaxValue;
-    
-	// Number of rectangles already drawn
-    i = 0;
-
 	barLengthFilled = barValue / barMaxValue;
-
-    /* Displays active rectangles */
-  //  while ( (i < numberOfBarSquares) && (i < 10) )
-  //  {
-  //      Canvas.SetPos(posX, y);
-  //      Canvas.SetDrawColor(textValueR, textValueG, textValueB, 200);
-  //      Canvas.DrawRect(16, 24);
-		//// Canvas.DrawRect(8, 12);
-
-  //      posX += 18;
-  //      i++;
-  //  }
 
 	Canvas.SetPos(posX, y);
 	Canvas.SetDrawColor(textValueR, textValueG, textValueB, 200);
 	Canvas.DrawRect(barLength * barLengthFilled, barHeight);
-
-    /* Displays unactive rectangles */
-  //  while (i < 10)
-  //  {
-  //      Canvas.SetPos(posX, y);
-  //      Canvas.SetDrawColor(255, 255, 255, 80);
-  //      Canvas.DrawRect(16, 24);
-		//// Canvas.DrawRect(8, 12);
-
-  //      posX += 18;
-  //      i++;
-  //  }
 
     /* Displays a title of the bar */
     Canvas.SetPos(posX + 5, y + 5);
@@ -237,12 +205,60 @@ function DrawAmmoBar()
     }
 }
 
+function DrawStaminaBar()
+{
+	local AEPlayerController playerPC;
+	playerPC = AEPlayerController(GetALocalPlayerController());
+
+	if ( !PlayerOwner.IsDead() && !UTPlayerOwner.IsInState('Spectating'))
+    {
+		Canvas.SetPos(Canvas.SizeX - (Canvas.SizeX * 0.990f), Canvas.SizeY - (Canvas.SizeY * 0.100f));
+		Canvas.SetDrawColor(80, 200 + 20, 80, 100);
+		//Canvas.DrawBox(barLength, 24);
+		Canvas.DrawRect(barLength, barHeight);
+
+		DrawBar("Stamina", playerPC.myPawn.sprintEnergy, playerPC.myPawn.maxSprintEnergy,
+			Canvas.SizeX - (Canvas.SizeX * 0.990f),
+			Canvas.SizeY - (Canvas.SizeY * 0.100f),
+			80, 200, 80);
+    }
+}
+
+function DrawFuelBar(float barValueR, float barValueG, float barValueB)
+{
+	local AEPlayerController playerPC;
+	local float fuelRatio;
+
+	playerPC = AEPlayerController(GetALocalPlayerController());
+	fuelRatio = playerPC.myPawn.fuelEnergy / playerPC.myPawn.maxFuelEnergy;
+
+	if ( !PlayerOwner.IsDead() && !UTPlayerOwner.IsInState('Spectating') && playerPC.myPawn.isUsingJetPack)
+    {
+		//Canvas.SetPos((Canvas.SizeX / 2) - ((barLength * fuelRatio) / 2), (Canvas.SizeY / 2) + (barHeight * 3));
+		//Canvas.SetDrawColor(barValueR, barValueG, barValueB, 100);
+		//Canvas.DrawRect((barLength * fuelRatio), barHeight);
+
+		DrawBar("", playerPC.myPawn.fuelEnergy, playerPC.myPawn.maxFuelEnergy,
+			(Canvas.SizeX / 2) - ((barLength * fuelRatio) / 2),
+			(Canvas.SizeY / 2) + (barHeight * 4),
+			barValueR, barValueG, barValueB);
+		
+		if (playerPC.myPawn.fuelEnergy <= 0.0f)
+		{
+			Canvas.SetPos((Canvas.SizeX / 2) - 55.0f, (Canvas.SizeY / 2) + (barHeight * 2));
+			Canvas.DrawText("OUT OF FUEL");
+		}
+    }
+}
+
 // Overrode this function to make our custom HUD.
 function DrawLivingHud()
 {
 	DisplayAmmo(UTWeapon(PawnOwner.Weapon));
 
 	DrawHealthBar();
+	DrawStaminaBar();
+	DrawFuelBar(200, 200, 200);
 	//DrawAmmoBar();
 }
 

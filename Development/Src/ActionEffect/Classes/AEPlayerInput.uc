@@ -23,15 +23,15 @@ exec function MenuEnter()
 // Press LeftShift to sprint.
 simulated exec function Sprint()
 {
-	isSprinting = true;
-	myPawn.GroundSpeed = 1000.0f;
+	myPawn.isSprinting = true;
+	myPawn.regenerateSprintEnergy = false;
 }
 
 // Release LeftShift to stop sprinting.
 simulated exec function StopSprinting()
 {
-	isSprinting = false;
-	myPawn.GroundSpeed = 600.0f;
+	myPawn.isSprinting = false;
+	myPawn.regenerateSprintEnergy = true;
 }
 
 // Hold Space to use jetpack.
@@ -39,7 +39,6 @@ simulated exec function UseJetpack()
 {
 	//`Log("JETPACK: ON");
 	myPawn.isUsingJetPack = true;
-	myPawn.CustomGravityScaling = -1.0f;
 }
 
 // Release Space to stop using the jetpack.
@@ -47,7 +46,6 @@ simulated exec function StopUsingJetpack()
 {
 	//`Log("JETPACK: OFF");
 	myPawn.isUsingJetPack = false;
-	myPawn.CustomGravityScaling = 1.0f;
 }
 
 DefaultProperties

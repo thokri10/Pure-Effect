@@ -24,9 +24,6 @@ var AEPawn_Player           myPawn;
 // Mission module that initialize mission and spawns it's objectives.
 var AEMissionObjective      myMissionObjective;
 
-// Boolean that checks if we are sprinting.
-var bool                    isSprinting;
-
 // Initializations before any pawns spawn on the map.
 simulated event PostBeginPlay()
 {
