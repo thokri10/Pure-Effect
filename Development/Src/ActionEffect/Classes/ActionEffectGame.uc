@@ -35,7 +35,7 @@ defaultproperties
 	PlayerControllerClass = class'ActionEffect.AEPlayerController';
 	DefaultPawnClass = class'ActionEffect.AEPawn_Player';
 	
-	
+	bDelayedStart=false
 	BotClass=class'AEAIController'
 	bCustomBots=true
 

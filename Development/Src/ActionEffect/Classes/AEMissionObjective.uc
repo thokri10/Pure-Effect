@@ -26,7 +26,7 @@ var string rewardString;
 var array<string> rewardArray;
 
 var int botsKilled;
-var Console consoleClient;
+var Console consolClient;
 
 // Player controller 
 var AEPlayerController  PC;
@@ -119,7 +119,7 @@ function activateObjectives(MissionObjectives objectives)
 	printObjectiveMessage("BotsKilled: " $ botsKilled $ " / " $ objectives.MOEnemies);
 	createObjectiveInfo();
 
-	// long "if section" for all the objectives. 
+	// Long "if section" for all the objectives. 
 
 	SpawnEnemies(objectives.MOEnemies);
 }
@@ -133,7 +133,6 @@ function SpawnEnemies(int enemyNumber)
 
 	foreach WorldInfo.AllActors( class'AEVolume_BotSpawn', target )
 	{
-		`log("SpawnPoitnLAlskdalskd: " $ spawnPoint.spawnPoints.Length);
 		spawnPoint = target;
 	}
 
@@ -146,6 +145,8 @@ function SpawnEnemies(int enemyNumber)
 // When a bot dies he runs this method to update the bots killed.
 function botDied()
 {
+	local AEVolume_BotSpawn target;
+
 	++botsKilled;
 
 	if(botsKilled < AEObjectives.MOEnemies){
@@ -153,8 +154,14 @@ function botDied()
 	}else{
 		printObjectiveMessage("", true);
 		PC.mHUD.postError("Mission complete: Reward added to inventory");
+		botsKilled=0;
 		printObjectiveInfo("", true);
 		getReward(AEObjectives.id);
+
+		foreach WorldInfo.AllActors( class'AEVolume_BotSpawn', target )
+		{
+			target.resetSpawnPoints();
+		}
 	}
 }
 

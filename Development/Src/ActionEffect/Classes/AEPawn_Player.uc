@@ -240,6 +240,7 @@ function StartUsingTheJetpack(float DeltaTime)
 {
 	if (isUsingJetPack)
 	{
+		`Log(fuelEnergy);
 		if (fuelEnergy > 0.0f)
 		{
 			CustomGravityScaling = -1.0f;

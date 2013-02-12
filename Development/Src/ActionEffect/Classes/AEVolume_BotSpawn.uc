@@ -15,6 +15,16 @@ function AEPawn_Bot spawnBot(class<AEPawn_Bot> bot, AEMissionObjective spawnOwne
 	return spawn(bot, spawnOwner,, point.Location, point.Rotation,, true);
 }
 
+function resetSpawnPoints()
+{
+	local AENavigationPoint_Spawn point;
+
+	foreach spawnPoints( point )
+	{
+		point.bInUse=false;
+	}
+}
+
 DefaultProperties
 {
 	Begin Object Class=StaticMeshComponent Name=PickupMesh
