@@ -141,6 +141,4 @@ exec function UseItem(int slot)
 DefaultProperties
 {
 	InputClass = class'AEPlayerInput';
-
-	isSprinting = false;
 }

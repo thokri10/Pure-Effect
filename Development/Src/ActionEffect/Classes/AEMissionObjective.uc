@@ -26,7 +26,7 @@ var string rewardString;
 var array<string> rewardArray;
 
 var int botsKilled;
-var Console consolClient;
+var Console consoleClient;
 
 // Player controller 
 var AEPlayerController  PC;
