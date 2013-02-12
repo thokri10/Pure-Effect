@@ -119,7 +119,7 @@ function activateObjectives(MissionObjectives objectives)
 	printObjectiveMessage("BotsKilled: " $ botsKilled $ " / " $ objectives.MOEnemies);
 	createObjectiveInfo();
 
-	// Long "if section" for all the objectives. 
+	// long "if section" for all the objectives. 
 
 	SpawnEnemies(objectives.MOEnemies);
 }
