@@ -1,8 +1,7 @@
-// PURPOSE: Main game class.
+/** Main game class. */
 class ActionEffectGame extends UTGame;
 
-/* Spawn and initialize a bot
-*/   
+/** Spawn and initialize a bot. */   
 function UTBot SpawnBot(optional string botName,optional bool bUseTeamIndex, optional int TeamIndex)
 {
 	local UTBot NewBot;
@@ -12,8 +11,8 @@ function UTBot SpawnBot(optional string botName,optional bool bUseTeamIndex, opt
 	BotTeam = GetBotTeam(,bUseTeamIndex,TeamIndex);
 	BotInfo = BotTeam.GetBotInfo(botName);
  
-        //JTC - the below two lines are the only line changes from the original for our version of the function
-        LogInternal("New SpawnBot");
+    //JTC - the below two lines are the only line changes from the original for our version of the function
+    LogInternal("New SpawnBot");
 	NewBot = Spawn(class'AEAIController');
  
 	if ( NewBot != None )
@@ -29,17 +28,16 @@ function UTBot SpawnBot(optional string botName,optional bool bUseTeamIndex, opt
 	return NewBot;
 }
 
-defaultproperties
+DefaultProperties
 {
-	// Initializes the player and the belonging controller.
+	// Initializations of various variables.
 	PlayerControllerClass = class'ActionEffect.AEPlayerController';
 	DefaultPawnClass = class'ActionEffect.AEPawn_Player';
 	
-	bDelayedStart=false
-	BotClass=class'AEAIController'
-	bCustomBots=true
+	bDelayedStart = false;
+	BotClass = class'AEAIController';
+	bCustomBots = true;
 
-	// Intializes the HUD.
 	HUDType = class'AEHUD';
 	bUseClassicHUD = true;
 }

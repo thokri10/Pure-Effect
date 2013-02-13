@@ -154,7 +154,5 @@ DefaultProperties
 	InputClass = class'AEPlayerInput';
 	pars = class'AEJSONParser'
 
-	isSprinting = false;
-
 	parsing = "[{\"category\":\"Search and destroy\",\"description\":\"Regain loot\",\"id\":1,\"title\":\"Marauders\",\"items\":[{\"properties\":{\"type\":\"rocket\",\"damage\":150,\"speed\":400,\"range\":1000,\"spread\":1.5,\"fire_rate\":3,\"clip_size\":1,\"reload_speed\":3,\"ammo_pool\":8},\"slot\":\"weapon\"}]},{\"category\":\"Search and destroy\",\"description\":\"Kill the robbers\",\"id\":2,\"title\":\"Bank robbers\",\"items\":[{\"properties\":{\"type\":\"linkgun\",\"damage\":20,\"speed\":2000,\"range\":1000,\"spread\":0.9,\"fire_rate\":1,\"clip_size\":30,\"reload_speed\":1,\"ammo_pool\":800},\"slot\":\"weapon\"}]},{\"category\":\"Search and Destroy\",\"description\":\"Kill the robbers\",\"id\":3,\"title\":\"Bank robbers\",\"items\":[{\"properties\":{\"type\":\"rocket\",\"damage\":100,\"speed\":2000,\"range\":1000,\"spread\":0,\"fire_rate\":0.01,\"clip_size\":1,\"reload_speed\":0.01,\"ammo_pool\":1000},\"slot\":\"weapon\"}]}]"
 }

@@ -1,45 +1,62 @@
+/** A text-based HUD for the menu. */
 class AEHUDMenu extends Actor
 	dependson(AEMissionObjective);
  
+/** Struct that represents the current active (selected) menu entry. */
 struct SelectStruct
 {
 	var int     id;
 	var string  name;
 };
 
+/** TODO: FILL IN. */
 var int numberOfServerStrings;
+
+/** TODO: FILL IN. */
 var int ServerCounter;
 
-// Path of the menu. Set together by adding all the stringarray together. 
-// Easy to remove the last path and go back in menu
+/** Path of the menu. Set together by adding all the stringarray together. 
+ *  Easy to remove the last path and go back in menu.
+ */
 var array<string>               menuPath;
 
-// Saves all the available missions in an array for us
+/** Saves all the available missions in an array for us. */
 var array<MissionObjectives>    menuMissions;
 
-// Saves witch menuselections we have.
+/** Saves which menuselections we have. */
 var array<SelectStruct>         menuSelections;
 
+/** Controller for the player. */
 var AEPlayerController          PC;
 
-// Used for navigate the text menu
+/** Currently selected menu slot. */
 var int     selectedMenuSlot;
+
+/** String (JSON) that we receive from the database. */
 var string  DBSTRING;
+
+/** TODO: FILL IN. */
 var int     BACK;
 
-// Booleans to check what menu we are wxpecting to create on the next answer from server
+/** Booleans to check what menu we are expecting to create on the next answer 
+ *  from server. 
+ */
 var bool    bMenuSelection;
+
+/** Booleans to check what menu we are expecting to create on the next answer 
+ *  from server. 
+ */
 var bool    bMenuInfo;
 
-/**
- * Initializing functions
+/** Overrode base function of PostBeginPlay. Currently doesn't do
+ *  anything special. 
  */
-
 simulated function PostBeginPlay()
 {
 	super.PostBeginPlay();
 }
 
+/** Initializes the menu. */
 function initMenu()
 {
 	local int i;
@@ -56,11 +73,12 @@ function initMenu()
 	}
 	
 	PC.mHUD.setMenuActive(0);
-	selectedMenuSlot=0;
+	selectedMenuSlot = 0;
 
 	setBack(menuSelections.Length);
 }
 
+/** Empties the menu for entries. */
 function resetMenuSelection()
 {
 	PC.mHUD.addMenuSelections("", true);
@@ -69,6 +87,7 @@ function resetMenuSelection()
 	selectedMenuSlot=0;
 }
 
+/**  Fills up the main menu with menu entries. */
 function setMainMenu()
 {
 	local SelectStruct selection;

@@ -1,35 +1,46 @@
-// PURPOSE: Custom HUD (based on an old HUD from UDK).
+/** Custom HUD for Action Effect. */
 class AEHUD extends UTHUD;
 
-// Varibles that hold various HUD information.
+/** Message that contains why an error occured. */
 var HudLocalizedMessage         ErrorMessage;
+
+/** Message that contains ordinary info (non-errors). */
 var HudLocalizedMessage         Message;
+
+/** An array of Messages that together represent the details of the mission. */
 var array<HudLocalizedMessage>  MissionInfo;
+
+/** An array of Messages that together represent the details of the user (player). */
 var array<HudLocalizedMessage>  UserInfo;
 
-// Menu variables that show what choices you can browse and current "active"
-// choice.
+/** Array of menu entries. */
 var array<HudLocalizedMessage>  Menu;
+
+/** Variable that holds the info of the current active menu entry. */
 var int activeMenuSlot;
 
-// Not sure what this is used for... :p
+/** Not sure what this is used for... :p */
 var int ErrorCounter;
 
-var float barLength;
+/** The width of the HUD bar. */
+var float barWidth;
+
+/** The height of the HUD bar. */
 var float barHeight;
 
-// Draws a message on the screen (can be part of the menu).
+/** Draws a message on the screen (can be part of the menu). */
 function DrawMessageText(HudLocalizedMessage LocalMessage, float ScreenX, float ScreenY)
 {
 	super.DrawMessageText(LocalMessage, ScreenX, ScreenY);
 }
 
+/** Overrode this function even though it does nothing. */
 event Tick(float DeltaTime)
 {
 	// Override if necessary.	
 }
 
-// Draws the HUD.
+/** Draws the HUD for every frame. */
 event PostRender()
 {
 	local int i;
@@ -73,14 +84,14 @@ event PostRender()
 }
 
 
-// Posts errors.
+/** Posts errors. */
 function postError(string msg)
 {
 	ErrorMessage.StringMessage = msg;
 	ErrorCounter = 0;
 }
 
-// Adds menu entries (selections) to the menu.
+/** Adds menu entries (selections) to the menu. */
 function addMenuSelections(string msg, optional bool bNoAdd)
 {
 	local HudLocalizedMessage nullMsg;
@@ -99,7 +110,7 @@ function addMenuSelections(string msg, optional bool bNoAdd)
 	}
 }
 
-// Adds entries to the HUD for mission info.
+/** Adds entries to the HUD for mission info. */
 function addMissionInfo(string msg, optional bool bNoAdd)
 {
 	local HudLocalizedMessage nullMsg;
@@ -115,7 +126,7 @@ function addMissionInfo(string msg, optional bool bNoAdd)
 	MissionInfo.AddItem(nullMsg);
 }
 
-// Set menu entry active with an "[>]". "Inactive" entries are marked with "[ ]". 
+/** Set menu entry active with an "[>]". "Inactive" entries are marked with "[ ]". */
 function setMenuActive(int slot)
 {
 	if (slot > menu.Length || menu.Length == 0)
@@ -134,7 +145,7 @@ function setMenuActive(int slot)
 	activeMenuSlot = slot;
 }
 
-// Adds entries to the HUD containing the player info.
+/** Adds entries to the HUD containing the player info. */
 function addUserInfo(string msg)
 {
 	local HudLocalizedMessage nullMsg;
@@ -143,7 +154,7 @@ function addUserInfo(string msg)
 	UserInfo.AddItem(nullMsg);
 }
 
-// Resets all mission info.
+/** Resets all mission info. */
 function resetMissionInfo()
 {
 	local array<HudLocalizedMessage> tmp;
@@ -155,6 +166,7 @@ function resetMissionInfo()
 	MissionInfo = tmp;
 }
 
+/** Draws a bar for HUD */
 function DrawBar(String barTitle, float barValue, float barMaxValue,
 	int x, int y, int textValueR, int textValueG, int textValueB)
 {
@@ -168,7 +180,7 @@ function DrawBar(String barTitle, float barValue, float barMaxValue,
 
 	Canvas.SetPos(posX, y);
 	Canvas.SetDrawColor(textValueR, textValueG, textValueB, 200);
-	Canvas.DrawRect(barLength * barLengthFilled, barHeight);
+	Canvas.DrawRect(barWidth * barLengthFilled, barHeight);
 
     /* Displays a title of the bar */
     Canvas.SetPos(posX + 5, y + 5);
@@ -177,35 +189,24 @@ function DrawBar(String barTitle, float barValue, float barMaxValue,
     Canvas.DrawText(barTitle);
 }
 
-function DrawHealthBar()
+/** Draws the health bar on the screen. */
+function DrawHealthBar(float barValueR, float barValueG, float barValueB)
 {
     if ( !PlayerOwner.IsDead() && !UTPlayerOwner.IsInState('Spectating'))
     {
 		Canvas.SetPos(Canvas.SizeX - (Canvas.SizeX * 0.990f), Canvas.SizeY - (Canvas.SizeY * 0.050f));
-		Canvas.SetDrawColor(200 + 20, 80, 80, 100);
-		//Canvas.DrawBox(barLength, 24);
-		Canvas.DrawRect(barLength, barHeight);
+		Canvas.SetDrawColor(barValueR + 20, barValueG, barValueB, 100);
+		Canvas.DrawRect(barWidth, barHeight);
 
         DrawBar("Health", PlayerOwner.Pawn.Health, PlayerOwner.Pawn.HealthMax, 
         	Canvas.SizeX - (Canvas.SizeX * 0.990f), 
         	Canvas.SizeY - (Canvas.SizeY * 0.050f),
-        	200, 80, 80);
+        	barValueR, barValueG, barValueB);
     }
 }
 
-function DrawAmmoBar()
-{
-	if ( !PlayerOwner.IsDead() && !UTPlayerOwner.IsInState('Spectating'))
-    {
-		//DrawBar("Ammo", UTWeapon(PawnOwner.Weapon).AmmoCount, UTWeapon(PawnOwner.Weapon).MaxAmmoCount ,20,40,80,80,200);
-		DrawBar("Ammo", UTWeapon(PawnOwner.Weapon).AmmoCount, UTWeapon(PawnOwner.Weapon).MaxAmmoCount ,
-			Canvas.SizeX - (Canvas.SizeX * 0.990f),
-			Canvas.SizeY - (Canvas.SizeY * 0.090f),
-			80, 80, 200);
-    }
-}
-
-function DrawStaminaBar()
+/** Draws the stamina bar on the screen. */
+function DrawStaminaBar(float barValueR, float barValueG, float barValueB)
 {
 	local AEPlayerController playerPC;
 	playerPC = AEPlayerController(GetALocalPlayerController());
@@ -213,17 +214,17 @@ function DrawStaminaBar()
 	if ( !PlayerOwner.IsDead() && !UTPlayerOwner.IsInState('Spectating'))
     {
 		Canvas.SetPos(Canvas.SizeX - (Canvas.SizeX * 0.990f), Canvas.SizeY - (Canvas.SizeY * 0.100f));
-		Canvas.SetDrawColor(80, 200 + 20, 80, 100);
-		//Canvas.DrawBox(barLength, 24);
-		Canvas.DrawRect(barLength, barHeight);
+		Canvas.SetDrawColor(barValueR, barValueG + 20, barValueB, 100);
+		Canvas.DrawRect(barWidth, barHeight);
 
 		DrawBar("Stamina", playerPC.myPawn.sprintEnergy, playerPC.myPawn.maxSprintEnergy,
 			Canvas.SizeX - (Canvas.SizeX * 0.990f),
 			Canvas.SizeY - (Canvas.SizeY * 0.100f),
-			80, 200, 80);
+			barValueR, barValueG, barValueB);
     }
 }
 
+/** Draws the fuel bar on the screen. */
 function DrawFuelBar(float barValueR, float barValueG, float barValueB)
 {
 	local AEPlayerController playerPC;
@@ -234,12 +235,8 @@ function DrawFuelBar(float barValueR, float barValueG, float barValueB)
 
 	if ( !PlayerOwner.IsDead() && !UTPlayerOwner.IsInState('Spectating') && playerPC.myPawn.isUsingJetPack)
     {
-		//Canvas.SetPos((Canvas.SizeX / 2) - ((barLength * fuelRatio) / 2), (Canvas.SizeY / 2) + (barHeight * 3));
-		//Canvas.SetDrawColor(barValueR, barValueG, barValueB, 100);
-		//Canvas.DrawRect((barLength * fuelRatio), barHeight);
-
 		DrawBar("", playerPC.myPawn.fuelEnergy, playerPC.myPawn.maxFuelEnergy,
-			(Canvas.SizeX / 2) - ((barLength * fuelRatio) / 2),
+			(Canvas.SizeX / 2) - ((barWidth * fuelRatio) / 2),
 			(Canvas.SizeY / 2) + (barHeight * 4),
 			barValueR, barValueG, barValueB);
 		
@@ -251,20 +248,20 @@ function DrawFuelBar(float barValueR, float barValueG, float barValueB)
     }
 }
 
-// Overrode this function to make our custom HUD.
+/** Overrode this function to make our custom HUD. */
 function DrawLivingHud()
 {
 	DisplayAmmo(UTWeapon(PawnOwner.Weapon));
 
-	DrawHealthBar();
-	DrawStaminaBar();
-	DrawFuelBar(200, 200, 200);
-	//DrawAmmoBar();
+	DrawHealthBar(200.0f, 80.0f, 80.0f);
+	DrawStaminaBar(80.0f, 200.0f, 80.0f);
+	DrawFuelBar(200.0f, 200.0f, 200.0f);
 }
 
 DefaultProperties
 {
+	// Initializations of various variables.
 	ErrorCounter = 0;
-	barLength = 300.0f;
+	barWidth = 300.0f;
 	barHeight = 30.0f;
 }

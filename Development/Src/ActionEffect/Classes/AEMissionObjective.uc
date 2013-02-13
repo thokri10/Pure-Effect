@@ -1,7 +1,7 @@
 class AEMissionObjective extends Actor
 	dependson(AEWeaponCreator);
 
-// Strcut for to hold all the mission objectives. This is created with a string parser in this class.
+// Struct for to hold all the mission objectives. This is created with a string parser in this class.
 struct MissionObjectives
 {
 	var int id;
@@ -22,11 +22,12 @@ struct RewardStruct
 // This is set trough AEtcpLink when the string is parsed.
 // QuickFix find a better solution.
 var string rewardString;
+
 // Array that contains our rewards for our mission.
 var array<string> rewardArray;
 
 var int botsKilled;
-var Console consolClient;
+var Console consoleClient;
 
 // Player controller 
 var AEPlayerController  PC;
@@ -119,7 +120,7 @@ function activateObjectives(MissionObjectives objectives)
 	printObjectiveMessage("BotsKilled: " $ botsKilled $ " / " $ objectives.MOEnemies);
 	createObjectiveInfo();
 
-	// Long "if section" for all the objectives. 
+	// long "if section" for all the objectives. 
 
 	SpawnEnemies(objectives.MOEnemies);
 }
