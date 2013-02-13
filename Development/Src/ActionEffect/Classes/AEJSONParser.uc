@@ -1,22 +1,49 @@
 class AEJSONParser extends Object;
 
+
+//-----------------------------------------------------------------------------
+// Structs
+
+/** Holds the value so we do not need to split the string the whole time. 
+ *  Value can be a number but will be casted at a later time */
+struct ValueStruct
+{
+	var string  type;
+	var string  value;
+};
+
 // Used to get a 2 dimensional array
 struct Array2D
 {
-	var array<string> arr;
+	var array<string>       arr;
+	var array<ValueStruct>  variables;
 };
 
-// Used to set where the brackets start to split brackets inside a string.
+
+//-----------------------------------------------------------------------------
+// Variables
+
+// Used to set where the bracket start to split brackets inside a string.
 var array<int>      bracketPositions;
-// Controlls where the next main cathegory start in the string.
+// Controlls where the next section start in the string.
 var int             nextBracket;
 
-// Parse the string from server into a 2D array.
+/** Parses the string to a 2D array variable list splitted with ":" */
+function array<Array2D> fullParse(string in)
+{
+	return parseToMainChategories( parseToVariables( parse( in ) ) );
+}
+
+
+//-----------------------------------------------------------------------------
+// Parsing
+
+/** Parse the string from server into a 2D array containing the main brackets. */
 function array<Array2D> parse(string in)
 {
-	local array<Array2D>    parsedArray;
+	local array<Array2D>    parsed2DArray;
+	local Array2D           parsedArray;
 	local array<string>     parsed;
-	local Array2D           asd;
 	local int               endBracket;
 
 	if( Chr( Asc( in ) ) == "[" )
@@ -37,24 +64,25 @@ function array<Array2D> parse(string in)
 
 		parsed.Length = 0;
 		parsed = splitToSections( in );
-		asd.arr = parsed;
+		parsedArray.arr = parsed;
 
-		parsedArray.AddItem( asd );
+		parsed2DArray.AddItem( parsedArray );
 	}
 
-	return parsedArray;
+	return parsed2DArray;
 }
 
-// Parses the array into a more readable and controllable variableArray
+/** Parses the array into a more readable and readable variableArray 
+ *  Returns variables splitted with ":" */
 function array<Array2D> parseToVariables(array<Array2D> in)
 {
 	local array<string>     variables;
 	local array<string>     value;
 	local array<Array2D>    returnArray;
+	local ValueStruct       valueS;
 
 	local Array2D           target;
 	local Array2D           valueArray;
-	local string            valueString;
 
 	local string            targetString; 
 	local string            targetVariable;
@@ -68,20 +96,52 @@ function array<Array2D> parseToVariables(array<Array2D> in)
 			foreach variables( targetVariable )
 			{
 				value = splitToValue( targetVariable );
-				valueString = value[0] $ ":" $ value[1];
-				valueArray.arr.AddItem( valueString );
+				valueS.type = value[0];
+				valueS.value = value[1];
+				valueArray.variables.AddItem( valueS );
 			}
 			returnArray.AddItem( valueArray );
-			valueArray.arr.Length = 0;
+			valueArray.variables.Length = 0;
 		}
 	}
 
 	return returnArray;
 }
 
-// Splits a string until it reaches the endbracket for the first bracket.
-// Its used for splitting the missions into its own strings.
-// Returns where the next main bracket start.
+/** Creates an array that contains an array with valuestruct * Type and Value */
+function array<Array2D> parseToMainChategories(array<Array2D> in)
+{
+	local array<Array2D> parsed;
+	local ValueStruct    value;
+	local Array2D        temp;
+	local Array2D        cathegory;
+	local string         type;
+	local int            index;
+
+	index = 0;
+	parsed.AddItem(temp);
+
+	foreach in( cathegory )
+	{
+		foreach cathegory.variables( value )
+		{
+			if(type == "")
+				type = value.type;
+			else if( type == value.type ){
+				++index;
+				parsed.AddItem(temp);
+			}
+
+			parsed[index].variables.AddItem( value );
+		}
+	}
+
+	return parsed;
+}
+
+/** Splits a string until it reaches the endbracket for the first bracket.
+ Its used for splitting the types into its own strings.
+ Returns where the next main bracket start. */
 function int SplitFirstToEndBracket(string in, int firstBracket)
 {
 	local int endBracket;
@@ -101,7 +161,7 @@ function int SplitFirstToEndBracket(string in, int firstBracket)
 	return firstBracket;
 }
 
-// Splits the string into its sections. 
+/** Splits the string into its sections. */ 
 function array<string> splitToSections(string in)
 {
 	local array<string> parsed;
@@ -127,8 +187,11 @@ function array<string> splitToSections(string in)
 	return parsed;
 }
 
-// Splits the string with ",". 
-// Returns an array that contains all the variables type and value in a string.
+//-----------------------------------------------------------------------------
+// Array splits and other
+
+/** Splits the string with ",". 
+*** Returns an array that contains all the variables type and value in a string. */
 function array<string> splitToVariables(string in)
 {
 	local array<string> splitted;
@@ -138,7 +201,7 @@ function array<string> splitToVariables(string in)
 	return splitted;
 }
 
-// Splits the string to readable valaues that can later be put into correct structs.
+/** Splits the string to readable valaues that can later be put into correct structs. */
 function array<string> splitToValue(string in)
 {
 	local array<string> splitted;
@@ -161,7 +224,17 @@ function array<string> splitToValue(string in)
 	return splitted;
 }
 
-// Removes the "{}[]" characters in a string.  
+/** Splits the string where it finds ":" */
+function array<string> splitValue(string in)
+{
+	local array<string> splitted;
+
+	splitted = SplitString( in, ":" );
+	
+	return splitted;
+}
+
+/** Removes the "{}[]" characters in a string. */
 function string removeExcessChar(string in)
 {
 	in = Repl(in, "}", "", false);

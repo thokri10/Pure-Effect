@@ -1,5 +1,6 @@
 class AEHUDMenu extends Actor
-	dependson(AEMissionObjective);
+	dependson(AEMissionObjective)
+	dependson(AEJSONparser);
  
 struct SelectStruct
 {
@@ -16,6 +17,7 @@ var array<string>               menuPath;
 
 // Saves all the available missions in an array for us
 var array<MissionObjectives>    menuMissions;
+var array<SimpleMissionStruct>  missions;
 
 // Saves witch menuselections we have.
 var array<SelectStruct>         menuSelections;
@@ -106,20 +108,64 @@ function UpdateMenuFromPath()
 	PC.myTcpLink.getMenuSelections();
 }
 
-/**
- * Functions that this class do not use. Often called from TCP
- **/
+/** Functions that this class do not use. Often called from TCP */
 function numberOfStringFromServer(int number)
 {
 	numberOfServerStrings = number;
 	ServerCounter = 0;
 }
 
+function parseMissionArrayToMenu(array<string> MenuArray)
+{
+	local MissionObjectives objective;
+	local SelectStruct      selection;
+
+	objective = PC.myMissionObjective.parseArrayToMissionStruct( MenuArray );
+
+	selection.id = objective.id;
+	selection.name = objective.title;
+
+	menuSelections.AddItem(selection);
+
+	menuMissions.AddItem(objective);
+}
+
 function stringFromServer(string menuString)
 {
-	if(ServerCounter == 0)
-		resetMenuSelection();
+	local SimpleMissionStruct asd;
+	local ValueStruct           dsa;
+	local SelectStruct      selection;
+	local array<Array2D>    parsedArray;
+	local Array2D           mission;
+	local int id;
+	
+	resetMenuSelection();
+	missions.Length = 0;
 
+	parsedArray = PC.parser.fullParse( menuString );
+
+	foreach parsedArray( mission )
+	{
+		missions.AddItem( PC.myMissionObjective.parseArrayToSimpleStruct( mission.variables ) );
+	}
+
+	foreach missions( asd )
+	{
+		foreach asd.information( dsa )
+		{
+			if( dsa.type == "title" )
+			{
+				selection.id = id++;
+				selection.name = dsa.value;
+				menuSelections.AddItem(selection);
+			}
+		}
+	}
+
+	bMenuSelection = false;
+	initMenu();
+
+	/*
 	if( bMenuSelection )
 	{
 		parseMissionArrayToMenu( PC.myTcpLink.parseToArray( menuString ) );
@@ -136,6 +182,7 @@ function stringFromServer(string menuString)
 	{
 		return;
 	}
+	*/
 }
 
 /**
@@ -211,7 +258,7 @@ function Select()
 				`log(selectedMenuSlot);
 				MenuPath[1] = string( selectedMenuSlot );
 
-				showMissionInfo(menuMissions[selectedMenuSlot]);
+				showMissionInfo(missions[selectedMenuSlot]);
 			}
 		}
 
@@ -260,21 +307,6 @@ function showMissionInfo(MissionObjectives objective)
 /**
  * Parsing functions
  */
-
-function parseMissionArrayToMenu(array<string> MenuArray)
-{
-	local MissionObjectives objective;
-	local SelectStruct      selection;
-
-	objective = PC.myMissionObjective.parseArrayToMissionStruct( MenuArray );
-
-	selection.id = objective.id;
-	selection.name = objective.title;
-
-	menuSelections.AddItem(selection);
-
-	menuMissions.AddItem(objective);
-}
 
 function array<string> parseStringForMenu(string menuString)
 {

@@ -1,7 +1,11 @@
 class AEMissionObjective extends Actor
-	dependson(AEWeaponCreator);
+	dependson(AEWeaponCreator)
+	dependson(AEJSONParser);
 
-// Strcut for to hold all the mission objectives. This is created with a string parser in this class.
+//-----------------------------------------------------------------------------
+// Structs
+
+/** Struct for to hold all the mission objectives. This is created with a string parser in this class. */
 struct MissionObjectives
 {
 	var int id;
@@ -13,17 +17,33 @@ struct MissionObjectives
 	var int MOEnemies;
 };
 
+/** Easy access to all the information to a mission. */
+struct SimpleMissionStruct
+{
+	/** Holds the info to the mission */
+	var array<ValueStruct> information;
+	/** Rewards. Length to check how many rewards.*/
+	var array<Array2D> rewards;
+};
+
+/** Really not in use. Remove later if not in use */
 struct RewardStruct
 {
 	var int Credit;
 	var string Weapon;
 };
 
+
+//-----------------------------------------------------------------------------
+// Variables
+
 // This is set trough AEtcpLink when the string is parsed.
 // QuickFix find a better solution.
 var string rewardString;
+
 // Array that contains our rewards for our mission.
 var array<string> rewardArray;
+var array<SimpleMissionStruct> simpleMissionArray;
 
 var int botsKilled;
 var Console consolClient;
@@ -39,12 +59,82 @@ var array<AEPawn_Bot>   SpawnedBots;
 // Then we can easily restart our mission at any time.
 var MissionObjectives   AEObjectives;
 
+
+//-----------------------------------------------------------------------------
+// Init
+
 simulated event PostBeginPlay()
 {
 	super.PostBeginPlay();
 }
 
-// Parses the array to a mission struct so we have controll over the objectives.
+/** Initializes the missions wtih the string from server */
+function Initialize(string missionString)
+{
+	local array<Array2D>    missionArray;
+	
+	local Array2D           missions;
+
+	//AEObjectives = parseArrayToMissionStruct(missionArray);
+	//activateObjectives( AEObjectives );
+
+	missionArray = PC.parser.fullParse( missionString );
+
+	foreach missionArray( missions )
+	{
+		simpleMissionArray.AddItem( parseArrayToSimpleStruct( missions.variables ) );
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+// Parsing
+
+/** Parses the a mission array to a simple mission struct. 
+ *  It sets the info and rewars for the mission.*/
+function SimpleMissionStruct parseArrayToSimpleStruct(array<ValueStruct> missionArray)
+{
+	local SimpleMissionStruct   mission;
+	local Array2D               temp;
+	local string                Type;
+	local bool  existingReward;
+	local int   numberOfRewards;
+	local int   i;
+
+	`log("\n\nStarting Mission Parsing: \nLENGTH: " $ missionArray.Length );
+	for( i = 0; i < missionArray.Length; i++) 
+	{
+		//`log(missionArray[i].type $ " : " $ missionArray[i].value );
+		if( missionArray[i].type == "category" )
+		{
+			Type = "info";
+		}
+		else if( missionArray[i].type == "type" )
+		{
+			Type = "reward";
+			mission.rewards.AddItem( temp );
+				
+			if(!existingReward)
+				existingReward=true;
+			else
+				++numberOfRewards;
+		}
+		else if( missionArray[i].type == "" )
+		{
+			`log("[MissionSimpleParsing] Type is blank");
+		}
+
+		switch( Type )
+		{
+		case "info": mission.information.AddItem( missionArray[i] ); break;
+		case "type": mission.rewards[numberOfRewards].variables.AddItem( missionArray[i] ); break;
+		}
+	}
+
+	return mission;
+}
+
+/** Parses the array to a mission struct so we have controll over the objectives. */
 function MissionObjectives parseArrayToMissionStruct(array<string> missionArray)
 {
 	local array<string>     splitted;
@@ -54,8 +144,6 @@ function MissionObjectives parseArrayToMissionStruct(array<string> missionArray)
 	for(i = 0; i < missionArray.Length; i++)
 	{
 		splitted = SplitString(missionArray[i], ":");
-
-		splitted[0] = mid( splitted[0], 1, len( splitted[0] ) - 2 );
 
 		if     (splitted[0] == "id")            objectives.id           = int( splitted[1] );
 		else if(splitted[0] == "category")      objectives.category     = mid( splitted[1], 1, len( splitted[1] ) - 2 );
@@ -70,20 +158,23 @@ function MissionObjectives parseArrayToMissionStruct(array<string> missionArray)
 	return objectives;
 }
 
-// This is runned when the mission string is parsed to a struct.
-// You should not use this
+//-----------------------------------------------------------------------------
+// Rewards
+
+/** This is runned when the mission string is parsed to a struct.
+  * You should not use this */
 function addMissionReward( string itemString )
 {
 	rewardArray.AddItem( itemString );
 }
 
-// When missions is done this is runned with the mission ID to give you the correct reward
+/** When missions is done this is runned with the mission ID to give you the correct reward */
 function getReward(int missionID)
 {
 	parseStringToReward( rewardArray[missionID - 1] );
 }
 
-// Gives the reward to player from reward string. You can only retrieve weapon at this time.
+/** Gives the reward to player from reward string. You can only retrieve weapon at this time. */
 function parseStringToReward(string in)
 {
 	local array<string> reward;
@@ -98,15 +189,11 @@ function parseStringToReward(string in)
 	PC.addWeaponToInventory( PC.myWeaponCreator.CreateWeaponFromStruct( weap ) );
 }
 
-// Initializes the missions wtih the string from server
-function Initialize(array<string> missionArray)
-{
-	AEObjectives = parseArrayToMissionStruct(missionArray);
 
-	activateObjectives( AEObjectives );
-}
+//-----------------------------------------------------------------------------
+// Objectives
 
-// Activates all the objectives. Check through a list and adds all the active objectives. 
+/** Activates all the objectives. Check through a list and adds all the active objectives. */ 
 function activateObjectives(MissionObjectives objectives)
 {
 	if(objectives != AEObjectives)
@@ -124,7 +211,7 @@ function activateObjectives(MissionObjectives objectives)
 	SpawnEnemies(objectives.MOEnemies);
 }
 
-// Spawns an enemy at a set location in the map.
+/** Spawns an enemy at a set location in the map */
 function SpawnEnemies(int enemyNumber)
 {
 	local AEVolume_BotSpawn spawnPoint; 
@@ -142,7 +229,7 @@ function SpawnEnemies(int enemyNumber)
 	}
 }
 
-// When a bot dies he runs this method to update the bots killed.
+/** When a bot dies he runs this method to update the bots killed. */
 function botDied()
 {
 	local AEVolume_BotSpawn target;
@@ -165,11 +252,10 @@ function botDied()
 	}
 }
 
-/**
- * Menu functions
- **/
+//-----------------------------------------------------------------------------
+// MENU / HUD
 
-// Print mission info to screen
+/** Print mission info to screen */
 function createObjectiveInfo()
 {
 	printObjectiveInfo( "Category: "    $   AEObjectives.category, true);
@@ -179,7 +265,7 @@ function createObjectiveInfo()
 	printObjectiveInfo( "Description: " $   AEObjectives.description);
 }
 
-// Prints the objective info to screen
+/** Prints the objective info to screen * if bNoAddToMessage is true it clears screen */
 function printObjectiveInfo(string message, optional bool bNoAddToMessage)
 {
 	if(bNoAddToMessage){
@@ -189,6 +275,8 @@ function printObjectiveInfo(string message, optional bool bNoAddToMessage)
 	}
 }
 
+/** Print objectives to the screen * Reset clears the screen first. 
+ *  if message == "" it clears screen completly */
 function printObjectiveMessage(string message, optional bool bReset)
 {
 	local HudLocalizedMessage msg;

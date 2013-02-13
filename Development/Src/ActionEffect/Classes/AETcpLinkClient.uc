@@ -1,5 +1,6 @@
 // THIS CLASS IS RESPONSIBLE FOR SERVER COMMUNICATION.
-class AETcpLinkClient extends TcpLink;
+class AETcpLinkClient extends TcpLink
+	dependson(AEJSONParser);
 
 // PlayerStruct holds various information about the player
 // from the server.
@@ -216,7 +217,7 @@ event ReceivedText(string Text)
 		
 		if (bWaitingForMission)
 		{
-			PC.myMissionObjective.Initialize(returnedArray);
+			PC.myMissionObjective.Initialize(returnedMessage);
 			bWaitingForMission = false;
 		}
 		else if (bWaitingForWeapon)
@@ -231,8 +232,8 @@ event ReceivedText(string Text)
 		}
 		else if (bWaitingForPath)
 		{
-			parseString(Text);
-			
+			//parseString(Text);
+			PC.myMenu.stringFromServer( Text );
 			bWaitingForPath = false;
 		}
 	}
@@ -240,9 +241,16 @@ event ReceivedText(string Text)
 
 function parseString(string jsonString)
 {
-	local array<string> stringArray;
-	local string temp;
+	local array<Array2D> missionArray;
+	local Array2D missions;
+	local string values;
 
+	missionArray = PC.parser.fullParse( jsonString );
+
+	foreach missionArray( missions )
+	{
+	}
+	/*
 	jsonString = mid( jsonString, 1 );
 	stringArray = SplitString( jsonString, "},{" );
 	PC.myMenu.numberOfStringFromServer( stringArray.Length );
@@ -251,6 +259,7 @@ function parseString(string jsonString)
 	{
 		PC.myMenu.stringFromServer( parseString2(temp) );
 	}
+	*/
 }
 
 function string parseString2(string jsonString)
