@@ -107,7 +107,7 @@ function setMainMenu()
 	initMenu();
 }
 
-// Updates the menu with the menuPath variable in this class
+/** Updates the menu with the menuPath variable in this class. */
 function UpdateMenuFromPath()
 {
 	local int i;
@@ -126,7 +126,7 @@ function UpdateMenuFromPath()
 }
 
 /**
- * Functions that this class do not use. Often called from TCP
+ * Function that this class do not use. Often called from TCP.
  **/
 function numberOfStringFromServer(int number)
 {
@@ -134,6 +134,9 @@ function numberOfStringFromServer(int number)
 	ServerCounter = 0;
 }
 
+/**
+ * Function that this class do not use. Often called from TCP.
+ **/
 function stringFromServer(string menuString)
 {
 	if(ServerCounter == 0)
@@ -165,11 +168,7 @@ exec function ppp()
 	setMainMenu();
 }
 
-/**
- * MENU SELECT FUNCTIONS
- */
-
-// Jumps down in the menu.
+/** Jumps down in the menu. */
 function nextMenuSlot()
 {
 	if(selectedMenuSlot >= menuSelections.Length)
@@ -180,7 +179,7 @@ function nextMenuSlot()
 	PC.mHUD.setMenuActive(selectedMenuSlot);
 }
 
-// Jumps up in the menu
+/** Jumps up in the menu. */
 function preMenuSlot()
 {
 	if( selectedMenuSlot < 1 )
@@ -191,7 +190,7 @@ function preMenuSlot()
 	PC.mHUD.setMenuActive(selectedMenuSlot);
 }
 
-// Selects the selected choice in the menu.
+/** Selects the selected choice in the menu. */
 function Select()
 {
 	if(selectedMenuSlot == BACK)
@@ -245,7 +244,7 @@ function Select()
 	}
 }
 
-// Set the back button on the bottom of the selection.
+/** Set the back (previous) button on the bottom of the selection. */
 function setBack(int i)
 {
 	BACK = i;
@@ -256,7 +255,7 @@ function setBack(int i)
 		PC.mHUD.addMenuSelections("QUIT");
 }
 
-// Puts out the missions info to the screen
+/** Puts the mission info to the screen. */
 function showMissionInfo(MissionObjectives objective)
 {
 	local SelectStruct selection;
@@ -277,9 +276,9 @@ function showMissionInfo(MissionObjectives objective)
 }
 
 /**
- * Parsing functions
+ * Parsing function: Receives an string array with mission info and uses
+ * it to display it on the HUD.
  */
-
 function parseMissionArrayToMenu(array<string> MenuArray)
 {
 	local MissionObjectives objective;
@@ -295,6 +294,9 @@ function parseMissionArrayToMenu(array<string> MenuArray)
 	menuMissions.AddItem(objective);
 }
 
+/** Parsing function: Receives the string and splits the elements neatly
+ *  into a string array. 
+ */
 function array<string> parseStringForMenu(string menuString)
 {
 	local array<string> splitted;
@@ -319,6 +321,6 @@ function array<string> parseStringForMenu(string menuString)
 
 DefaultProperties
 {
-	MenuPath(0)=""
+	MenuPath(0) = ""
 	DBSTRING = "[{\"category\":\"Search and destroy\",\"city_name\":\"Yorik\",\"description\":\"Regain loot\",\"id\":1,\"title\":\"Marauders\"},{\"category\":\"Search and destroy\",\"city_name\":\"Gaupang\",\"description\":\"Kill the robbers\",\"id\":2,\"title\":\"Bank robbers\"},{\"category\":\"Search and destroy\",\"city_name\":\"Valhall\",\"description\":\"Regain loot\",\"id\":3,\"title\":\"Marauders\"\}]"
 }

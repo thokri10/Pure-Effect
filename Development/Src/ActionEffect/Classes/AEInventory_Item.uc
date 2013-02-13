@@ -1,5 +1,5 @@
 class AEInventory_Item extends Actor
-	placeable;
+	abstract placeable;
  
 var AEPlayerController PC;
 
@@ -12,7 +12,6 @@ var bool stillActive;
 
 var string ItemInfo;
 
-// 
 simulated function PostBeginPlay()
 {
 	super.PostBeginPlay();
