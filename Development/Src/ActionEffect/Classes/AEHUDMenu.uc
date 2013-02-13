@@ -46,11 +46,6 @@ var int     BACK;
 var bool    bMenuSelection;
 var bool    bMenuInfo;
 
-/** Booleans to check what menu we are expecting to create on the next answer 
- *  from server. 
- */
-var bool    bMenuInfo;
-
 /** Overrode base function of PostBeginPlay. Currently doesn't do
  *  anything special. 
  */
@@ -129,15 +124,13 @@ function UpdateMenuFromPath()
 }
 
 /** Functions that this class do not use. Often called from TCP */
- * Function that this class do not use. Often called from TCP.
- * Functions that this class do not use. Often called from TCP
- **/
 function numberOfStringFromServer(int number)
 {
 	numberOfServerStrings = number;
 	ServerCounter = 0;
 }
 
+/* Duplicate function FIX!
 function parseMissionArrayToMenu(array<string> MenuArray)
 {
 	local MissionObjectives objective;
@@ -152,6 +145,7 @@ function parseMissionArrayToMenu(array<string> MenuArray)
 
 	menuMissions.AddItem(objective);
 }
+*/
 
 function stringFromServer(string menuString)
 {
@@ -282,7 +276,7 @@ function Select()
 				`log(selectedMenuSlot);
 				MenuPath[1] = string( selectedMenuSlot );
 
-				showMissionInfo(missions[selectedMenuSlot]);
+				//showMissionInfo(missions[selectedMenuSlot]);
 			}
 		}
 
