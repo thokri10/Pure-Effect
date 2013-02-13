@@ -1,7 +1,7 @@
 // PURPOSE: Controller for AI-bots
 class AEAIController extends UTBot;
 
-//copied from bot class
+/** Derived from bot class */
 function SetAttractionState()
 {
         if ( Enemy != None )
@@ -17,24 +17,16 @@ function SetAttractionState()
  
         }//close if
 }
- 
-//the bot will never leave this state
-//it will just output the message
-//you must add your own content
+
+/** The bot will never leave this state. 
+ *  It will just output the message.
+ *  You must add your own content. 
+ *  */
 state MyState
 {
-Begin:
-      `log("In MyState");
-DoneMyState:
+	Begin:
+		`log("In MyState");
+
+	DoneMyState:
 }
 
-DefaultProperties
-{
-	// Initialize the bots to be very aggressive against the player.
-	// NOTE: Currently not working.
-	Aggressiveness = 1.0;
-	bHuntPlayer = true;
-	bTacticalDoubleJump = true;
-
-
-}
