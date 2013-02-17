@@ -1,8 +1,8 @@
-// THIS CLASS IS RESPONSIBLE FOR CREATING CUSTOM WEAPONS.
+/** THIS CLASS IS RESPONSIBLE FOR CREATING CUSTOM WEAPONS. */
 class AEWeaponCreator extends Actor;
 
-// Our WeaponStruct that will contain all the variables for our weapon. 
-// Default variables is now set by server.
+/** Our WeaponStruct that will contain all the variables for our weapon. 
+ *  Default variables is now set by server. */
 struct WeaponStruct
 {
 	var int     id;
@@ -14,21 +14,21 @@ struct WeaponStruct
 	var float   speed;
 };
 
-// Variable to easy use playercontroller
+/** Variable to easily use player controller. */
 var AEPlayerController PC;
 
-function UTWeapon CrateWeaponFromString(string weap)
+function UTWeapon CreateWeaponFromString(string weap)
 {
 	return CreateWeaponFromStruct( parseArrayToWeaponStruct( PC.myTcpLink.parseToArray( weap ) ) );
 }
 
-// Creates a custom-made weapon from server (main function)
+/** Creates a custom-made weapon from server (main function) */
 function UTWeapon CreateWeaponFromStruct(WeaponStruct weap)
 {
 	return CreateWeapon(weap.type, weap.spread, weap.magsize, weap.reloadTime, weap.damage, weap.speed);
 }
 
-// Creates a custom-made weapon from server (sub-function)
+/** Creates a custom-made weapon from server (sub-function) */
 function UTWeapon CreateWeapon(string type, float spread, int magazineSize, float reloadSpeed, float damage, float speed)
 {
 	// Initializes a weapon.
@@ -46,7 +46,7 @@ function UTWeapon CreateWeapon(string type, float spread, int magazineSize, floa
 	return returnWeapon;
 }
 
-// Returns a weaponStruct from a json message from server
+/** Returns a weaponStruct from a json message from server. */
 function WeaponStruct parseArrayToWeaponStruct(array<string> in)
 {
 	local WeaponStruct  Weap;
@@ -92,7 +92,7 @@ function WeaponStruct parseArrayToWeaponStruct(array<string> in)
 	return Weap;
 }
 
-// Changes a weapon's firing speed.
+/** Changes a weapon's firing speed. */
 function UTWeapon ChangeFiringSpeed(UTWeapon weap, float firingSpeed)
 {
 	weap.FireInterval[0] = firingSpeed;
@@ -100,7 +100,7 @@ function UTWeapon ChangeFiringSpeed(UTWeapon weap, float firingSpeed)
 	return weap;
 }
 
-// Changes a weapon's magazine size.
+/** Changes a weapon's magazine size. */
 function UTWeapon ChangeMagazineSize(UTWeapon weap, int size)
 {
 	weap.AddAmmo(size);
@@ -108,7 +108,7 @@ function UTWeapon ChangeMagazineSize(UTWeapon weap, int size)
 	return weap;
 }
 
-// Changes a weapon's projectile spread.
+/** Changes a weapon's projectile spread. */
 function UTWeapon ChangeSpread(UTWeapon weap, float spread)
 {
 	// The higher spread value, the wider spread.
@@ -117,7 +117,7 @@ function UTWeapon ChangeSpread(UTWeapon weap, float spread)
 	return weap;
 }
 
-// Sets a weapon to be a specific type.
+/** Sets a weapon to be a specific type. */
 function UTWeapon SpawnWeaponType(string Type, float damage, float speed)
 {
 	// Declares weapons, where one will be returned depending on the Type.

@@ -2,8 +2,7 @@ class AEMissionObjective extends Actor
 	dependson(AEWeaponCreator)
 	dependson(AEJSONParser);
 
-// Struct for to hold all the mission objectives. This is created with a string parser in this class.
-// Structs
+// STRUCTS
 
 /** Struct for to hold all the mission objectives. This is created with a string parser in this class. */
 struct MissionObjectives
@@ -20,8 +19,9 @@ struct MissionObjectives
 /** Easy access to all the information to a mission. */
 struct SimpleMissionStruct
 {
-	/** Holds the info to the mission */
+	/** Holds the info of the mission */
 	var array<ValueStruct> information;
+
 	/** Rewards. Length to check how many rewards.*/
 	var array<Array2D> rewards;
 };
@@ -51,11 +51,11 @@ var Console consoleClient;
 // Player controller 
 var AEPlayerController  PC;
 
-// We want to have controll over all the pawns we have spawned in this objective. 
+// We want to have control over all the pawns we have spawned in this objective. 
 // Now we have a easy way to check how many bots we have killed. 
 var array<AEPawn_Bot>   SpawnedBots;
 
-// Initilaize the strcut to hold the defualt variables of our mission.
+// Initialize the struct to hold the default variables of our mission.
 // Then we can easily restart our mission at any time.
 var MissionObjectives   AEObjectives;
 

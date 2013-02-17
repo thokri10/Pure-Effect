@@ -109,7 +109,6 @@ DefaultProperties
 	WeaponColor = (R=255,G=255,B=255,A=255);
 
 	MaxLoadCount = 20;
-	
 	MaxAmmoCount = 1000;
 	LockerAmmoCount = 1000;
 }

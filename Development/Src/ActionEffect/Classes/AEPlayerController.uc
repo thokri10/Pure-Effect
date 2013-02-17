@@ -87,7 +87,7 @@ function getReward(int id)
 
 function serverWeaponCreator(string weap)
 {
-	addWeaponToInventory( myWeaponCreator.CrateWeaponFromString( weap ) );
+	addWeaponToInventory( myWeaponCreator.CreateWeaponFromString( weap ) );
 }
 
 function addWeaponToInventory(UTWeapon weap)
