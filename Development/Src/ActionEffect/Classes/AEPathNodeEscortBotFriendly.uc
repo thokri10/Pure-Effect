@@ -28,7 +28,7 @@ function setPathNodeID(int ID)
 	else
 	{
 		`Log("[AEPathNodeEscortBotFriendly] PathNodeID could not be set due to " $
-			"an invalid value.");
+			"an invalid value...");
 	}
 }
 
