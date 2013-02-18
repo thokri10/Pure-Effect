@@ -199,6 +199,12 @@ function SpawnEnemies(int enemyNumber)
 	{
 		SpawnedBots.AddItem( spawnPoint.spawnBot(class'AEPawn_Bot', self) );
 	}
+
+	for (i = 0; i < enemyNumber; i++)
+	{
+		//SpawnedBots[i].MyController.GotoState('Attacking');
+		//`Log(" LOOOOOOOOOOOOL " $ SpawnedBots[i].GetStateName());
+	}
 }
 
 /** When a bot dies he runs this method to update the bots killed. */
@@ -220,7 +226,7 @@ function botDied()
 	}
 }
 
-/** Comlpete and reset all vaiables and gives the reward to player */
+/** Complete and reset all vaiables and gives the reward to player. */
 function MissionComplete()
 {
 	PC.mHUD.postError("Mission complete: Reward added to inventory");

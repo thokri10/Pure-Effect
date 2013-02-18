@@ -11,6 +11,7 @@ function SpawnDefaultController()
 
 simulated event PostBeginPlay()
 {
+	super.PostBeginPlay();
 	SetPhysics(PHYS_Walking);
 
 	if(ControllerClass == none)
@@ -28,7 +29,7 @@ simulated event PostBeginPlay()
 	
 	SetCharacterClassFromInfo(class'UTFamilyInfo_Liandri_Male');
 
-	super.PostBeginPlay();
+	//super.PostBeginPlay();
 
 	AddDefaultInventory();
 }
