@@ -2,8 +2,10 @@
 class AETcpLinkClient extends TcpLink
 	dependson(AEJSONParser);
 
-// PlayerStruct holds various information about the player
-// from the server.
+//-----------------------------------------------------------------------------
+// Structures
+
+/** PlayerStruct holds various information about the player from server. */
 struct PlayerStruct
 {
 	var string name;
@@ -11,53 +13,60 @@ struct PlayerStruct
 	var int id;
 };
 
-// Reference to the player controller.
+//-----------------------------------------------------------------------------
+// Varialbes
+
+/** Reference to the player controller. */
 var AEPlayerController  PC;
 
 var WebRequest Request;
 
-// 
+/** Player information */
 var string UserName;
 var string Password;
 var string UserNameAndPassword;
 var string AuthenticationKey;
 
-// Server (hostname/IP-address)
+/** Server (hostname/IP-address) */
 var string  TargetHost;
 
-// Server's port used for game communication.
+/** Server's port used for game communication. */
 var int     TargetPort;
 
-// Database path to the info needed to generate a weapon.
+/** Database path to the info needed to generate a weapon. */
 var string  get;
 var string  databasePath;
 
-// Message that the player sends to the server.
+/** Message that the player sends to the server. */
 var string  requestText;
 
-// The score the player has.
+/** The score the player has. */
 var int     score;
 
-// Variable that checks if the player is ready to communicate with the server.
+/** Variable that checks if the player is ready to communicate with the server. */
 var bool    send;
 
-// Information that the player receives from the server.
+/** Information that the player receives from the server. */
 var string          returnedMessage;
 var array<string>   returnedArray;
 
-// Token we use to connect to server.
+/** Token we use to connect to server. */
 var PlayerStruct    playerInfo;
 var bool            bLogedIn;
 var bool            bHavePlayerInfo;
 var string          token;
 
-// Booleans needed to not spam the server for requests.
+/** Booleans needed to not spam the server for requests. */
 var bool            bWaitingForMission;
 var bool            bWaitingForWeapon;
 var bool            bWaitingForReward;
 var bool            bWaitingForPath;
 
-// Initializations before any pawns spawn on the map.
+
+//-----------------------------------------------------------------------------
+// Init
+
+/** Initializations before any pawns spawn on the map. */
 simulated event PostBeginPlay()
 {
 	super.PostBeginPlay();
@@ -67,14 +76,18 @@ simulated event PostBeginPlay()
 	Request = new(None) class'WebRequest';
 }
 
-// Connect to server.
+
+//-----------------------------------------------------------------------------
+// Connection
+
+/** Connect to server with preset path and command. */
 function ResolveMe()
 {
 	PC.mHUD.postError(databasePath);
 	Resolve(TargetHost);
 }
 
-// Successfully connected to a server.
+/** Successfully connected to a server. */
 event Resolved( IpAddr Addr )
 {
 	// Log that the hostname was resolved successfully.
@@ -95,7 +108,7 @@ event Resolved( IpAddr Addr )
 	}
 }
 
-// Failed to connect to the server.
+/** Failed to connect to the server. */
 event ResolvedFailed()
 {
 	`Log("[TcpLinkClient] Unable to resolve "$TargetHost);
@@ -103,7 +116,7 @@ event ResolvedFailed()
     // remote host.
 }
 
-// Established a connection with the server's port.
+/** Established a connection with the server's port. */
 event Opened()
 {
 	`Log("[TcpLinkClient] Event opened.");
@@ -140,7 +153,7 @@ event Opened()
 	`Log("[TcpLinkClient] end HTTP query");
 }
 
-
+/** Closed connection to server */
 event Closed()
 {
 	// In this case the remote client should have automatically closed
@@ -151,55 +164,7 @@ event Closed()
     // connection using the same TcpLink instance.
 }
 
-
-function logIn(string user, string pw)
-{
-	// The clan name "McDonald" is hardcoded, and this bit of code
-	// should be more dynamic to allow players from other clans
-	// to also log in.
-	databasePath = "soldiers";
-	Username = user;
-	Password = pw;
-
-	UserNameAndPassword = user $ ":" $ password;
-	AuthenticationKey = Request.EncodeBase64(UserNameAndPassword);
-
-	ResolveMe();
-}
-
-function getMission(int id)
-{
-	databasePath = "missions/" $ id;
-	bWaitingForMission = true;
-
-	ResolveMe();
-}
-
-function getWeapon(int id)
-{
-	databasePath = "items/McDonald/Terminator/" $ id;
-	bWaitingForWeapon = true;
-
-	ResolveMe();
-}
-
-function getReward(int id)
-{
-	databasePath = "rewards/" $ id;
-	bWaitingForReward = true;
-
-	ResolveMe();
-}
-
-function getMenuSelections()
-{
-	bWaitingForPath = true;
-
-	ResolveMe();
-}
-
-
-// Receives the text from server. Runs automaticly when server send info to us.
+/** Receives the text from server. Runs automaticly when server send info to us. */
 event ReceivedText(string Text)
 {
 	// receiving some text, note that the text includes line breaks
@@ -217,17 +182,17 @@ event ReceivedText(string Text)
 		
 		if (bWaitingForMission)
 		{
-			PC.myMissionObjective.Initialize(returnedMessage);
+			`log("[TCP] NEED CODE OR REMOVE");
 			bWaitingForMission = false;
 		}
 		else if (bWaitingForWeapon)
 		{
-			PC.serverWeaponCreator(Text);
+			`log("[TCP] NEED CODE OR REMOVE");
 			bWaitingForWeapon = false;
 		}
 		else if (bWaitingForReward)
 		{
-			PC.addReward(returnedArray);
+			`log("[TCP] NEED CODE OR REMOVE");
 			bWaitingForReward = false;
 		}
 		else if (bWaitingForPath)
@@ -238,6 +203,71 @@ event ReceivedText(string Text)
 		}
 	}
 }
+
+/** Returns "space newline" * So we can send new command to server */
+function CarriageReturn()
+{
+	SendText(chr(13)$chr(10));
+}
+
+
+//-----------------------------------------------------------------------------
+// User Commands
+
+/** Player logs in to the server to be able to get list of items and info to player. */
+function logIn(string user, string pw)
+{
+	// The clan name "McDonald" is hardcoded, and this bit of code
+	// should be more dynamic to allow players from other clans
+	// to also log in.
+	databasePath = "soldiers";
+	Username = user;
+	Password = pw;
+
+	UserNameAndPassword = user $ ":" $ password;
+	AuthenticationKey = Request.EncodeBase64(UserNameAndPassword);
+
+	ResolveMe();
+}
+
+/** Gets mission with set ID */
+function getMission(int id)
+{
+	databasePath = "missions/" $ id;
+	bWaitingForMission = true;
+
+	ResolveMe();
+}
+
+/** Get weapon from server with set ID */
+function getWeapon(int id)
+{
+	databasePath = "items/McDonald/Terminator/" $ id;
+	bWaitingForWeapon = true;
+
+	ResolveMe();
+}
+
+/** Get reward from server with set ID */
+function getReward(int id)
+{
+	databasePath = "rewards/" $ id;
+	bWaitingForReward = true;
+
+	ResolveMe();
+}
+
+/** Get menu list from preset Path */
+function getMenuSelections()
+{
+	bWaitingForPath = true;
+
+	ResolveMe();
+}
+
+
+//-----------------------------------------------------------------------------
+// Parsing
 
 function array<string> parseToArray(string jsonString)
 {
@@ -252,6 +282,10 @@ function array<string> parseToArray(string jsonString)
 	return returnString;
 }
 
+//-----------------------------------------------------------------------------
+// User properties
+
+/** Set player info with the string from server */
 function setUserInfo(string info)
 {
 	local array<string> userInfo;
@@ -287,12 +321,6 @@ function setUserInfo(string info)
 		PC.mHUD.addUserInfo("Name : " $ playerInfo.name);
 	}
 
-}
-
-// Returns "space newline"
-function CarriageReturn()
-{
-	SendText(chr(13)$chr(10));
 }
 
 DefaultProperties

@@ -175,6 +175,7 @@ function array<string> splitToSections(string in)
 		
 		// Takes out the section we want.
 		temp = mid( in, bracketPositions[i], (startBracket - bracketPositions[i]) );
+		//`log(temp);
 		temp = removeExcessChar( temp );
 
 		parsed.InsertItem(i, temp);
@@ -210,7 +211,7 @@ function array<string> splitToValue(string in)
 	if( len( splitted[0] ) <= 1 )
 		`log("[JSON] Empty occupant in splitToValue: " $ splitted[0]);
 	if( splitted.Length > 2 )
-		`log("[JSON] To many values when splitted in SplitToValue: " $ splitted.Length);
+		`log("[JSON] To many values when splitted in SplitToValue: " $ splitted.Length $ ": " $ splitted[0] $ " . " $ splitted[1] $ " . " $ splitted[2] );
 
 	splitted[0] = mid( splitted[0], 1, len( splitted[0] ) - 2 );
 
