@@ -1,6 +1,11 @@
 // PURPOSE: Controller for AI-bots
 class AEAIController extends UTBot;
 
+function PostBeginPlay()
+{
+	super.PostBeginPlay();
+}
+
 /** Derived from bot class */
 function SetAttractionState()
 {

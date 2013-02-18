@@ -15,6 +15,11 @@ function Possess(Pawn aPawn, bool bVehicleTransition)
 	MyController.Possess(aPawn, bVehicleTransition);
 }
 
+//state MoveToGoal 
+//{
+
+//}
+
 DefaultProperties
 {
 
