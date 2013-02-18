@@ -28,15 +28,14 @@ var array<int>      bracketPositions;
 // Controlls where the next section start in the string.
 var int             nextBracket;
 
+//-----------------------------------------------------------------------------
+// Parsing
+
 /** Parses the string to a 2D array variable list splitted with ":" */
 function array<Array2D> fullParse(string in)
 {
 	return parseToMainChategories( parseToVariables( parse( in ) ) );
 }
-
-
-//-----------------------------------------------------------------------------
-// Parsing
 
 /** Parse the string from server into a 2D array containing the main brackets. */
 function array<Array2D> parse(string in)

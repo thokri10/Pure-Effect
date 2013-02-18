@@ -1,6 +1,7 @@
 class AEMissionObjective extends Actor
 	dependson(AEWeaponCreator)
-	dependson(AEJSONParser);
+	dependson(AEJSONParser)
+	dependson(AEWeaponCreator);
 
 // STRUCTS
 
@@ -12,7 +13,7 @@ struct MissionObjectives
 	var string mapName;
 	var string title;
 	var string description;
-	var string reward;
+	var array<WeaponStruct> rewards;
 	var int MOEnemies;
 };
 
@@ -32,7 +33,6 @@ struct RewardStruct
 	var int Credit;
 	var string Weapon;
 };
-
 
 //-----------------------------------------------------------------------------
 // Variables
@@ -71,19 +71,7 @@ simulated event PostBeginPlay()
 /** Initializes the missions wtih the string from server */
 function Initialize(string missionString)
 {
-	local array<Array2D>    missionArray;
-	
-	local Array2D           missions;
 
-	//AEObjectives = parseArrayToMissionStruct(missionArray);
-	//activateObjectives( AEObjectives );
-
-	missionArray = PC.parser.fullParse( missionString );
-
-	foreach missionArray( missions )
-	{
-		simpleMissionArray.AddItem( parseArrayToSimpleStruct( missions.variables ) );
-	}
 }
 
 
@@ -101,7 +89,7 @@ function SimpleMissionStruct parseArrayToSimpleStruct(array<ValueStruct> mission
 	local int   numberOfRewards;
 	local int   i;
 
-	`log("\n\nStarting Mission Parsing: \nLENGTH: " $ missionArray.Length );
+	//`log("\n\nStarting Mission Parsing: \nLENGTH: " $ missionArray.Length );
 	for( i = 0; i < missionArray.Length; i++) 
 	{
 		//`log(missionArray[i].type $ " : " $ missionArray[i].value );
@@ -127,35 +115,38 @@ function SimpleMissionStruct parseArrayToSimpleStruct(array<ValueStruct> mission
 		switch( Type )
 		{
 		case "info": mission.information.AddItem( missionArray[i] ); break;
-		case "type": mission.rewards[numberOfRewards].variables.AddItem( missionArray[i] ); break;
+		case "reward": mission.rewards[numberOfRewards].variables.AddItem( missionArray[i] ); break;
 		}
 	}
 
 	return mission;
 }
 
-/** Parses the array to a mission struct so we have controll over the objectives. */
-function MissionObjectives parseArrayToMissionStruct(array<string> missionArray)
+/** Create a missionObjective struct from our simple struct */
+function MissionObjectives MissionFromSimpleStruct(SimpleMissionStruct simpleMission)
 {
-	local array<string>     splitted;
-	local MissionObjectives objectives;
-	local int i;
-
-	for(i = 0; i < missionArray.Length; i++)
+	local MissionObjectives objective;
+	local ValueStruct       values;
+	local Array2D           reward;
+	
+	foreach simpleMission.information(values)
 	{
-		splitted = SplitString(missionArray[i], ":");
-
-		if     (splitted[0] == "id")            objectives.id           = int( splitted[1] );
-		else if(splitted[0] == "category")      objectives.category     = mid( splitted[1], 1, len( splitted[1] ) - 2 );
-		else if(splitted[0] == "city_name")     objectives.mapName      = mid( splitted[1], 1, len( splitted[1] ) - 2 );
-		else if(splitted[0] == "description" )  objectives.description  = mid( splitted[1], 1, len( splitted[1] ) - 2 );
-		else if(splitted[0] == "reward")        objectives.reward       = mid( splitted[1], 1, len( splitted[1] ) - 2 );
-		else if(splitted[0] == "title")         objectives.title        = mid( splitted[1], 1, len( splitted[1] ) - 2 );
-		else if(splitted[0] == "items")         addMissionReward(rewardString);
-		else `log("[MissionArrayParse] No known name of this type: " $ splitted[0]);
+		if     (values.type == "id")            objective.id           = int( values.value );
+		else if(values.type == "category")      objective.category     = values.value;
+		else if(values.type == "city_name")     objective.mapName      = values.value;
+		else if(values.type == "description" )  objective.description  = values.value;
+		else if(values.type == "title")         objective.title        = values.value;
+		else `log("[SimpleMissionParse] No known name of this type: " $ values.type);
 	}
 
-	return objectives;
+	foreach simpleMission.rewards( reward )
+	{
+		`log("Adding reward: " $ reward.variables.Length);
+		
+		objective.rewards.AddItem( PC.myWeaponCreator.parseToStruct( reward.variables ) );
+	}
+	
+	return objective;
 }
 
 //-----------------------------------------------------------------------------
@@ -239,17 +230,27 @@ function botDied()
 	if(botsKilled < AEObjectives.MOEnemies){
 		printObjectiveMessage("BotsKilled: " $ botsKilled $ " / " $ AEObjectives.MOEnemies);
 	}else{
-		printObjectiveMessage("", true);
-		PC.mHUD.postError("Mission complete: Reward added to inventory");
-		botsKilled=0;
-		printObjectiveInfo("", true);
-		getReward(AEObjectives.id);
+		MissionComplete();
 
 		foreach WorldInfo.AllActors( class'AEVolume_BotSpawn', target )
 		{
 			target.resetSpawnPoints();
 		}
 	}
+}
+
+/** Comlpete and reset all vaiables and gives the reward to player */
+function MissionComplete()
+{
+	local WeaponStruct weap;
+	PC.mHUD.postError("Mission complete: Reward added to inventory");
+	printObjectiveMessage("", true);
+	printObjectiveInfo("", true);
+
+	botsKilled=0;
+
+	foreach AEObjectives.rewards( weap )
+		PC.addWeaponToInventory( PC.myWeaponCreator.CreateWeaponFromStruct( weap ) );
 }
 
 //-----------------------------------------------------------------------------
@@ -261,7 +262,7 @@ function createObjectiveInfo()
 	printObjectiveInfo( "Category: "    $   AEObjectives.category, true);
 	printObjectiveInfo( "Title: "       $   AEObjectives.title);
 	printObjectiveInfo( "Map: "         $   AEObjectives.mapName);
-	printObjectiveInfo( "Reward: "      $   AEObjectives.reward);
+	//printObjectiveInfo( "Reward: "      $   AEObjectives.reward);
 	printObjectiveInfo( "Description: " $   AEObjectives.description);
 }
 
