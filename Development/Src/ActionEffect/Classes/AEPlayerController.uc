@@ -54,9 +54,6 @@ simulated event PostBeginPlay()
 	myMenu.PC = self;
 
 	parser = new pars;
-	myMissionObjective.Initialize( parsing );
-	//parser.parseToMainChategories( parser.fullParse(parsing) );
-	//parser.parseToVariables( asd );
 
 	// Connect to server.
 	//myTcpLink.ResolveMe();

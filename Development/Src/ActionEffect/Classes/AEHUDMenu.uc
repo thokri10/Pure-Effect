@@ -24,6 +24,7 @@ var array<string>               menuPath;
 /** Saves all the available missions in an array for us. */
 var array<MissionObjectives>    menuMissions;
 var array<SimpleMissionStruct>  missions;
+var MissionObjectives           activeMission;
 
 /** Saves which menuselections we have. */
 var array<SelectStruct>         menuSelections;
@@ -123,34 +124,10 @@ function UpdateMenuFromPath()
 	PC.myTcpLink.getMenuSelections();
 }
 
-/** Functions that this class do not use. Often called from TCP */
-function numberOfStringFromServer(int number)
-{
-	numberOfServerStrings = number;
-	ServerCounter = 0;
-}
-
-/* Duplicate function FIX!
-function parseMissionArrayToMenu(array<string> MenuArray)
-{
-	local MissionObjectives objective;
-	local SelectStruct      selection;
-
-	objective = PC.myMissionObjective.parseArrayToMissionStruct( MenuArray );
-
-	selection.id = objective.id;
-	selection.name = objective.title;
-
-	menuSelections.AddItem(selection);
-
-	menuMissions.AddItem(objective);
-}
-*/
-
 function stringFromServer(string menuString)
 {
-	local SimpleMissionStruct asd;
-	local ValueStruct           dsa;
+	local SimpleMissionStruct selectedMission;
+	local ValueStruct           value;
 	local SelectStruct      selection;
 	local array<Array2D>    parsedArray;
 	local Array2D           mission;
@@ -166,40 +143,22 @@ function stringFromServer(string menuString)
 		missions.AddItem( PC.myMissionObjective.parseArrayToSimpleStruct( mission.variables ) );
 	}
 
-	foreach missions( asd )
+	foreach missions( selectedMission )
 	{
-		foreach asd.information( dsa )
+		foreach selectedMission.information( value )
 		{
-			if( dsa.type == "title" )
+			if( value.type == "title" )
 			{
 				selection.id = id++;
-				selection.name = dsa.value;
+				selection.name = value.value;
 				menuSelections.AddItem(selection);
 			}
 		}
 	}
 
 	bMenuSelection = false;
+
 	initMenu();
-
-	/*
-	if( bMenuSelection )
-	{
-		parseMissionArrayToMenu( PC.myTcpLink.parseToArray( menuString ) );
-		++ServerCounter;
-
-		if(numberOfServerStrings == ServerCounter)
-		{
-			ServerCounter = 0;
-			bMenuSelection = false;
-			initMenu();
-		}
-	}
-	else if( bMenuInfo )
-	{
-		return;
-	}
-	*/
 }
 
 /**
@@ -210,12 +169,11 @@ exec function ppp()
 	setMainMenu();
 }
 
-/** Jumps down in the menu. */
 /**
  * MENU SELECT FUNCTIONS
  */
 
-// Jumps down in the menu.
+/** Jumps down in the menu. */
 function nextMenuSlot()
 {
 	if(selectedMenuSlot >= menuSelections.Length)
@@ -276,7 +234,7 @@ function Select()
 				`log(selectedMenuSlot);
 				MenuPath[1] = string( selectedMenuSlot );
 
-				//showMissionInfo(missions[selectedMenuSlot]);
+				showMissionInfo(missions[selectedMenuSlot]);
 			}
 		}
 
@@ -284,7 +242,7 @@ function Select()
 		{
 			if( menuSelections[selectedMenuSlot].name == "Accept" )
 			{
-				PC.myMissionObjective.activateObjectives( menuMissions[ int(MenuPath[1]) ] );
+				PC.myMissionObjective.activateObjectives( activeMission );
 				resetMenuSelection();
 			}
 		}
@@ -303,16 +261,18 @@ function setBack(int i)
 }
 
 /** Puts the mission info to the screen. */
-function showMissionInfo(MissionObjectives objective)
+function showMissionInfo(SimpleMissionStruct objective)
 {
-	local SelectStruct selection;
+	local SelectStruct      selection;
+
+	activeMission = PC.myMissionObjective.MissionFromSimpleStruct( objective );
 
 	resetMenuSelection();
 
-	PC.mHUD.addMissionInfo( "Name        : " $ objective.title, true );
-	PC.mHUD.addMissionInfo( "Map         : " $ objective.mapName );
-	PC.mHUD.addMissionInfo( "Reward      : " $ objective.reward );
-	PC.mHUD.addMissionInfo( "description : " $ objective.description );
+	PC.mHUD.addMissionInfo( "Category    : " $ activeMission.category, true );
+	PC.mHUD.addMissionInfo( "Name        : " $ activeMission.title );
+	PC.mHUD.addMissionInfo( "Map         : " $ activeMission.mapName );
+	PC.mHUD.addMissionInfo( "description : " $ activeMission.description );
 
 	selection.id = 0;
 	selection.name = "Accept";
@@ -320,51 +280,6 @@ function showMissionInfo(MissionObjectives objective)
 	menuSelections.AddItem( selection );
 
 	initMenu();
-}
-
-/**
- * Parsing function: Receives an string array with mission info and uses
- * it to display it on the HUD.
- */
-
-function parseMissionArrayToMenu(array<string> MenuArray)
-{
-	local MissionObjectives objective;
-	local SelectStruct      selection;
-
-	objective = PC.myMissionObjective.parseArrayToMissionStruct( MenuArray );
-
-	selection.id = objective.id;
-	selection.name = objective.title;
-
-	menuSelections.AddItem(selection);
-
-	menuMissions.AddItem(objective);
-}
-
-/** Parsing function: Receives the string and splits the elements neatly
- *  into a string array. 
- */
-function array<string> parseStringForMenu(string menuString)
-{
-	local array<string> splitted;
-	local int i;
-
-	menuString = mid( menuString, 0 );
-
-	splitted = SplitString(menuString, "{");
-
-	for( i = 0; i < splitted.Length; i++)
-	{
-		// the { is needed because of the parseStringToArray or it will remove to much
-		splitted[i] = "{" $ splitted[i];
-		if( i > 0 && i < ( splitted.Length - 1 ) )
-		{
-			splitted[i] = mid( splitted[i], 0, len( splitted[i] ) - 2 );
-		}
-	}
-
-	return splitted;
 }
 
 DefaultProperties
