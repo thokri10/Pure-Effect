@@ -2,6 +2,9 @@
 class AEWeaponCreator extends Actor
 	dependson(AEJSONParser);
 
+//-----------------------------------------------------------------------------
+// Structs
+
 /** Our WeaponStruct that will contain all the variables for our weapon. 
  *  Default variables is now set by server. */
 struct WeaponStruct
@@ -15,13 +18,16 @@ struct WeaponStruct
 	var float   speed;
 };
 
+
+//-----------------------------------------------------------------------------
+// Variables
+
 /** Variable to easily use player controller. */
 var AEPlayerController PC;
 
-function UTWeapon CreateWeaponFromString(string weap)
-{
-	return CreateWeaponFromStruct( parseArrayToWeaponStruct( PC.myTcpLink.parseToArray( weap ) ) );
-}
+
+//-----------------------------------------------------------------------------
+// Creation functions
 
 /** Creates a custom-made weapon from server (main function) */
 function UTWeapon CreateWeaponFromStruct(WeaponStruct weap)
@@ -47,6 +53,11 @@ function UTWeapon CreateWeapon(string type, float spread, int magazineSize, floa
 	return returnWeapon;
 }
 
+
+//-----------------------------------------------------------------------------
+// Parsing
+
+/** Parses the valueArray to a Weaponstruct */
 function WeaponStruct parseToStruct(array<ValueStruct> values)
 {
 	local WeaponStruct returnWeapon;
@@ -54,89 +65,23 @@ function WeaponStruct parseToStruct(array<ValueStruct> values)
 
 	foreach values( value )
 	{
-		if      (value.type == "id")            returnWeapon.id         = int   ( value.value );         
+		if      (value.type == "type")          returnWeapon.type       = value.value;   
+		else if (value.type == "damage")        returnWeapon.damage     = float ( value.value );
+		else if (value.type == "speed")         returnWeapon.speed      = float ( value.value );
+		else if (value.type == "id")            returnWeapon.id         = int   ( value.value );         
 		else if (value.type == "ammo_pool")     returnWeapon.magSize    = int   ( value.value );
 		else if (value.type == "fire_rate")     returnWeapon.reloadTime = float ( value.value );
 		else if (value.type == "spread")        returnWeapon.spread     = float ( value.value );
-		else if (value.type == "type")          returnWeapon.type       = value.value;   
-		else if (value.type == "damage")        returnWeapon.damage     = float ( value.value );
-		else if (value.type == "speed")         returnWeapon.speed      = float ( value.value );
 		else `log("[WeaponCreatorParse] No known type: " $ value.type);
 	}
 
 	return returnWeapon;
 }
 
-/** Returns a weaponStruct from a json message from server. */
-function WeaponStruct parseArrayToWeaponStruct(array<string> in)
-{
-	local WeaponStruct  Weap;
-	local array<string> tempString2;
-	local int i;
-	local string weaponDebugLog;
 
-	weaponDebugLog = "\n";
+//-----------------------------------------------------------------------------
+// Weapon functions
 
-	for(i = 0; i < in.Length; i++)
-	{
-		// Now we split it one more time to get type and value 
-		tempString2 = SplitString(in[i], ":");
-		// Removes both the ' " ' from the string so we can read it properly
-		tempString2[0] = mid( tempString2[0], 1, len( tempString2[0] ) - 2 );
-
-		// Now we check if any of the preset variables we have exist in this json
-		if      (tempString2[0] == "id")            Weap.id         = int   ( tempString2[1] );         
-		else if (tempString2[0] == "ammo_pool")     Weap.magSize    = int   ( tempString2[1] );
-		else if (tempString2[0] == "fire_rate")     Weap.reloadTime = float ( tempString2[1] );
-		else if (tempString2[0] == "spread")        Weap.spread     = float ( tempString2[1] );
-		else if (tempString2[0] == "type")          Weap.type       = mid( tempString2[1], 1, len( tempString2[1] ) - 2 );   
-		else if (tempString2[0] == "damage")        Weap.damage     = float ( tempString2[1] );
-		else if (tempString2[0] == "speed")         Weap.speed      = float ( tempString2[1] );
-		else `log("[WeaponStructCreator] No known variable of this type: " $ tempString2[0] );
-	}
-
-	// TESTING PURPOSES. Fix this later.
-	//Weap.damage = 1337.0f;
-	//Weap.speed = 1500.0f;
-
-	weaponDebugLog = weaponDebugLog $ "Weapon ID: "                 $ Weap.id $             "\n"
-									$ "Magazine size: "             $ Weap.magSize $        "\n"
-									$ "Reload time (seconds): "     $ Weap.reloadTime $     "\n"
-									$ "Spread: "                    $ Weap.spread $         "\n"
-									$ "Weapon type: "               $ Weap.type $           "\n"
-									$ "Damage: "                    $ Weap.damage $         "\n"
-									$ "Speed: "                     $ Weap.speed $          "\n";
-									
-
-	`Log("Weapon generated:" $ weaponDebugLog);
-
-	return Weap;
-}
-
-/** Changes a weapon's firing speed. */
-function UTWeapon ChangeFiringSpeed(UTWeapon weap, float firingSpeed)
-{
-	weap.FireInterval[0] = firingSpeed;
-
-	return weap;
-}
-
-/** Changes a weapon's magazine size. */
-function UTWeapon ChangeMagazineSize(UTWeapon weap, int size)
-{
-	weap.AddAmmo(size);
-
-	return weap;
-}
-
-/** Changes a weapon's projectile spread. */
-function UTWeapon ChangeSpread(UTWeapon weap, float spread)
-{
-	// The higher spread value, the wider spread.
-	weap.Spread[weap.CurrentFireMode] = spread;
-
-	return weap;
-}
 
 /** Sets a weapon to be a specific type. */
 function UTWeapon SpawnWeaponType(string Type, float damage, float speed)
@@ -178,6 +123,31 @@ function UTWeapon SpawnWeaponType(string Type, float damage, float speed)
 	};
 
 	return none;
+}
+
+/** Changes a weapon's firing speed. */
+function UTWeapon ChangeFiringSpeed(UTWeapon weap, float firingSpeed)
+{
+	weap.FireInterval[0] = firingSpeed;
+
+	return weap;
+}
+
+/** Changes a weapon's magazine size. */
+function UTWeapon ChangeMagazineSize(UTWeapon weap, int size)
+{
+	weap.AddAmmo(size);
+
+	return weap;
+}
+
+/** Changes a weapon's projectile spread. */
+function UTWeapon ChangeSpread(UTWeapon weap, float spread)
+{
+	// The higher spread value, the wider spread.
+	weap.Spread[weap.CurrentFireMode] = spread;
+
+	return weap;
 }
 
 DefaultProperties

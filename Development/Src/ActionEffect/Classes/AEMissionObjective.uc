@@ -3,7 +3,8 @@ class AEMissionObjective extends Actor
 	dependson(AEJSONParser)
 	dependson(AEWeaponCreator);
 
-// STRUCTS
+//-----------------------------------------------------------------------------
+// Structures
 
 /** Struct for to hold all the mission objectives. This is created with a string parser in this class. */
 struct MissionObjectives
@@ -68,10 +69,10 @@ simulated event PostBeginPlay()
 	super.PostBeginPlay();
 }
 
-/** Initializes the missions wtih the string from server */
-function Initialize(string missionString)
+/** Initializes the missions wtih the array from jsonParser*/
+function Initialize(array<ValueStruct> missionArray)
 {
-
+	activateObjectives( MissionFromSimpleStruct( parseArrayToSimpleStruct( missionArray ) ) );
 }
 
 
@@ -152,34 +153,14 @@ function MissionObjectives MissionFromSimpleStruct(SimpleMissionStruct simpleMis
 //-----------------------------------------------------------------------------
 // Rewards
 
-/** This is runned when the mission string is parsed to a struct.
-  * You should not use this */
-function addMissionReward( string itemString )
+/** Gets the reward from mission and puts them into player inventory */
+function getMissionRewards()
 {
-	rewardArray.AddItem( itemString );
-}
-
-/** When missions is done this is runned with the mission ID to give you the correct reward */
-function getReward(int missionID)
-{
-	parseStringToReward( rewardArray[missionID - 1] );
-}
-
-/** Gives the reward to player from reward string. You can only retrieve weapon at this time. */
-function parseStringToReward(string in)
-{
-	local array<string> reward;
 	local WeaponStruct weap;
 
-	in = in $ "}";
-
-	reward = PC.myTcpLink.parseToArray( in );
-
-	weap = PC.myWeaponCreator.parseArrayToWeaponStruct( reward );
-
-	PC.addWeaponToInventory( PC.myWeaponCreator.CreateWeaponFromStruct( weap ) );
+	foreach AEObjectives.rewards( weap )
+		PC.addWeaponToInventory( PC.myWeaponCreator.CreateWeaponFromStruct( weap ) );
 }
-
 
 //-----------------------------------------------------------------------------
 // Objectives
@@ -248,15 +229,13 @@ function botDied()
 /** Complete and reset all vaiables and gives the reward to player. */
 function MissionComplete()
 {
-	local WeaponStruct weap;
 	PC.mHUD.postError("Mission complete: Reward added to inventory");
 	printObjectiveMessage("", true);
 	printObjectiveInfo("", true);
 
 	botsKilled=0;
 
-	foreach AEObjectives.rewards( weap )
-		PC.addWeaponToInventory( PC.myWeaponCreator.CreateWeaponFromStruct( weap ) );
+	getMissionRewards();
 }
 
 //-----------------------------------------------------------------------------

@@ -2,6 +2,9 @@
 class AEHUDMenu extends Actor
 	dependson(AEMissionObjective)
 	dependson(AEJSONparser);
+
+//-----------------------------------------------------------------------------
+// Structures
  
 /** Struct that represents the current active (selected) menu entry. */
 struct SelectStruct
@@ -10,11 +13,15 @@ struct SelectStruct
 	var string  name;
 };
 
-/** TODO: FILL IN. */
-var int numberOfServerStrings;
+//-----------------------------------------------------------------------------
+// Classes
 
-/** TODO: FILL IN. */
-var int ServerCounter;
+/** Controller for the player. */
+var AEPlayerController          PC;
+
+
+//-----------------------------------------------------------------------------
+// Variables
 
 /** Path of the menu. Set together by adding all the stringarray together. 
  *  Easy to remove the last path and go back in menu.
@@ -29,16 +36,13 @@ var MissionObjectives           activeMission;
 /** Saves which menuselections we have. */
 var array<SelectStruct>         menuSelections;
 
-/** Controller for the player. */
-var AEPlayerController          PC;
-
 /** Currently selected menu slot. */
 var int     selectedMenuSlot;
 
 /** String (JSON) that we receive from the database. */
 var string  DBSTRING;
 
-/** TODO: FILL IN. */
+/** posision of backButton in the menu */
 var int     BACK;
 
 /** Booleans to check what menu we are expecting to create on the next answer 
@@ -47,6 +51,10 @@ var int     BACK;
 var bool    bMenuSelection;
 var bool    bMenuInfo;
 
+
+//-----------------------------------------------------------------------------
+// Events
+
 /** Overrode base function of PostBeginPlay. Currently doesn't do
  *  anything special. 
  */
@@ -54,6 +62,10 @@ simulated function PostBeginPlay()
 {
 	super.PostBeginPlay();
 }
+
+
+//-----------------------------------------------------------------------------
+// Init
 
 /** Initializes the menu. */
 function initMenu()
@@ -124,54 +136,20 @@ function UpdateMenuFromPath()
 	PC.myTcpLink.getMenuSelections();
 }
 
-function stringFromServer(string menuString)
+/** Set the back (previous) button on the bottom of the selection. */
+function setBack(int i)
 {
-	local SimpleMissionStruct selectedMission;
-	local ValueStruct           value;
-	local SelectStruct      selection;
-	local array<Array2D>    parsedArray;
-	local Array2D           mission;
-	local int id;
-	
-	resetMenuSelection();
-	missions.Length = 0;
+	BACK = i;
 
-	parsedArray = PC.parser.fullParse( menuString );
-
-	foreach parsedArray( mission )
-	{
-		missions.AddItem( PC.myMissionObjective.parseArrayToSimpleStruct( mission.variables ) );
-	}
-
-	foreach missions( selectedMission )
-	{
-		foreach selectedMission.information( value )
-		{
-			if( value.type == "title" )
-			{
-				selection.id = id++;
-				selection.name = value.value;
-				menuSelections.AddItem(selection);
-			}
-		}
-	}
-
-	bMenuSelection = false;
-
-	initMenu();
+	if(menuPath.Length != 0)
+		PC.mHUD.addMenuSelections("BACK");
+	else
+		PC.mHUD.addMenuSelections("QUIT");
 }
 
-/**
- * TEMP FUNCTION FOR TESTING PURPOSES
- */
-exec function ppp()
-{
-	setMainMenu();
-}
 
-/**
- * MENU SELECT FUNCTIONS
- */
+//-----------------------------------------------------------------------------
+// Menu Selection
 
 /** Jumps down in the menu. */
 function nextMenuSlot()
@@ -249,15 +227,46 @@ function Select()
 	}
 }
 
-/** Set the back (previous) button on the bottom of the selection. */
-function setBack(int i)
-{
-	BACK = i;
 
-	if(menuPath.Length != 0)
-		PC.mHUD.addMenuSelections("BACK");
-	else
-		PC.mHUD.addMenuSelections("QUIT");
+//-----------------------------------------------------------------------------
+// Menu Selection Init
+
+/** Gets a string from server that get parsed to a menu selection */
+function stringFromServer(string menuString)
+{
+	local SimpleMissionStruct selectedMission;
+	local ValueStruct           value;
+	local SelectStruct      selection;
+	local array<Array2D>    parsedArray;
+	local Array2D           mission;
+	local int id;
+	
+	resetMenuSelection();
+	missions.Length = 0;
+
+	parsedArray = PC.parser.fullParse( menuString );
+
+	foreach parsedArray( mission )
+	{
+		missions.AddItem( PC.myMissionObjective.parseArrayToSimpleStruct( mission.variables ) );
+	}
+
+	foreach missions( selectedMission )
+	{
+		foreach selectedMission.information( value )
+		{
+			if( value.type == "title" )
+			{
+				selection.id = id++;
+				selection.name = value.value;
+				menuSelections.AddItem(selection);
+			}
+		}
+	}
+
+	bMenuSelection = false;
+
+	initMenu();
 }
 
 /** Puts the mission info to the screen. */
