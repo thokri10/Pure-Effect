@@ -137,7 +137,7 @@ function MissionObjectives MissionFromSimpleStruct(SimpleMissionStruct simpleMis
 		else if(values.type == "city_name")     objective.mapName      = values.value;
 		else if(values.type == "description" )  objective.description  = values.value;
 		else if(values.type == "title")         objective.title        = values.value;
-		else `log("[SimpleMissionParse] No known name of this type: " $ values.type);
+		//else `log("[SimpleMissionParse] No known name of this type: " $ values.type);
 	}
 
 	foreach simpleMission.rewards( reward )

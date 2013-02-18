@@ -34,43 +34,65 @@ var int             nextBracket;
 /** Parses the string to a 2D array variable list splitted with ":" */
 function array<Array2D> fullParse(string in)
 {
-	return parseToMainChategories( parseToVariables( parse( in ) ) );
+	return parseToMainChategories( parse( in ) );
 }
 
 /** Parse the string from server into a 2D array containing the main brackets. */
 function array<Array2D> parse(string in)
 {
+	local array<string>     mainBrackets;
+	local string            bracket;
+	local ValueStruct       asd;
 	local array<Array2D>    parsed2DArray;
 	local Array2D           parsedArray;
 	local array<string>     parsed;
-	local int               endBracket;
 
 	if( Chr( Asc( in ) ) == "[" )
 		in = mid( in, 1, len(in) - 1 );
 
 	nextBracket = 0;
 
-	endBracket = InStr( in, "}", true );
+	mainBrackets = SplitFirstToEndBracket( in );
 
-	while(endBracket != nextBracket)
+	if(mainBrackets.Length == 0)
+		`log("[JSON] NOTHING TO PARSE");
+
+	foreach mainBrackets( bracket )
 	{
-		endBracket = nextBracket;
-		nextBracket = SplitFirstToEndBracket( in, nextBracket );
-
-		if(endBracket == nextBracket){
-			break;
-		}
-
 		parsed.Length = 0;
-		parsed = splitToSections( in );
-		parsedArray.arr = parsed;
-
+		parsed = splitToSections( bracket );
+		parsedArray = parseToValues( parsed );
 		parsed2DArray.AddItem( parsedArray );
+
+		//foreach parsedArray.variables( asd )
+		//	`log(asd.type $ " : " $ asd.value);
 	}
 
 	return parsed2DArray;
 }
 
+/** Parses array to values */
+function Array2D parseToValues(array<string> in)
+{
+	local array<string>     values;
+	local Array2D           values2D;
+	local string            stringValues;
+	local string            valueString;
+	
+	`log("\nNEW MISSION\n");
+	
+	foreach in( stringValues ){
+		values = splitToVariables( stringValues );
+
+		foreach values( valueString ){
+			values2D.variables.addItem( splitToValue( valueString ) );
+		}
+	}
+
+	return values2D;
+}
+
+/*
 /** Parses the array into a more readable and readable variableArray 
  *  Returns variables splitted with ":" */
 function array<Array2D> parseToVariables(array<Array2D> in)
@@ -106,6 +128,7 @@ function array<Array2D> parseToVariables(array<Array2D> in)
 
 	return returnArray;
 }
+*/
 
 /** Creates an array that contains an array with valuestruct * Type and Value */
 function array<Array2D> parseToMainChategories(array<Array2D> in)
@@ -139,35 +162,88 @@ function array<Array2D> parseToMainChategories(array<Array2D> in)
 }
 
 /** Splits a string until it reaches the endbracket for the first bracket.
- Its used for splitting the types into its own strings.
- Returns where the next main bracket start. */
-function int SplitFirstToEndBracket(string in, int firstBracket)
+  *	Returns the main brackets for the string */
+function array<string> SplitFirstToEndBracket(string in)
 {
-	local int endBracket;
+	local array<string>     splitted;
+	local string            temp;
+
+	local int           firstBracket;
+	local int	        start;
+	local int	        end;
+	local int	        endBracket;
+	local int           bracketCounter;
 
 	bracketPositions.Length = 0;
+
+	firstBracket = InStr( in, "{",,, firstBracket );
+	endBracket = InStr( in, "}",,, firstBracket );
+
 	while( InStr( in, "{",,, firstBracket ) != -1 )
 	{
-		endBracket = inStr( in, "}",,, firstBracket );
-		firstBracket = InStr( in, "{",,, firstBracket );
+		if( endBracket > firstBracket ){
+			firstBracket = InStr( in, "{",,, ++firstBracket );
+			if(firstBracket == -1){
+				end = InStr( in, "}", true );
+				bracketCounter = 0;
+			}else
+				++bracketCounter;
+		}else{
+			--bracketCounter;
+			if(bracketCounter <= 0)
+				end = endBracket;
+			endBracket = inStr( in, "}",,, ++endBracket );
+		}
 
-		if( endBracket < firstBracket )
-			break;
+		if(bracketCounter <= 0)
+		{
+			if(start == 0)
+				temp = mid( in, start, end );
+			else 
+				temp = mid( in, start, end - start );
+			start = InStr( in, "{",,, end );
 
-		bracketPositions.AddItem(++firstBracket);
+			splitted.AddItem(temp);
+
+			if( start == -1 )
+				break;
+		}
 	}
 
-	return firstBracket;
+	return splitted;
 }
 
 /** Splits the string into its sections. */ 
 function array<string> splitToSections(string in)
 {
+	local array<string> parsedtemp;
 	local array<string> parsed;
-	local string temp;
 	local int startBracket;
+	local int endBracket;
 	local int i;
 
+	while( InStr( in, "{" ) != -1 )
+	{
+		startBracket = InStr( in, "{", true );
+
+		endBracket = InStr( in, "}",,, startBracket );
+
+		parsedtemp.AddItem( removeExcessChar( mid( in, startBracket, endBracket - startBracket ) ) );
+
+		in = mid( in, 0, startBracket ) $ mid( in, endBracket + 1, len(in) );
+
+		if(endBracket == -1)
+			break;
+	}
+
+	for(i = parsedtemp.Length - 1; i >= 0 ; i--)
+	{
+		parsed.AddItem( parsedtemp[i] );
+	}
+
+	return parsed;
+
+	/*
 	startBracket = 0;
 	for( i = (bracketPositions.Length - 1); i >= 0; --i )
 	{
@@ -183,6 +259,7 @@ function array<string> splitToSections(string in)
 		// Removes the text we just took out of the string.
 		in = mid( in, 0, bracketPositions[i] ) $ mid( in, startBracket + 1, len( in ) );
 	}
+	*/
 
 	return parsed;
 }
@@ -202,9 +279,12 @@ function array<string> splitToVariables(string in)
 }
 
 /** Splits the string to readable valaues that can later be put into correct structs. */
-function array<string> splitToValue(string in)
+function ValueStruct splitToValue(string in)
 {
 	local array<string> splitted;
+	local ValueStruct   value;
+	
+	`log(in);
 
 	splitted = SplitString( in, ":" );
 
@@ -213,15 +293,17 @@ function array<string> splitToValue(string in)
 	if( splitted.Length > 2 )
 		`log("[JSON] To many values when splitted in SplitToValue: " $ splitted.Length $ ": " $ splitted[0] $ " . " $ splitted[1] $ " . " $ splitted[2] );
 
-	splitted[0] = mid( splitted[0], 1, len( splitted[0] ) - 2 );
+	value.type = mid( splitted[0], 1, len( splitted[0] ) - 2 );
 
 	if( float( splitted[1] ) == 0.0000f)
 	{
 		if( len( splitted[1] ) > 1 )
-			splitted[1] = mid( splitted[1], 1, len( splitted[1] ) - 2 );
+			value.value = mid( splitted[1], 1, len( splitted[1] ) - 2 );
+	}else{
+		value.value = splitted[1];
 	}
 
-	return splitted;
+	return value;
 }
 
 /** Splits the string where it finds ":" */
