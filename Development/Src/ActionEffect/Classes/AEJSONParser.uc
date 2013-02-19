@@ -40,12 +40,11 @@ function array<Array2D> fullParse(string in)
 /** Parse the string from server into a 2D array containing the main brackets. */
 function array<Array2D> parse(string in)
 {
-	local array<string>     mainBrackets;
-	local string            bracket;
-	local ValueStruct       asd;
 	local array<Array2D>    parsed2DArray;
 	local Array2D           parsedArray;
+	local array<string>     mainBrackets;
 	local array<string>     parsed;
+	local string            bracket;
 
 	if( Chr( Asc( in ) ) == "[" )
 		in = mid( in, 1, len(in) - 1 );
@@ -64,9 +63,6 @@ function array<Array2D> parse(string in)
 		parsed = splitToSections( bracket );
 		parsedArray = parseToValues( parsed );
 		parsed2DArray.AddItem( parsedArray );
-
-		//foreach parsedArray.variables( asd )
-		//	`log(asd.type $ " : " $ asd.value);
 	}
 
 	return parsed2DArray;
@@ -80,8 +76,6 @@ function Array2D parseToValues(array<string> in)
 	local string            stringValues;
 	local string            valueString;
 	
-	`log("\nNEW MISSION\n");
-	
 	foreach in( stringValues ){
 		values = splitToVariables( stringValues );
 
@@ -92,44 +86,6 @@ function Array2D parseToValues(array<string> in)
 
 	return values2D;
 }
-
-/*
-/** Parses the array into a more readable and readable variableArray 
- *  Returns variables splitted with ":" */
-function array<Array2D> parseToVariables(array<Array2D> in)
-{
-	local array<string>     variables;
-	local array<string>     value;
-	local array<Array2D>    returnArray;
-	local ValueStruct       valueS;
-
-	local Array2D           target;
-	local Array2D           valueArray;
-
-	local string            targetString; 
-	local string            targetVariable;
-
-	foreach in(target)
-	{
-		foreach target.arr(targetString)
-		{
-			variables = splitToVariables( targetString );
-			
-			foreach variables( targetVariable )
-			{
-				value = splitToValue( targetVariable );
-				valueS.type = value[0];
-				valueS.value = value[1];
-				valueArray.variables.AddItem( valueS );
-			}
-			returnArray.AddItem( valueArray );
-			valueArray.variables.Length = 0;
-		}
-	}
-
-	return returnArray;
-}
-*/
 
 /** Creates an array that contains an array with valuestruct * Type and Value */
 function array<Array2D> parseToMainChategories(array<Array2D> in)
@@ -177,8 +133,6 @@ function array<string> SplitFirstToEndBracket(string in)
 	local int           bracketCounter;
 
 	bracketPositions.Length = 0;
-	`log(len(in));
-	`log(in);
 
 	firstBracket = InStr( in, "{",,, firstBracket );
 	endBracket = InStr( in, "}",,, firstBracket );
@@ -208,13 +162,8 @@ function array<string> SplitFirstToEndBracket(string in)
 			else 
 				temp = mid( in, start, end - start );
 			start = InStr( in, "{",,, end );
-			//firstBracket = start;
 
 			splitted.AddItem(temp);
-
-			`log( mid( in, firstBracket, len(in) ) );
-
-			//if( endBracket == -1 )
 
 			if( start == -1 ){
 				moreBrackets = false;
@@ -255,27 +204,8 @@ function array<string> splitToSections(string in)
 	}
 
 	return parsed;
-
-	/*
-	startBracket = 0;
-	for( i = (bracketPositions.Length - 1); i >= 0; --i )
-	{
-		startBracket = InStr( in, "}",,, bracketPositions[i] );
-		
-		// Takes out the section we want.
-		temp = mid( in, bracketPositions[i], (startBracket - bracketPositions[i]) );
-		//`log(temp);
-		temp = removeExcessChar( temp );
-
-		parsed.InsertItem(i, temp);
-
-		// Removes the text we just took out of the string.
-		in = mid( in, 0, bracketPositions[i] ) $ mid( in, startBracket + 1, len( in ) );
-	}
-	*/
-
-	return parsed;
 }
+
 
 //-----------------------------------------------------------------------------
 // Array splits and other
@@ -296,8 +226,6 @@ function ValueStruct splitToValue(string in)
 {
 	local array<string> splitted;
 	local ValueStruct   value;
-	
-	`log(in);
 
 	splitted = SplitString( in, ":" );
 

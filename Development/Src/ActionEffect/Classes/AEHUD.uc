@@ -123,7 +123,10 @@ function addMissionInfo(string msg, optional bool bNoAdd)
 		MissionInfo.Length = 0;
 	}
 		
-	MissionInfo.AddItem(nullMsg);
+	if (msg != "")
+	{
+		MissionInfo.AddItem(nullMsg);
+	}
 }
 
 /** Set menu entry active with an "[>]". "Inactive" entries are marked with "[ ]". */

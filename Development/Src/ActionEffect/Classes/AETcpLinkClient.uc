@@ -192,8 +192,6 @@ event ReceivedText(string Text)
 		else
 			Text = tempString;
 
-		`log("[TcpLinkClient] ReceivedText:: " $Text);
-
 		returnedMessage = Text;
 		returnedArray = parseToArray(Text);
 		

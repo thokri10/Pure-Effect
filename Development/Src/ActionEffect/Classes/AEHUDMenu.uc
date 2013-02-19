@@ -4,7 +4,7 @@ class AEHUDMenu extends Actor
 	dependson(AEJSONparser);
 
 //-----------------------------------------------------------------------------
-// Structures
+// Structures & Enum
  
 /** Struct that represents the current active (selected) menu entry. */
 struct SelectStruct
@@ -12,6 +12,12 @@ struct SelectStruct
 	var int     id;
 	var string  name;
 };
+
+var enum menuPosition
+{
+	MENU_MISSION,
+	MENU_PROFILE
+} position;
 
 //-----------------------------------------------------------------------------
 // Classes
@@ -200,16 +206,26 @@ function Select()
 			if( menuSelections[selectedMenuSlot].name == "Show missions" )
 			{
 				MenuPath[0] = "missions";
+				position = MENU_MISSION;
+				bMenuSelection = true;
+				UpdateMenuFromPath();
+			}
+			else if( menuSelections[selectedMenuSlot].name == "Show profile" )
+			{
+				// soldiers is the folder where the server saves to profile info.
+				// Returns the profile with set username and password
+				menuPath[0] = "soldiers"; 
+				position = MENU_PROFILE;
 				bMenuSelection = true;
 				UpdateMenuFromPath();
 			}
 		}
-		// The second menu you get to. Should be splitted up after all the choices you have in main menu selections.
+		// The second menu you get to. 
+		// Should be splitted up after all the choices you have in main menu selections.
 		else if ( menuPath.Length == 1 )
 		{
 			if( MenuPath[0] == "missions" )
 			{
-				`log(selectedMenuSlot);
 				MenuPath[1] = string( selectedMenuSlot );
 
 				showMissionInfo(missions[selectedMenuSlot]);
@@ -246,22 +262,29 @@ function stringFromServer(string menuString)
 
 	parsedArray = PC.parser.fullParse( menuString );
 
-	foreach parsedArray( mission )
+	switch( position )
 	{
-		missions.AddItem( PC.myMissionObjective.parseArrayToSimpleStruct( mission.variables ) );
-	}
-
-	foreach missions( selectedMission )
-	{
-		foreach selectedMission.information( value )
+	case MENU_MISSION:
+		foreach parsedArray( mission )
 		{
-			if( value.type == "title" )
+			missions.AddItem( PC.myMissionObjective.parseArrayToSimpleStruct( mission.variables ) );
+		}
+
+		foreach missions( selectedMission )
+		{
+			foreach selectedMission.information( value )
 			{
-				selection.id = id++;
-				selection.name = value.value;
-				menuSelections.AddItem(selection);
+				if( value.type == "title" )
+				{
+					selection.id = id++;
+					selection.name = value.value;
+					menuSelections.AddItem(selection);
+				}
 			}
 		}
+	case MENU_PROFILE:
+		foreach parsedArray( mission )
+			showProfileInfo( mission.variables );
 	}
 
 	bMenuSelection = false;
@@ -289,6 +312,25 @@ function showMissionInfo(SimpleMissionStruct objective)
 	menuSelections.AddItem( selection );
 
 	initMenu();
+}
+
+/** Puts the profile info to screen */
+function showProfileInfo(array<ValueStruct> information)
+{
+	local ValueStruct   value;
+	local SelectStruct  selection;
+
+	PC.mHUD.addMissionInfo( "", true );
+	foreach information( value )
+	{
+		if      ( value.type == "id" )      PC.mHUD.addMissionInfo( "ID   : " $ value.value );
+		else if ( value.type == "name" )    PC.mHUD.addMissionInfo( "Name : " $ value.value );
+	}
+
+	selection.id = 0;
+	selection.name = "Itemlist";
+
+	menuSelections.AddItem( selection );
 }
 
 DefaultProperties
