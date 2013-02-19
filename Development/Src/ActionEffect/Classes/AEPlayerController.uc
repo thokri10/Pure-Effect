@@ -36,6 +36,8 @@ var AEWeaponCreator         myWeaponCreator;
 var HudLocalizedMessage     message;
 var int                     credits;
 
+var string test;
+
 
 //-----------------------------------------------------------------------------
 // Events 
@@ -147,4 +149,5 @@ DefaultProperties
 {
 	InputClass = class'AEPlayerInput'
 	pars = class'AEJSONParser'
+
 }

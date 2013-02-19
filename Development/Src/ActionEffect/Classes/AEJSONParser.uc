@@ -52,6 +52,7 @@ function array<Array2D> parse(string in)
 
 	nextBracket = 0;
 
+	`log("Length: " $ Len(in));
 	mainBrackets = SplitFirstToEndBracket( in );
 
 	if(mainBrackets.Length == 0)
@@ -168,6 +169,7 @@ function array<string> SplitFirstToEndBracket(string in)
 	local array<string>     splitted;
 	local string            temp;
 
+	local bool          moreBrackets;
 	local int           firstBracket;
 	local int	        start;
 	local int	        end;
@@ -175,11 +177,15 @@ function array<string> SplitFirstToEndBracket(string in)
 	local int           bracketCounter;
 
 	bracketPositions.Length = 0;
+	`log(len(in));
+	`log(in);
 
 	firstBracket = InStr( in, "{",,, firstBracket );
 	endBracket = InStr( in, "}",,, firstBracket );
+	start = 0;
+	moreBrackets = true;
 
-	while( InStr( in, "{",,, firstBracket ) != -1 )
+	while( moreBrackets )
 	{
 		if( endBracket > firstBracket ){
 			firstBracket = InStr( in, "{",,, ++firstBracket );
@@ -190,9 +196,9 @@ function array<string> SplitFirstToEndBracket(string in)
 				++bracketCounter;
 		}else{
 			--bracketCounter;
+			endBracket = inStr( in, "}",,, endBracket + 1 );
 			if(bracketCounter <= 0)
-				end = endBracket;
-			endBracket = inStr( in, "}",,, ++endBracket );
+				end = inStr( in, "}", true,, firstBracket );
 		}
 
 		if(bracketCounter <= 0)
@@ -202,11 +208,18 @@ function array<string> SplitFirstToEndBracket(string in)
 			else 
 				temp = mid( in, start, end - start );
 			start = InStr( in, "{",,, end );
+			//firstBracket = start;
 
 			splitted.AddItem(temp);
 
-			if( start == -1 )
+			`log( mid( in, firstBracket, len(in) ) );
+
+			//if( endBracket == -1 )
+
+			if( start == -1 ){
+				moreBrackets = false;
 				break;
+			}
 		}
 	}
 

@@ -164,11 +164,19 @@ event Closed()
     // connection using the same TcpLink instance.
 }
 
+event ReceivedLine(string Line)
+{
+	`log("dsaasddsa: " $ Line);
+}
+
 /** Receives the text from server. Runs automaticly when server send info to us. */
 event ReceivedText(string Text)
 {
+	local string tempString;
 	// receiving some text, note that the text includes line breaks
 	//`log("[TcpLinkClient] ReceivedText:: " $Text);
+
+	tempString = Text;
 
 	if (Text == "HTTP Basic: Access denied.\n")
 	{
@@ -177,6 +185,15 @@ event ReceivedText(string Text)
 	}
 	else
 	{
+		ReadText( Text );
+
+		if(len(Text) != 0)
+			Text = tempString $ Text;
+		else
+			Text = tempString;
+
+		`log("[TcpLinkClient] ReceivedText:: " $Text);
+
 		returnedMessage = Text;
 		returnedArray = parseToArray(Text);
 		
@@ -329,6 +346,8 @@ DefaultProperties
 	Password="secret"
 	UserNameAndPassword = "McDonald:secret";
 	AuthenticationKey = "";
+
+	LinkMode = MODE_Line;
 	
 	TargetHost = "www.geirhilmersen.com";
 	TargetPort = 8080;
