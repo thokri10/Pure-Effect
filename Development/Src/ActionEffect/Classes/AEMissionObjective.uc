@@ -200,10 +200,20 @@ function SpawnEnemies(int enemyNumber)
 		SpawnedBots.AddItem( spawnPoint.spawnBot(class'AEPawn_Bot', self) );
 	}
 
-	for (i = 0; i < enemyNumber; i++)
+	SpawnEscortBot(1);
+}
+
+/** Spawn the bot that the player is going to escort in the Escort gametype. */
+function SpawnEscortBot(int numberOfEscorts)
+{
+	local AEVolume_EscortBotSpawn escortSpawnPoint; 
+	local AEVolume_EscortBotSpawn target;
+
+	foreach WorldInfo.AllActors( class'AEVolume_EscortBotSpawn', target)
 	{
-		//SpawnedBots[i].MyController.GotoState('Attacking');
-		//`Log(" LOOOOOOOOOOOOL " $ SpawnedBots[i].GetStateName());
+		escortSpawnPoint = target;
+		SpawnedBots.AddItem(escortSpawnPoint.spawnBot(class'AEPawn_EscortBot', self));
+		`Log("LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOL");
 	}
 }
 
@@ -226,14 +236,14 @@ function botDied()
 	}
 }
 
-/** Complete and reset all vaiables and gives the reward to player. */
+/** Complete and reset all variables and gives the reward to player. */
 function MissionComplete()
 {
 	PC.mHUD.postError("Mission complete: Reward added to inventory");
 	printObjectiveMessage("", true);
 	printObjectiveInfo("", true);
 
-	botsKilled=0;
+	botsKilled = 0;
 
 	getMissionRewards();
 }

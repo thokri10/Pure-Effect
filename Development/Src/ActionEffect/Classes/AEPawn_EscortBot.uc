@@ -9,6 +9,23 @@ var vector NavGoalLocation;
  *  the final location (the goal/final path node). */
 var vector NextLocationToGoal;
 
+var array<AEPathNodeEscortBotFriendly> pathNodes;
+
+simulated function PostBeginPlay()
+{
+	local AEPathNodeEscortBotFriendly escortPathNode;
+	local AEPathNodeEscortBotFriendly target;
+
+	super.PostBeginPlay();
+
+	foreach WorldInfo.AllNavigationPoints(class'AEPathNodeEscortBotFriendly', target)
+	{
+		escortPathNode = target;
+		pathNodes.AddItem(escortPathNode);
+		`Log("LOOOOOOOOOOOODFOJISDFHIFSKS");
+	}
+}
+
 /** Makes sure the bot is on the ground upon possible possession. */
 function Possess(Pawn aPawn, bool bVehicleTransition)
 {
