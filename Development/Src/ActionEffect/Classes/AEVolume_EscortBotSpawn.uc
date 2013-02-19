@@ -1,4 +1,5 @@
-class AEVolume_BotSpawn extends Actor
+/** Spawn point for your escort target in the Escort game type. */
+class AEVolume_EscortBotSpawn extends Actor
 	placeable;
 
 var(SpawnPoints) array<AENavigationPoint_Spawn> spawnPoints;
