@@ -2,15 +2,19 @@
 class AEVolume_EscortBotSpawn extends Actor
 	placeable;
 
-var(SpawnPoints) array<AENavigationPoint_Spawn> spawnPoints;
+var(SpawnPoints) array<AENavigationPoint_EscortBotSpawn> spawnPoints;
 
-function AEPawn_Bot spawnBot(class<AEPawn_Bot> bot, AEMissionObjective spawnOwner)
+function AEPawn_EscortBot spawnBot(class<AEPawn_EscortBot> bot, AEMissionObjective spawnOwner)
 {
-	local AENavigationPoint_Spawn point;
+	local AENavigationPoint_EscortBotSpawn point;
 
 	foreach spawnPoints( point )
 	{
-		if(!point.bInUse){ point.bInUse=true; break; }
+		if (!point.bInUse) 
+		{ 
+			point.bInUse = true; 
+			break; 
+		}
 	}
 
 	return spawn(bot, spawnOwner,, point.Location, point.Rotation,, true);
@@ -18,7 +22,7 @@ function AEPawn_Bot spawnBot(class<AEPawn_Bot> bot, AEMissionObjective spawnOwne
 
 function resetSpawnPoints()
 {
-	local AENavigationPoint_Spawn point;
+	local AENavigationPoint_EscortBotSpawn point;
 
 	foreach spawnPoints( point )
 	{

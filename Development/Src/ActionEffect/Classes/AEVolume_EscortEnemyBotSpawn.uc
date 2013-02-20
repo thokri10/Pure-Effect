@@ -1,4 +1,4 @@
-/** Spawn point for enemy bots that try to kill you and your escort target
+/** VOLUME for the Spawn points for enemy bots that try to kill you and your escort target
  *  in the Escort game type. */
 class AEVolume_EscortEnemyBotSpawn extends Actor
 	placeable;

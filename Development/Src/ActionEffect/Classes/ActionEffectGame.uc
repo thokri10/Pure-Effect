@@ -1,21 +1,10 @@
 /** Main game class. */
 class ActionEffectGame extends UTGame;
 
+/** Overrode this function. Currently doesn't do anything special. */
 function PostBeginPlay()
 {
-	//local AENavigationPoint_EscortBotSpawn spawnPoint; 
-	//local AENavigationPoint_EscortBotSpawn target;
-
 	super.PostBeginPlay();
-	
-	`Log("CUNTSAAAAAAAAAAAAAAAAAAACK!");
-
-	//foreach WorldInfo.AllActors( class'AENavigationPoint_EscortBotSpawn', target )
-	//{
-	//	spawnPoint = target;
-	//	//spawnPoint.Spawn('AEPawn_Bot');
-	//	`Log("LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOL");
-	//}
 }
 
 /** Spawn and initialize a bot. */   

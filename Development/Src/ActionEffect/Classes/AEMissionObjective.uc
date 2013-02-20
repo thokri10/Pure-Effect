@@ -35,6 +35,14 @@ struct RewardStruct
 	var string Weapon;
 };
 
+/** Game types. */
+enum AEGameType
+{
+	SEARCH_AND_DESTROY,
+	ESCORT,
+	NO_GAMETYPE
+};
+
 //-----------------------------------------------------------------------------
 // Variables
 
@@ -54,12 +62,17 @@ var AEPlayerController  PC;
 
 // We want to have control over all the pawns we have spawned in this objective. 
 // Now we have a easy way to check how many bots we have killed. 
-var array<AEPawn_Bot>   SpawnedBots;
+var array<AEPawn_Bot>           SpawnedBots;
+
+/** The escort bots that we spawn in the gametype Escort. */
+var array<AEPawn_EscortBot>     SpawnedEscortBots;
 
 // Initialize the struct to hold the default variables of our mission.
 // Then we can easily restart our mission at any time.
 var MissionObjectives   AEObjectives;
 
+/** Gametype of the mission. */
+var AEGameType missionGameType;
 
 //-----------------------------------------------------------------------------
 // Init
@@ -178,6 +191,22 @@ function activateObjectives(MissionObjectives objectives)
 	printObjectiveMessage("BotsKilled: " $ botsKilled $ " / " $ objectives.MOEnemies);
 	createObjectiveInfo();
 
+	switch (AEObjectives.category)
+	{
+		case "Search and destroy":
+			missionGameType = SEARCH_AND_DESTROY;
+			break;
+
+		case "Escort":
+			missionGameType = ESCORT;
+			break;
+
+		default:
+			`Log("[AEMissionObjective] failed to set gametype enum.");
+			missionGameType = NO_GAMETYPE;
+			break;
+	}
+
 	// long "if section" for all the objectives. 
 
 	SpawnEnemies(objectives.MOEnemies);
@@ -195,15 +224,25 @@ function SpawnEnemies(int enemyNumber)
 		spawnPoint = target;
 	}
 
-	for(i = 0; i < enemyNumber; i++)
+	for (i = 0; i < enemyNumber; i++)
 	{
 		SpawnedBots.AddItem( spawnPoint.spawnBot(class'AEPawn_Bot', self) );
 	}
 
-	for (i = 0; i < enemyNumber; i++)
+	SpawnEscortBot(1);
+}
+
+/** Spawn the bot that the player is going to escort in the Escort gametype. */
+function SpawnEscortBot(int numberOfEscorts)
+{
+	local AEVolume_EscortBotSpawn escortSpawnPoint; 
+	local AEVolume_EscortBotSpawn target;
+
+	foreach WorldInfo.AllActors( class'AEVolume_EscortBotSpawn', target)
 	{
-		//SpawnedBots[i].MyController.GotoState('Attacking');
-		//`Log(" LOOOOOOOOOOOOL " $ SpawnedBots[i].GetStateName());
+		escortSpawnPoint = target;
+		SpawnedEscortBots.AddItem(escortSpawnPoint.spawnBot(class'AEPawn_EscortBot', self));
+		`Log("LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOL");
 	}
 }
 
@@ -214,9 +253,12 @@ function botDied()
 
 	++botsKilled;
 
-	if(botsKilled < AEObjectives.MOEnemies){
+	if (botsKilled < AEObjectives.MOEnemies)
+	{
 		printObjectiveMessage("BotsKilled: " $ botsKilled $ " / " $ AEObjectives.MOEnemies);
-	}else{
+	}
+	else
+	{
 		MissionComplete();
 
 		foreach WorldInfo.AllActors( class'AEVolume_BotSpawn', target )
@@ -226,14 +268,14 @@ function botDied()
 	}
 }
 
-/** Complete and reset all vaiables and gives the reward to player. */
+/** Complete and reset all variables and gives the reward to player. */
 function MissionComplete()
 {
 	PC.mHUD.postError("Mission complete: Reward added to inventory");
 	printObjectiveMessage("", true);
 	printObjectiveInfo("", true);
 
-	botsKilled=0;
+	botsKilled = 0;
 
 	getMissionRewards();
 }
@@ -254,9 +296,12 @@ function createObjectiveInfo()
 /** Prints the objective info to screen * if bNoAddToMessage is true it clears screen */
 function printObjectiveInfo(string message, optional bool bNoAddToMessage)
 {
-	if(bNoAddToMessage){
+	if (bNoAddToMessage)
+	{
 		PC.mHUD.resetMissionInfo();
-	}else{
+	}
+	else
+	{
 		PC.mHUD.addMissionInfo(message);
 	}
 }
@@ -267,11 +312,15 @@ function printObjectiveMessage(string message, optional bool bReset)
 {
 	local HudLocalizedMessage msg;
 
-	if(bReset)
+	if (bReset)
+	{
 		msg.StringMessage = "";
+	}
 	else
+	{
 		msg.StringMessage = "[Objectives] " $ message;
-
+	}
+		
 	PC.mHUD.Message = msg;
 }
 
