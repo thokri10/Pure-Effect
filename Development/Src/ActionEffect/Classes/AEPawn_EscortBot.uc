@@ -1,13 +1,9 @@
 /** A bot that the player escorts during the Escort gametype. */
-class AEPawn_EscortBot extends AEPawn_Bot;
+class AEPawn_EscortBot extends AEPawn
+	placeable;
 
-// CHANGE VECTORS OUT WITH AENAVIGATIONPOINT_ESCORTENEMYBOTSPAWN LATER.
-/** The goal (final path node) where the Escort bot is walking to. */
-var vector NavGoalLocation;
-
-/** The next path node the Escort bot needs to walk to, in order to reach
- *  the final location (the goal/final path node). */
-var vector NextLocationToGoal;
+var AEAIEscortBotController     MyController;
+var AEMissionObjective          spawnOwner;
 
 var array<AEPathNodeEscortBotFriendly> pathNodes;
 
@@ -24,12 +20,52 @@ simulated function PostBeginPlay()
 		pathNodes.AddItem(escortPathNode);
 		`Log("LOOOOOOOOOOOODFOJISDFHIFSKS");
 	}
+
+	SetPhysics(PHYS_Walking);
+
+	if (ControllerClass == none)
+	{
+		ControllerClass = class'AEAIEscortBotController';
+
+		if (MyController == none)
+		{
+			MyController = AEAIEscortBotController(Controller);
+		}
+
+		spawnOwner = AEMissionObjective(Owner);
+
+		if (spawnOwner == none)
+		{
+			`log("[AEPawn_EscortBot] Owner does not exist. Or can't be casted to AEMissionObjective");
+		}
+	}
+	
+	SetCharacterClassFromInfo(class'UTFamilyInfo_Liandri_Male');
+
+	AddDefaultInventory();
 }
 
 /** Makes sure the bot is on the ground upon possible possession. */
 function Possess(Pawn aPawn, bool bVehicleTransition)
 {
 	MyController.Possess(aPawn, bVehicleTransition);
+}
+
+function SpawnDefaultController()
+{
+	Super.SpawnDefaultController();
+}
+
+function bool Died(Controller Killer, class<DamageType> damageType, Vector HitLocation)
+{
+	if (spawnOwner == none)
+	{
+		spawnOwner = AEMissionObjective(Owner);
+	}
+		
+	spawnOwner.botDied();
+
+	return super.Died(Killer, damageType, HitLocation);
 }
 
 //state MoveToGoal 
@@ -39,5 +75,6 @@ function Possess(Pawn aPawn, bool bVehicleTransition)
 
 DefaultProperties
 {
-
+	ControllerClass = class'AEAIEscortBotController';
 }
+
