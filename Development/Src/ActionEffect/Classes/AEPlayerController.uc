@@ -8,6 +8,10 @@ class AEPlayerController extends UTPlayerController
 // Character that the player controls.
 var AEPawn_Player           myPawn;
 
+// Holds our playerinfo to the server. This also changes playerpawn behavior when we get items.
+var class<AEPlayerInfo>     PlayerInfo;
+var AEPlayerInfo            myPlayerInfo;
+
 // Network module used to gain weapon info from server.
 var AETcpLinkClient         myTcpLink;
 
@@ -66,6 +70,12 @@ simulated event PostBeginPlay()
 	myMenu.PC = self;
 
 	parser = new pars;
+
+	myPlayerInfo = new PlayerInfo;
+	myPlayerInfo.PC = self;
+	myPlayerInfo.myTcpClient = myTcpLink;
+	myPlayerInfo.myWeaponCreator = myWeaponCreator;
+
 
 	// Connect to server.
 	//myTcpLink.ResolveMe();
@@ -147,6 +157,7 @@ exec function UseItem(int slot)
 
 DefaultProperties
 {
+	PlayerInfo = class'AEPlayerInfo'
 	InputClass = class'AEPlayerInput'
 	pars = class'AEJSONParser'
 

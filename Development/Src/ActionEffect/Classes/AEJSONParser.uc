@@ -51,7 +51,6 @@ function array<Array2D> parse(string in)
 
 	nextBracket = 0;
 
-	`log("Length: " $ Len(in));
 	mainBrackets = SplitFirstToEndBracket( in );
 
 	if(mainBrackets.Length == 0)

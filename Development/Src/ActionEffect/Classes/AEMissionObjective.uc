@@ -247,8 +247,8 @@ function createObjectiveInfo()
 	printObjectiveInfo( "Category: "    $   AEObjectives.category, true);
 	printObjectiveInfo( "Title: "       $   AEObjectives.title);
 	printObjectiveInfo( "Map: "         $   AEObjectives.mapName);
-	//printObjectiveInfo( "Reward: "      $   AEObjectives.reward);
 	printObjectiveInfo( "Description: " $   AEObjectives.description);
+	//printObjectiveInfo( "Reward: "      $   AEObjectives.reward);
 }
 
 /** Prints the objective info to screen * if bNoAddToMessage is true it clears screen */

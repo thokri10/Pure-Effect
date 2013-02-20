@@ -13,17 +13,20 @@ struct SelectStruct
 	var string  name;
 };
 
-var enum menuPosition
+var enum MENUPATHSTRUCT
 {
-	MENU_MISSION,
-	MENU_PROFILE
-} position;
+	MENUPATH_MISSION,
+	MENUPATH_PROFILE,
+	MENUPATH_PROFILEINFO,
+} Path;
 
 //-----------------------------------------------------------------------------
 // Classes
 
 /** Controller for the player. */
-var AEPlayerController          PC;
+var AEPlayerController  PC;
+/** Player information */
+var AEPlayerInfo        playerInfo;
 
 
 //-----------------------------------------------------------------------------
@@ -33,6 +36,7 @@ var AEPlayerController          PC;
  *  Easy to remove the last path and go back in menu.
  */
 var array<string>               menuPath;
+var array<MENUPATHSTRUCT>       pathList;
 
 /** Saves all the available missions in an array for us. */
 var array<MissionObjectives>    menuMissions;
@@ -184,6 +188,8 @@ function Select()
 {
 	if(selectedMenuSlot == BACK)
 	{
+		pathList.Length = pathList.Length - 1;
+
 		if( menuPath.Length == 0 ){
 			ConsoleCommand("quit");
 		}
@@ -206,7 +212,7 @@ function Select()
 			if( menuSelections[selectedMenuSlot].name == "Show missions" )
 			{
 				MenuPath[0] = "missions";
-				position = MENU_MISSION;
+				Path = MENUPATH_MISSION;
 				bMenuSelection = true;
 				UpdateMenuFromPath();
 			}
@@ -215,7 +221,7 @@ function Select()
 				// soldiers is the folder where the server saves to profile info.
 				// Returns the profile with set username and password
 				menuPath[0] = "soldiers"; 
-				position = MENU_PROFILE;
+				Path = MENUPATH_PROFILE;
 				bMenuSelection = true;
 				UpdateMenuFromPath();
 			}
@@ -224,11 +230,17 @@ function Select()
 		// Should be splitted up after all the choices you have in main menu selections.
 		else if ( menuPath.Length == 1 )
 		{
-			if( MenuPath[0] == "missions" )
+			if( Path == MENUPATH_MISSION )
 			{
 				MenuPath[1] = string( selectedMenuSlot );
 
 				showMissionInfo(missions[selectedMenuSlot]);
+			}
+			else if( Path == MENUPATH_PROFILE )
+			{
+				menuPath[1] = playerInfo.ID $ "/items";
+				
+				UpdateMenuFromPath();
 			}
 		}
 
@@ -241,20 +253,25 @@ function Select()
 			}
 		}
 	}
+
+	if(pathList[pathList.Length - 1] != Path)
+		pathList.AddItem( Path );
+
+	`log(pathList[pathList.Length - 1]);
 }
 
 
 //-----------------------------------------------------------------------------
 // Menu Selection Init
 
-/** Gets a string from server that get parsed to a menu selection */
+/** Gets a string from server that get parsed to the correct menu */
 function stringFromServer(string menuString)
 {
-	local SimpleMissionStruct selectedMission;
+	local SimpleMissionStruct   selectedMission;
 	local ValueStruct           value;
-	local SelectStruct      selection;
-	local array<Array2D>    parsedArray;
-	local Array2D           mission;
+	local SelectStruct          selection;
+	local array<Array2D>        parsedArray;
+	local Array2D               mission;
 	local int id;
 	
 	resetMenuSelection();
@@ -262,29 +279,31 @@ function stringFromServer(string menuString)
 
 	parsedArray = PC.parser.fullParse( menuString );
 
-	switch( position )
+	switch( Path )
 	{
-	case MENU_MISSION:
-		foreach parsedArray( mission )
-		{
-			missions.AddItem( PC.myMissionObjective.parseArrayToSimpleStruct( mission.variables ) );
-		}
-
-		foreach missions( selectedMission )
-		{
-			foreach selectedMission.information( value )
+		case MENUPATH_MISSION:
+			foreach parsedArray( mission )
 			{
-				if( value.type == "title" )
+				missions.AddItem( PC.myMissionObjective.parseArrayToSimpleStruct( mission.variables ) );
+			}
+
+			foreach missions( selectedMission )
+			{
+				foreach selectedMission.information( value )
 				{
-					selection.id = id++;
-					selection.name = value.value;
-					menuSelections.AddItem(selection);
+					if( value.type == "title" )
+					{
+						selection.id = id++;
+						selection.name = value.value;
+						menuSelections.AddItem(selection);
+					}
 				}
 			}
-		}
-	case MENU_PROFILE:
-		foreach parsedArray( mission )
-			showProfileInfo( mission.variables );
+			break;
+		case MENUPATH_PROFILE:
+			foreach parsedArray( mission )
+				showProfileInfo( mission.variables );
+			break;
 	}
 
 	bMenuSelection = false;
@@ -317,15 +336,13 @@ function showMissionInfo(SimpleMissionStruct objective)
 /** Puts the profile info to screen */
 function showProfileInfo(array<ValueStruct> information)
 {
-	local ValueStruct   value;
 	local SelectStruct  selection;
+	
+	playerInfo = PC.myPlayerInfo.Initialize( information );
 
 	PC.mHUD.addMissionInfo( "", true );
-	foreach information( value )
-	{
-		if      ( value.type == "id" )      PC.mHUD.addMissionInfo( "ID   : " $ value.value );
-		else if ( value.type == "name" )    PC.mHUD.addMissionInfo( "Name : " $ value.value );
-	}
+	PC.mHUD.addMissionInfo( "ID   : " $ playerInfo.ID );
+	PC.mHUD.addMissionInfo( "Name : " $ playerInfo.name );
 
 	selection.id = 0;
 	selection.name = "Itemlist";
