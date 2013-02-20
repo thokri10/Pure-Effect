@@ -187,7 +187,7 @@ function preMenuSlot()
 	printInfoAutomatic();
 }
 
-/** Check if the menu should print anything anto screen when we have menu selection */
+/** Check if the menu should print anything onto screen when we have menu selection */
 function printInfoAutomatic()
 {
 	if( selectedMenuSlot != BACK )
@@ -380,6 +380,8 @@ function showItemList(array<Array2D> menuString)
 	local WeaponStruct weap;
 	local SelectStruct selection;
 	local int i;
+
+	playerInfo.weapons.Length = 0;
 
 	foreach menuString( values )
 	{
