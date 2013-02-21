@@ -170,6 +170,8 @@ function nextMenuSlot()
 	++selectedMenuSlot;
 
 	PC.mHUD.setMenuActive(selectedMenuSlot);
+
+	printInfoAutomatic();
 }
 
 /** Jumps up in the menu. */
@@ -181,6 +183,20 @@ function preMenuSlot()
 	--selectedMenuSlot;
 
 	PC.mHUD.setMenuActive(selectedMenuSlot);
+
+	printInfoAutomatic();
+}
+
+/** Check if the menu should print anything onto screen when we have menu selection */
+function printInfoAutomatic()
+{
+	if( selectedMenuSlot != BACK )
+	{
+		if( Path == MENUPATH_PROFILEINFO )
+		{
+			showAutomaticItemInfo();
+		}
+	}
 }
 
 /** Selects the selected choice in the menu. */
@@ -239,6 +255,8 @@ function Select()
 			else if( Path == MENUPATH_PROFILE )
 			{
 				menuPath[1] = playerInfo.ID $ "/items";
+
+				Path = MENUPATH_PROFILEINFO;
 				
 				UpdateMenuFromPath();
 			}
@@ -250,14 +268,15 @@ function Select()
 			{
 				PC.myMissionObjective.activateObjectives( activeMission );
 				resetMenuSelection();
-			}
+			} 
 		}
 	}
 
 	if(pathList[pathList.Length - 1] != Path)
 		pathList.AddItem( Path );
 
-	`log(pathList[pathList.Length - 1]);
+	// Prints out any info that should be printed to screen automaticly
+	showAutomaticItemInfo();
 }
 
 
@@ -271,7 +290,7 @@ function stringFromServer(string menuString)
 	local ValueStruct           value;
 	local SelectStruct          selection;
 	local array<Array2D>        parsedArray;
-	local Array2D               mission;
+	local Array2D               values;
 	local int id;
 	
 	resetMenuSelection();
@@ -282,9 +301,9 @@ function stringFromServer(string menuString)
 	switch( Path )
 	{
 		case MENUPATH_MISSION:
-			foreach parsedArray( mission )
+			foreach parsedArray( values )
 			{
-				missions.AddItem( PC.myMissionObjective.parseArrayToSimpleStruct( mission.variables ) );
+				missions.AddItem( PC.myMissionObjective.parseArrayToSimpleStruct( values.variables ) );
 			}
 
 			foreach missions( selectedMission )
@@ -301,8 +320,11 @@ function stringFromServer(string menuString)
 			}
 			break;
 		case MENUPATH_PROFILE:
-			foreach parsedArray( mission )
-				showProfileInfo( mission.variables );
+			foreach parsedArray( values )
+				showProfileInfo( values.variables );
+			break;
+		case MENUPATH_PROFILEINFO:
+			showItemList(parsedArray);
 			break;
 	}
 
@@ -340,14 +362,51 @@ function showProfileInfo(array<ValueStruct> information)
 	
 	playerInfo = PC.myPlayerInfo.Initialize( information );
 
-	PC.mHUD.addMissionInfo( "", true );
-	PC.mHUD.addMissionInfo( "ID   : " $ playerInfo.ID );
+	PC.mHUD.addMissionInfo( "ID   : " $ playerInfo.ID, true );
 	PC.mHUD.addMissionInfo( "Name : " $ playerInfo.name );
 
 	selection.id = 0;
 	selection.name = "Itemlist";
 
 	menuSelections.AddItem( selection );
+
+	initMenu();
+}
+
+/** Shows the items to screen and adds them to playerinfo class for later use. */
+function showItemList(array<Array2D> menuString)
+{
+	local Array2D values;
+	local WeaponStruct weap;
+	local SelectStruct selection;
+	local int i;
+
+	playerInfo.weapons.Length = 0;
+
+	foreach menuString( values )
+	{
+		playerInfo.weapons.AddItem( PC.myWeaponCreator.parseToStruct( values.variables ) );
+	}
+
+	foreach playerInfo.weapons( weap )
+	{
+		selection.id = i++;
+		selection.name = weap.type;
+
+		menuSelections.AddItem( selection );
+	}
+
+	initMenu();
+}
+
+function showAutomaticItemInfo()
+{
+	PC.mHUD.addMissionInfo("Type         : " $ playerInfo.weapons[ selectedMenuSlot ].type, true);
+	PC.mHUD.addMissionInfo("MagSize      : " $ playerInfo.weapons[ selectedMenuSlot ].magSize);
+	PC.mHUD.addMissionInfo("ReloadTime   : " $ playerInfo.weapons[ selectedMenuSlot ].reloadTime);
+	PC.mHUD.addMissionInfo("Speed        : " $ playerInfo.weapons[ selectedMenuSlot ].speed);
+	PC.mHUD.addMissionInfo("Spread       : " $ playerInfo.weapons[ selectedMenuSlot ].spread);
+	PC.mHUD.addMissionInfo("Damage       : " $ playerInfo.weapons[ selectedMenuSlot ].damage);
 }
 
 DefaultProperties
