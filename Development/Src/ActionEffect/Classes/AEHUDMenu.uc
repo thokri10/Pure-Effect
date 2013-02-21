@@ -15,6 +15,7 @@ struct SelectStruct
 
 var enum MENUPATHSTRUCT
 {
+	MENUPATH_MAIN,
 	MENUPATH_MISSION,
 	MENUPATH_PROFILE,
 	MENUPATH_PROFILEINFO,
@@ -60,6 +61,7 @@ var int     BACK;
  */
 var bool    bMenuSelection;
 var bool    bMenuInfo;
+var bool    bWatingForServer;
 
 
 //-----------------------------------------------------------------------------
@@ -71,6 +73,8 @@ var bool    bMenuInfo;
 simulated function PostBeginPlay()
 {
 	super.PostBeginPlay();
+	Path = MENUPATH_MAIN;
+	pathList.AddItem( Path );
 }
 
 
@@ -143,6 +147,8 @@ function UpdateMenuFromPath()
 			PC.myTcpLink.databasePath = PC.myTcpLink.databasePath $ "/";
 	}
 
+	bWatingForServer = true;
+
 	PC.myTcpLink.getMenuSelections();
 }
 
@@ -164,27 +170,33 @@ function setBack(int i)
 /** Jumps down in the menu. */
 function nextMenuSlot()
 {
-	if(selectedMenuSlot >= menuSelections.Length)
-		return;
+	if( !bWatingForServer )
+	{
+		if(selectedMenuSlot >= menuSelections.Length)
+			return;
 
-	++selectedMenuSlot;
+		++selectedMenuSlot;
 
-	PC.mHUD.setMenuActive(selectedMenuSlot);
+		PC.mHUD.setMenuActive(selectedMenuSlot);
 
-	printInfoAutomatic();
+		printInfoAutomatic();
+	}
 }
 
 /** Jumps up in the menu. */
 function preMenuSlot()
 {
-	if( selectedMenuSlot < 1 )
-		return;
+	if( !bWatingForServer )
+	{
+		if( selectedMenuSlot < 1 )
+			return;
 
-	--selectedMenuSlot;
+		--selectedMenuSlot;
 
-	PC.mHUD.setMenuActive(selectedMenuSlot);
+		PC.mHUD.setMenuActive(selectedMenuSlot);
 
-	printInfoAutomatic();
+		printInfoAutomatic();
+	}
 }
 
 /** Check if the menu should print anything onto screen when we have menu selection */
@@ -202,81 +214,87 @@ function printInfoAutomatic()
 /** Selects the selected choice in the menu. */
 function Select()
 {
-	if(selectedMenuSlot == BACK)
+	if( !bWatingForServer )
 	{
-		pathList.Length = pathList.Length - 1;
+		if(selectedMenuSlot == BACK)
+		{
+			pathList.Length = pathList.Length - 1;
+			Path = pathList[pathList.Length - 1];
 
-		if( menuPath.Length == 0 ){
-			ConsoleCommand("quit");
-		}
-		if(menuPath.Length == 1){
-			MenuPath.Length = menuPath.Length - 1;
-			setMainMenu();
-		}
-		else if(MenuPath[menuPath.Length - 1] != "")
-		{
-			MenuPath.Length = menuPath.Length - 1;
-			bMenuSelection = true;
-			UpdateMenuFromPath();
-		}
-	}
-	else
-	{
-		// Main menu choices. Add more under here when you add more.
-		if( menuPath.Length == 0 )
-		{
-			if( menuSelections[selectedMenuSlot].name == "Show missions" )
-			{
-				MenuPath[0] = "missions";
-				Path = MENUPATH_MISSION;
-				bMenuSelection = true;
-				UpdateMenuFromPath();
+			if( menuPath.Length == 0 ){
+				ConsoleCommand("quit");
 			}
-			else if( menuSelections[selectedMenuSlot].name == "Show profile" )
+			if(menuPath.Length == 1){
+				MenuPath.Length = menuPath.Length - 1;
+				setMainMenu();
+			}
+			else if(MenuPath[menuPath.Length - 1] != "")
 			{
-				// soldiers is the folder where the server saves to profile info.
-				// Returns the profile with set username and password
-				menuPath[0] = "soldiers"; 
-				Path = MENUPATH_PROFILE;
+				MenuPath.Length = menuPath.Length - 1;
 				bMenuSelection = true;
 				UpdateMenuFromPath();
 			}
 		}
-		// The second menu you get to. 
-		// Should be splitted up after all the choices you have in main menu selections.
-		else if ( menuPath.Length == 1 )
+		else
 		{
-			if( Path == MENUPATH_MISSION )
+			// Main menu choices. Add more under here when you add more.
+			if( menuPath.Length == 0 )
 			{
-				MenuPath[1] = string( selectedMenuSlot );
-
-				showMissionInfo(missions[selectedMenuSlot]);
+				if( menuSelections[selectedMenuSlot].name == "Show missions" )
+				{
+					MenuPath[0] = "missions";
+					Path = MENUPATH_MISSION;
+					bMenuSelection = true;
+					UpdateMenuFromPath();
+				}
+				else if( menuSelections[selectedMenuSlot].name == "Show profile" )
+				{
+					// soldiers is the folder where the server saves to profile info.
+					// Returns the profile with set username and password
+					menuPath[0] = "soldiers"; 
+					Path = MENUPATH_PROFILE;
+					bMenuSelection = true;
+					UpdateMenuFromPath();
+				}
 			}
-			else if( Path == MENUPATH_PROFILE )
+			// The second menu you get to. 
+			// Should be splitted up after all the choices you have in main menu selections.
+			else if ( menuPath.Length == 1 )
 			{
-				menuPath[1] = playerInfo.ID $ "/items";
+				if( Path == MENUPATH_MISSION )
+				{
+					MenuPath[1] = string( selectedMenuSlot );
 
-				Path = MENUPATH_PROFILEINFO;
+					showMissionInfo(missions[selectedMenuSlot]);
+				}
+				else if( Path == MENUPATH_PROFILE )
+				{
+					menuPath[1] = playerInfo.ID $ "/items";
+
+					Path = MENUPATH_PROFILEINFO;
 				
-				UpdateMenuFromPath();
+					UpdateMenuFromPath();
+				}
+			}
+
+			else if( menuPath.Length == 2 )
+			{
+				if( menuSelections[selectedMenuSlot].name == "Accept" )
+				{
+					PC.myMissionObjective.activateObjectives( activeMission );
+					resetMenuSelection();
+				} 
 			}
 		}
 
-		else if( menuPath.Length == 2 )
+		if(pathList[pathList.Length - 1] != Path)
 		{
-			if( menuSelections[selectedMenuSlot].name == "Accept" )
-			{
-				PC.myMissionObjective.activateObjectives( activeMission );
-				resetMenuSelection();
-			} 
+			pathList.AddItem( Path );
 		}
+
+		// Prints out any info that should be printed to screen automaticly
+		printInfoAutomatic();
 	}
-
-	if(pathList[pathList.Length - 1] != Path)
-		pathList.AddItem( Path );
-
-	// Prints out any info that should be printed to screen automaticly
-	showAutomaticItemInfo();
 }
 
 
@@ -295,6 +313,7 @@ function stringFromServer(string menuString)
 	
 	resetMenuSelection();
 	missions.Length = 0;
+	bWatingForServer = false;
 
 	parsedArray = PC.parser.fullParse( menuString );
 
@@ -363,7 +382,7 @@ function showProfileInfo(array<ValueStruct> information)
 	playerInfo = PC.myPlayerInfo.Initialize( information );
 
 	PC.mHUD.addMissionInfo( "ID   : " $ playerInfo.ID, true );
-	PC.mHUD.addMissionInfo( "Name : " $ playerInfo.name );
+	PC.mHUD.addMissionInfo( "Name : " $ playerInfo.playerName );
 
 	selection.id = 0;
 	selection.name = "Itemlist";
