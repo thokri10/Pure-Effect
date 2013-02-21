@@ -121,6 +121,10 @@ function SimpleMissionStruct parseArrayToSimpleStruct(array<ValueStruct> mission
 			else
 				++numberOfRewards;
 		}
+		else if( missionArray[i].type == "slot" )
+		{
+			`log( i $ " : " $ missionArray[i].value );
+		}
 		else if( missionArray[i].type == "" )
 		{
 			`log("[MissionSimpleParsing] Type is blank");
