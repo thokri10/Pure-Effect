@@ -16,6 +16,7 @@ struct WeaponStruct
 	var int     magSize;
 	var float   damage;
 	var float   speed;
+	var string  slot;
 };
 
 
@@ -65,13 +66,14 @@ function WeaponStruct parseToStruct(array<ValueStruct> values)
 
 	foreach values( value )
 	{
-		if      (value.type == "type")          returnWeapon.type       = value.value;   
+		if      (value.type == "type")          returnWeapon.type       = value.value;
 		else if (value.type == "damage")        returnWeapon.damage     = float ( value.value );
 		else if (value.type == "speed")         returnWeapon.speed      = float ( value.value );
-		else if (value.type == "id")            returnWeapon.id         = int   ( value.value );         
+		else if (value.type == "id")            returnWeapon.id         = int   ( value.value );
 		else if (value.type == "ammo_pool")     returnWeapon.magSize    = int   ( value.value );
 		else if (value.type == "fire_rate")     returnWeapon.reloadTime = float ( value.value );
 		else if (value.type == "spread")        returnWeapon.spread     = float ( value.value );
+		else if (value.type == "slot")          returnWeapon.slot       = value.value;
 		else `log("[WeaponCreatorParse] No known type: " $ value.type);
 	}
 

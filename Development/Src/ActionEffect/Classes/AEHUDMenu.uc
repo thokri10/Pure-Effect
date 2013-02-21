@@ -17,8 +17,9 @@ var enum MENUPATHSTRUCT
 {
 	MENUPATH_MAIN,
 	MENUPATH_MISSION,
+	MENUPATH_MISSIONINFO,
 	MENUPATH_PROFILE,
-	MENUPATH_PROFILEINFO,
+	MENUPATH_PROFILEINFO
 } Path;
 
 //-----------------------------------------------------------------------------
@@ -107,6 +108,7 @@ function initMenu()
 function resetMenuSelection()
 {
 	PC.mHUD.addMenuSelections("", true);
+	PC.mHUD.addMissionInfo("", true);
 	menuSelections.Length = 0;
 	PC.mHUD.setMenuActive(0);
 	selectedMenuSlot=0;
@@ -208,6 +210,15 @@ function printInfoAutomatic()
 		{
 			showAutomaticItemInfo();
 		}
+		else if( Path == MENUPATH_MISSIONINFO )
+		{
+			if(selectedMenuSlot == 0)
+				showAutomaticMissionInfo();
+			else if(selectedMenuSlot > 1)
+				showAutomaticMissionItemInfo();
+			else
+				PC.mHUD.addMissionInfo("", true);
+		}
 	}
 }
 
@@ -264,6 +275,8 @@ function Select()
 				if( Path == MENUPATH_MISSION )
 				{
 					MenuPath[1] = string( selectedMenuSlot );
+
+					Path = MENUPATH_MISSIONINFO;
 
 					showMissionInfo(missions[selectedMenuSlot]);
 				}
@@ -356,20 +369,31 @@ function stringFromServer(string menuString)
 function showMissionInfo(SimpleMissionStruct objective)
 {
 	local SelectStruct      selection;
+	local WeaponStruct      weap;
+	local int i;
 
 	activeMission = PC.myMissionObjective.MissionFromSimpleStruct( objective );
 
 	resetMenuSelection();
 
-	PC.mHUD.addMissionInfo( "Category    : " $ activeMission.category, true );
-	PC.mHUD.addMissionInfo( "Name        : " $ activeMission.title );
-	PC.mHUD.addMissionInfo( "Map         : " $ activeMission.mapName );
-	PC.mHUD.addMissionInfo( "description : " $ activeMission.description );
+	showAutomaticMissionInfo();
 
-	selection.id = 0;
+	selection.id = i++;
 	selection.name = "Accept";
 
 	menuSelections.AddItem( selection );
+	
+	selection.id = i++;
+	selection.name = "Reward(s): ";
+
+	menuSelections.AddItem( selection );
+
+	foreach activeMission.rewards( weap )
+	{
+		selection.id = i++;
+		selection.name = weap.type;
+		menuSelections.AddItem( selection );
+	}
 
 	initMenu();
 }
@@ -402,9 +426,12 @@ function showItemList(array<Array2D> menuString)
 
 	playerInfo.weapons.Length = 0;
 
+	`log("MENUSTRINGLENGTH: " $ menuString.Length);
+
 	foreach menuString( values )
 	{
-		playerInfo.weapons.AddItem( PC.myWeaponCreator.parseToStruct( values.variables ) );
+		playerInfo.addItems( values.variables );
+		//playerInfo.weapons.AddItem( PC.myWeaponCreator.parseToStruct( values.variables ) );
 	}
 
 	foreach playerInfo.weapons( weap )
@@ -416,8 +443,20 @@ function showItemList(array<Array2D> menuString)
 	}
 
 	initMenu();
+
+	showAutomaticItemInfo();
 }
 
+/** Show the mission info to screen */
+function showAutomaticMissionInfo()
+{
+	PC.mHUD.addMissionInfo( "Category    : " $ activeMission.category, true );
+	PC.mHUD.addMissionInfo( "Name        : " $ activeMission.title );
+	PC.mHUD.addMissionInfo( "Map         : " $ activeMission.mapName );
+	PC.mHUD.addMissionInfo( "description : " $ activeMission.description );
+}
+
+/** Show information for the item you have targeted in itemlist */ 
 function showAutomaticItemInfo()
 {
 	PC.mHUD.addMissionInfo("Type         : " $ playerInfo.weapons[ selectedMenuSlot ].type, true);
@@ -426,6 +465,19 @@ function showAutomaticItemInfo()
 	PC.mHUD.addMissionInfo("Speed        : " $ playerInfo.weapons[ selectedMenuSlot ].speed);
 	PC.mHUD.addMissionInfo("Spread       : " $ playerInfo.weapons[ selectedMenuSlot ].spread);
 	PC.mHUD.addMissionInfo("Damage       : " $ playerInfo.weapons[ selectedMenuSlot ].damage);
+	PC.mHUD.addMissionInfo("Slot         : " $ playerInfo.weapons[ selectedMenuSlot ].slot);
+}
+
+/** Show targeted mission item in list. */
+function showAutomaticMissionItemInfo()
+{
+	PC.mHUD.addMissionInfo("Type         : " $ activeMission.rewards[ selectedMenuSlot - 2 ].type, true);
+	PC.mHUD.addMissionInfo("MagSize      : " $ activeMission.rewards[ selectedMenuSlot - 2 ].magSize);
+	PC.mHUD.addMissionInfo("ReloadTime   : " $ activeMission.rewards[ selectedMenuSlot - 2 ].reloadTime);
+	PC.mHUD.addMissionInfo("Speed        : " $ activeMission.rewards[ selectedMenuSlot - 2 ].speed);
+	PC.mHUD.addMissionInfo("Spread       : " $ activeMission.rewards[ selectedMenuSlot - 2 ].spread);
+	PC.mHUD.addMissionInfo("Damage       : " $ activeMission.rewards[ selectedMenuSlot - 2 ].damage);
+	PC.mHUD.addMissionInfo("Slot         : " $ activeMission.rewards[ selectedMenuSlot - 2 ].slot);
 }
 
 DefaultProperties

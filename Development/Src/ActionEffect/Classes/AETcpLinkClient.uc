@@ -335,7 +335,6 @@ function setUserInfo(string info)
 		`log("[TcpLinkClient] Log in accepted");
 		PC.mHUD.addUserInfo("Name : " $ playerInfo.name);
 	}
-
 }
 
 DefaultProperties
@@ -347,6 +346,8 @@ DefaultProperties
 
 	LinkMode = MODE_Line;
 	
+	//TargetHost = "pure-effect.herokuapp.com" // Other host
+	//TargetPort = 80
 	TargetHost = "www.geirhilmersen.com";
 	TargetPort = 8080;
 

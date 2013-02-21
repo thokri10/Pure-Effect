@@ -38,6 +38,26 @@ function AEPlayerInfo Initialize(array<ValueStruct> inf)
 	return self;
 }
 
+function addItems(array<ValueStruct> itemArray)
+{          
+	local ValueStruct        value;
+
+	foreach itemArray( value )
+	{
+		if( value.type == "slot" )
+		{
+			if( value.value == "weapon" )
+				weapons.AddItem( myWeaponCreator.parseToStruct( itemArray ) );
+			else if( value.value == "item" )
+				`log("Adding item");
+			else if( value.value == "jetpack" )
+				`log("JetPack");
+
+			break;
+		}
+	}
+}
+
 DefaultProperties
 {
 }

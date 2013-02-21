@@ -103,7 +103,6 @@ function SimpleMissionStruct parseArrayToSimpleStruct(array<ValueStruct> mission
 	local int   numberOfRewards;
 	local int   i;
 
-	//`log("\n\nStarting Mission Parsing: \nLENGTH: " $ missionArray.Length );
 	for( i = 0; i < missionArray.Length; i++) 
 	{
 		//`log(missionArray[i].type $ " : " $ missionArray[i].value );
@@ -111,7 +110,7 @@ function SimpleMissionStruct parseArrayToSimpleStruct(array<ValueStruct> mission
 		{
 			Type = "info";
 		}
-		else if( missionArray[i].type == "type" )
+		else if( missionArray[i].type == "properties" )
 		{
 			Type = "reward";
 			mission.rewards.AddItem( temp );
@@ -120,10 +119,6 @@ function SimpleMissionStruct parseArrayToSimpleStruct(array<ValueStruct> mission
 				existingReward=true;
 			else
 				++numberOfRewards;
-		}
-		else if( missionArray[i].type == "slot" )
-		{
-			`log( i $ " : " $ missionArray[i].value );
 		}
 		else if( missionArray[i].type == "" )
 		{
