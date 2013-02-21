@@ -165,6 +165,7 @@ function resetMissionInfo()
 
 	nullMsg.StringMessage = "";
 	tmp[0] = nullMsg;
+	MissionInfo.Length = 0;
 
 	MissionInfo = tmp;
 }
