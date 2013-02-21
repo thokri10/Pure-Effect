@@ -1,10 +1,16 @@
 /** Main game class. */
 class ActionEffectGame extends UTGame;
 
+//var class<AEAIEscortBotController> dasdassa;
+//var AEAIEscortBotController doasdpas;
+
 /** Overrode this function. Currently doesn't do anything special. */
 function PostBeginPlay()
 {
 	super.PostBeginPlay();
+
+	//doasdpas = new dasdassa;
+	//doasdpas = Spawn(class'AEAIEscortBotController');
 }
 
 /** Spawn and initialize a bot. */   
@@ -46,4 +52,6 @@ DefaultProperties
 
 	HUDType = class'AEHUD';
 	bUseClassicHUD = true;
+
+	//dasdassa = class'AEAIEscortBotController';
 }
