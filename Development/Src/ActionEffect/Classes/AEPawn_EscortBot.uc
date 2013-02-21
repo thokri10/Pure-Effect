@@ -6,20 +6,23 @@ var AEAIEscortBotController     MyController;
 var AEMissionObjective          spawnOwner;
 
 var array<AEPathNodeEscortBotFriendly> pathNodes;
+var()       array<NavigationPoint>  MyNavigationPoints;
+
+var ()  float       waitAtNode;
 
 simulated function PostBeginPlay()
 {
-	local AEPathNodeEscortBotFriendly escortPathNode;
-	local AEPathNodeEscortBotFriendly target;
+	//local AEPathNodeEscortBotFriendly escortPathNode;
+	//local AEPathNodeEscortBotFriendly target;
 
 	super.PostBeginPlay();
 
-	foreach WorldInfo.AllNavigationPoints(class'AEPathNodeEscortBotFriendly', target)
-	{
-		escortPathNode = target;
-		pathNodes.AddItem(escortPathNode);
-		`Log("LOOOOOOOOOOOODFOJISDFHIFSKS");
-	}
+	//foreach WorldInfo.AllNavigationPoints(class'AEPathNodeEscortBotFriendly', target)
+	//{
+	//	escortPathNode = target;
+	//	pathNodes.AddItem(escortPathNode);
+	//	`Log("LOOOOOOOOOOOODFOJISDFHIFSKS");
+	//}
 
 	SetPhysics(PHYS_Walking);
 
