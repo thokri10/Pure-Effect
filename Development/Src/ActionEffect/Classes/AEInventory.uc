@@ -1,8 +1,9 @@
 /** Inventory that contains player items (NOT WEAPONS). */
-class AEInventory extends Actor;
+class AEInventory extends Actor
+	dependson(AEJSONParser);
  
 /** Inventory that can hold up to three items. */
-var AEInventory_Item ItemList[3];
+var array<AEInventory_Item> ItemListFUCK;
 
 /** Controller for the player. */
 var AEPlayerController PC;
@@ -10,15 +11,40 @@ var AEPlayerController PC;
 /** Use an item. */
 function Use(int itemSlot)
 {
-	if( !ItemList[itemSlot].Use() )
+	if( !ItemListFUCK[itemSlot].use() )
 	{
+		`log("FAILED TO USE ITEM");
 	}
 }
 
 /** -Assigns- an item to a slot. */
 function AddItemToSlot(int slot, AEInventory_Item item)
 {
-	ItemList[slot] = item;
+	ItemListFUCK[slot] = item;
+}
+
+/** Creates an item from parsed json string */
+function AEInventory_Item createItem(array<ValueStruct> itemValues)
+{
+	local ValueStruct value;
+	local AEInventory_Item item;
+
+	item = spawn(class'AEInventory_Item', PC.myPawn,, PC.myPawn.Location,,, true);
+
+	foreach itemValues( value )
+	{
+		if( value.type == "type" ) 
+		{
+			if( value.value == "healthpack" )   item.Effects.AddItem(EFFECT_HEAL);
+			else if( value.value == "granade" ) item.Effects.AddItem(EFFECT_GRANADE);
+		}
+		else if( value.type == "name")      item.itemName       = value.value;
+		else if( value.type == "damage")    item.damage         = int(value.value);
+		else if( value.type == "cooldown")  item.Cooldown       = float(value.value);
+		else if( value.type == "quantity")  item.StackCounter   = int(value.value);
+	}
+
+	return item;
 }
 
 /** -Adds- an item to the inventory. 
@@ -30,24 +56,18 @@ function AddItem(AEInventory_Item item)
 {
 	local int i;
 
-	for(i = 0; i < 3; i++)
+	for(i = 0; i < ItemListFUCK.Length; i++)
 	{
-		if( ItemList[i] == item )
+		if( ItemListFUCK[i].itemName == item.itemName )
 		{
-			ItemList[i].add();
-			return;
-		}
-		else if( ItemList[i] == none )
-		{
-			ItemList[i] = item;
+			ItemListFUCK[i].add(item.StackCounter);
 			return;
 		}
 	}
+
+	ItemListFUCK.addItem(item);
 }
 
 DefaultProperties
 {
-	ItemList(0) = none;
-	ItemList(1) = none;
-	ItemList(2) = none;
 }

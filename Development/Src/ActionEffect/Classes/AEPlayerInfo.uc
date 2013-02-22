@@ -8,6 +8,7 @@ class AEPlayerInfo extends Object
 var AETcpLinkClient     myTcpClient;
 var AEWeaponCreator     myWeaponCreator;
 var AEPawn_Player       myPawn;
+var AEInventory         myInventory;
 var AEPlayerController  PC;
 
 
@@ -40,7 +41,7 @@ function AEPlayerInfo Initialize(array<ValueStruct> inf)
 
 function addItems(array<ValueStruct> itemArray)
 {          
-	local ValueStruct        value;
+	local ValueStruct   value;
 
 	foreach itemArray( value )
 	{
@@ -48,9 +49,9 @@ function addItems(array<ValueStruct> itemArray)
 		{
 			if( value.value == "weapon" )
 				weapons.AddItem( myWeaponCreator.parseToStruct( itemArray ) );
-			else if( value.value == "item" )
-				`log("Adding item");
-			else if( value.value == "jetpack" )
+			else if( value.value == "item") {
+				items.AddItem( myInventory.createItem( itemArray ) );
+			}else if( value.value == "jetpack" )
 				`log("JetPack");
 
 			break;

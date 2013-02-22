@@ -15,6 +15,7 @@ struct MissionObjectives
 	var string title;
 	var string description;
 	var array<WeaponStruct> rewards;
+	var array<AEInventory_Item> rewardItems;
 	var int MOEnemies;
 };
 
@@ -154,9 +155,21 @@ function MissionObjectives MissionFromSimpleStruct(SimpleMissionStruct simpleMis
 
 	foreach simpleMission.rewards( reward )
 	{
-		`log("Adding reward: " $ reward.variables.Length);
-		
-		objective.rewards.AddItem( PC.myWeaponCreator.parseToStruct( reward.variables ) );
+		foreach reward.variables( values )
+		{
+			if(values.type == "slot")
+			{
+				`log(values.type $ " : " $ values.value );
+				if(values.value == "weapon"){
+					objective.rewards.AddItem( PC.myWeaponCreator.parseToStruct( reward.variables ) );
+				}else if( values.value == "item"){
+					objective.rewardItems.AddItem( 
+						PC.myItemInventory.createItem( 
+						reward.variables ) );
+				}
+				break;
+			}
+		}		
 	}
 	
 	return objective;
@@ -169,9 +182,12 @@ function MissionObjectives MissionFromSimpleStruct(SimpleMissionStruct simpleMis
 function getMissionRewards()
 {
 	local WeaponStruct weap;
+	local AEInventory_Item item;
 
 	foreach AEObjectives.rewards( weap )
 		PC.addWeaponToInventory( PC.myWeaponCreator.CreateWeaponFromStruct( weap ) );
+	foreach AEObjectives.rewardItems( item )
+		PC.myItemInventory.AddItem( item );
 }
 
 //-----------------------------------------------------------------------------

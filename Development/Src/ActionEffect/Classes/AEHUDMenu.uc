@@ -204,19 +204,23 @@ function preMenuSlot()
 /** Check if the menu should print anything onto screen when we have menu selection */
 function printInfoAutomatic()
 {
+	local int index;
+
 	if( selectedMenuSlot != BACK )
 	{
 		if( Path == MENUPATH_PROFILEINFO )
 		{
-			showAutomaticItemInfo();
+			showAutomaticItemInfo(selectedMenuSlot);
 		}
 		else if( Path == MENUPATH_MISSIONINFO )
 		{
-			if(selectedMenuSlot == 0)
+			if(selectedMenuSlot == 0){
+				index = selectedMenuSlot;
 				showAutomaticMissionInfo();
-			else if(selectedMenuSlot > 1)
-				showAutomaticMissionItemInfo();
-			else
+			}else if(selectedMenuSlot > 1){
+				index = selectedMenuSlot - 2;
+				showAutomaticMissionItemInfo(index);
+			}else
 				PC.mHUD.addMissionInfo("", true);
 		}
 	}
@@ -369,7 +373,8 @@ function stringFromServer(string menuString)
 function showMissionInfo(SimpleMissionStruct objective)
 {
 	local SelectStruct      selection;
-	local WeaponStruct      weap;
+	local WeaponStruct      weaponReward;
+	local AEInventory_Item  itemReward;
 	local int i;
 
 	activeMission = PC.myMissionObjective.MissionFromSimpleStruct( objective );
@@ -388,10 +393,17 @@ function showMissionInfo(SimpleMissionStruct objective)
 
 	menuSelections.AddItem( selection );
 
-	foreach activeMission.rewards( weap )
+	foreach activeMission.rewards( weaponReward )
 	{
 		selection.id = i++;
-		selection.name = weap.type;
+		selection.name = weaponReward.type;
+		menuSelections.AddItem( selection );
+	}
+
+	foreach activeMission.rewardItems( itemReward )
+	{
+		selection.id = i++;
+		selection.name = itemReward.itemName;
 		menuSelections.AddItem( selection );
 	}
 
@@ -421,10 +433,12 @@ function showItemList(array<Array2D> menuString)
 {
 	local Array2D values;
 	local WeaponStruct weap;
+	local AEInventory_Item item;
 	local SelectStruct selection;
 	local int i;
 
 	playerInfo.weapons.Length = 0;
+	playerInfo.items.Length = 0;
 
 	`log("MENUSTRINGLENGTH: " $ menuString.Length);
 
@@ -442,9 +456,17 @@ function showItemList(array<Array2D> menuString)
 		menuSelections.AddItem( selection );
 	}
 
+	foreach playerInfo.items( item )
+	{
+		selection.id = i++;
+		selection.name = item.itemName;
+
+		menuSelections.AddItem( selection );
+	}
+
 	initMenu();
 
-	showAutomaticItemInfo();
+	showAutomaticItemInfo(selectedMenuSlot);
 }
 
 /** Show the mission info to screen */
@@ -457,27 +479,49 @@ function showAutomaticMissionInfo()
 }
 
 /** Show information for the item you have targeted in itemlist */ 
-function showAutomaticItemInfo()
+function showAutomaticItemInfo(int index)
 {
-	PC.mHUD.addMissionInfo("Type         : " $ playerInfo.weapons[ selectedMenuSlot ].type, true);
-	PC.mHUD.addMissionInfo("MagSize      : " $ playerInfo.weapons[ selectedMenuSlot ].magSize);
-	PC.mHUD.addMissionInfo("ReloadTime   : " $ playerInfo.weapons[ selectedMenuSlot ].reloadTime);
-	PC.mHUD.addMissionInfo("Speed        : " $ playerInfo.weapons[ selectedMenuSlot ].speed);
-	PC.mHUD.addMissionInfo("Spread       : " $ playerInfo.weapons[ selectedMenuSlot ].spread);
-	PC.mHUD.addMissionInfo("Damage       : " $ playerInfo.weapons[ selectedMenuSlot ].damage);
-	PC.mHUD.addMissionInfo("Slot         : " $ playerInfo.weapons[ selectedMenuSlot ].slot);
+	if(index < playerInfo.weapons.Length )
+	{
+		PC.mHUD.addMissionInfo("Type       : " $ playerInfo.weapons[ index ].type, true);
+		PC.mHUD.addMissionInfo("MagSize    : " $ playerInfo.weapons[ index ].magSize);
+		PC.mHUD.addMissionInfo("ReloadTime : " $ playerInfo.weapons[ index ].reloadTime);
+		PC.mHUD.addMissionInfo("Speed      : " $ playerInfo.weapons[ index ].speed);
+		PC.mHUD.addMissionInfo("Spread     : " $ playerInfo.weapons[ index ].spread);
+		PC.mHUD.addMissionInfo("Damage     : " $ playerInfo.weapons[ index ].damage);
+		PC.mHUD.addMissionInfo("Slot       : " $ playerInfo.weapons[ index ].slot);
+	}
+	else
+	{
+		index = index + playerInfo.weapons.Length - 2;
+		PC.mHUD.addMissionInfo("Name     : " $ playerInfo.items[ index ].itemName, true);
+		PC.mHUD.addMissionInfo("Delay    : " $ playerInfo.items[ index ].delay);
+		PC.mHUD.addMissionInfo("Cooldown : " $ playerInfo.items[ index ].Cooldown);
+		PC.mHUD.addMissionInfo("Damage   : " $ playerInfo.items[ index ].damage);
+	}
 }
 
 /** Show targeted mission item in list. */
-function showAutomaticMissionItemInfo()
+function showAutomaticMissionItemInfo(int index)
 {
-	PC.mHUD.addMissionInfo("Type         : " $ activeMission.rewards[ selectedMenuSlot - 2 ].type, true);
-	PC.mHUD.addMissionInfo("MagSize      : " $ activeMission.rewards[ selectedMenuSlot - 2 ].magSize);
-	PC.mHUD.addMissionInfo("ReloadTime   : " $ activeMission.rewards[ selectedMenuSlot - 2 ].reloadTime);
-	PC.mHUD.addMissionInfo("Speed        : " $ activeMission.rewards[ selectedMenuSlot - 2 ].speed);
-	PC.mHUD.addMissionInfo("Spread       : " $ activeMission.rewards[ selectedMenuSlot - 2 ].spread);
-	PC.mHUD.addMissionInfo("Damage       : " $ activeMission.rewards[ selectedMenuSlot - 2 ].damage);
-	PC.mHUD.addMissionInfo("Slot         : " $ activeMission.rewards[ selectedMenuSlot - 2 ].slot);
+	if(index < activeMission.rewards.Length )
+	{
+		PC.mHUD.addMissionInfo("Type       : " $ activeMission.rewards[ index ].type, true);
+		PC.mHUD.addMissionInfo("MagSize    : " $ activeMission.rewards[ index ].magSize);
+		PC.mHUD.addMissionInfo("ReloadTime : " $ activeMission.rewards[ index ].reloadTime);
+		PC.mHUD.addMissionInfo("Speed      : " $ activeMission.rewards[ index ].speed);
+		PC.mHUD.addMissionInfo("Spread     : " $ activeMission.rewards[ index ].spread);
+		PC.mHUD.addMissionInfo("Damage     : " $ activeMission.rewards[ index ].damage);
+		PC.mHUD.addMissionInfo("Slot       : " $ activeMission.rewards[ index ].slot);
+	}
+	else
+	{
+		index = index + activeMission.rewards.Length - 2;
+		PC.mHUD.addMissionInfo("Name     : " $ activeMission.rewardItems[ index ].itemName, true);
+		PC.mHUD.addMissionInfo("Delay    : " $ activeMission.rewardItems[ index ].delay);
+		PC.mHUD.addMissionInfo("Cooldown : " $ activeMission.rewardItems[ index ].Cooldown);
+		PC.mHUD.addMissionInfo("Damage   : " $ activeMission.rewardItems[ index ].damage);
+	}
 }
 
 DefaultProperties
