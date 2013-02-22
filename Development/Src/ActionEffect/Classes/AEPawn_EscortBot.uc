@@ -5,24 +5,25 @@ class AEPawn_EscortBot extends AEPawn
 var AEAIEscortBotController     MyController;
 var AEMissionObjective          spawnOwner;
 
-var array<AEPathNodeEscortBotFriendly> pathNodes;
-var()       array<NavigationPoint>  MyNavigationPoints;
+var () array<AENavigationPoint_EscortBotPathNode> MyNavigationPoints;
 
 var ()  float       waitAtNode;
 
 simulated function PostBeginPlay()
 {
-	//local AEPathNodeEscortBotFriendly escortPathNode;
-	//local AEPathNodeEscortBotFriendly target;
+	local AENavigationPoint_EscortBotPathNode escortPathNode;
+	local AENavigationPoint_EscortBotPathNode target;
 
 	super.PostBeginPlay();
 
-	//foreach WorldInfo.AllNavigationPoints(class'AEPathNodeEscortBotFriendly', target)
-	//{
-	//	escortPathNode = target;
-	//	pathNodes.AddItem(escortPathNode);
-	//	`Log("LOOOOOOOOOOOODFOJISDFHIFSKS");
-	//}
+	foreach WorldINfo.AllNavigationPoints(class'AENavigationPoint_EscortBotPathNode', target)
+	{
+		escortPathNode = target;
+		MyNavigationPoints.AddItem(escortPathNode);
+	}
+
+	MyController = Spawn(class'AEAIEscortBotController');
+	MyController.Possess(self, false);
 
 	SetPhysics(PHYS_Walking);
 
@@ -70,11 +71,6 @@ function bool Died(Controller Killer, class<DamageType> damageType, Vector HitLo
 
 	return super.Died(Killer, damageType, HitLocation);
 }
-
-//state MoveToGoal 
-//{
-// niggdsfds
-//}
 
 DefaultProperties
 {

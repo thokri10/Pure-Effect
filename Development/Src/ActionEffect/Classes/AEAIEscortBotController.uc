@@ -10,7 +10,7 @@ var vector NavGoalLocation;
 var vector NextLocationToGoal;
 
 /** Navigation points (path nodes). */
-var () array<NavigationPoint> MyNavigationPoints;
+var () array<AENavigationPoint_EscortBotPathNode> MyNavigationPoints;
 
 var AEPawn_EscortBot aiPawn;
 
@@ -39,6 +39,7 @@ function PostBeginPlay()
 
 	//GotoState('Attacking');
 	`Log("NIIIIIIIIIIIGGGGGGGGEEEEEEEEEEEERRR!");
+	GotoState('FollowPath');
 }
 
 //state Wandering
@@ -100,7 +101,7 @@ function PostBeginPlay()
 //	}
 //}
 
-state FollowPath
+auto state FollowPath
 {
 	//event SeePlayer(Pawn SeenPlayer)
 	//{
@@ -147,36 +148,49 @@ state FollowPath
 			// so it can move on to next path node.
 			if (waitCounter >= waitAtNode)
 			{
-				// Set next pathnode target to the next one.
+				// Increment to next pathnode target to the next one.
 				actual_node++;
 				
 				// Resets pathnode target to the very first one if goal
 				// has been reached.
 				if (actual_node >= MyNavigationPoints.Length)
 				{
-					actual_node = 0;
+					//actual_node = 0;
 				}
 				last_node = actual_node;
 
+				// Set current path node to move to. Again.
 				MoveTarget = MyNavigationPoints[actual_node];
+				
 				//aiPawn.SetAnimState(MS_Walk);
 				//SetWalkAnimSpeed();
+
+				// Resets the wait counter because it is now moving on
+				// to next path node.
 				waitCounter = 0.0f;
 			} 
 			else 
 			{
 				//aiPawn.SetAnimState(MS_Idle);
 				//SetIdleAnimSpeed();
+
+				// Increment the wait counter. The wait counter contains
+				// the time you're currently spending at a path node.
+				// Wait counter is used to make the bots wait a bit at each
+				// path node before moving on to next path node.
 				waitCounter += 0.1f;
 			}
 		}	
 
+		// Checks if the target is reachable (not blocked by stuff and shit).
 		if (ActorReachable(MoveTarget)) 
 		{
+			// Move towards the target if it is reachable.
 			MoveToward(MoveTarget, MoveTarget,,false);	
 		}
 		else
 		{
+			// ... move anyways even if it is blocked.
 			MoveTo( MoveTarget.Location );
 			
 			/*`log("Finding path towards");
@@ -215,6 +229,8 @@ function Possess(Pawn aPawn, bool bVehicleTransition)
 			Pawn.SetPhysics(PHYS_Falling);
 	    }
     }
+
+	GotoState('FollowPath');
 }
 
 DefaultProperties

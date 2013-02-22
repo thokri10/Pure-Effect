@@ -7,7 +7,7 @@ var(SpawnPoints) array<AENavigationPoint_EscortBotSpawn> spawnPoints;
 function AEPawn_EscortBot spawnBot(class<AEPawn_EscortBot> bot, AEMissionObjective spawnOwner)
 {
 	local AENavigationPoint_EscortBotSpawn point;
-
+	
 	foreach spawnPoints( point )
 	{
 		if (!point.bInUse) 

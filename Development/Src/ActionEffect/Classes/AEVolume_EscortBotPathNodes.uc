@@ -3,7 +3,8 @@ class AEVolume_EscortBotPathNodes extends AEVolume
 	placeable;
 
 /** Array of all the path nodes. */
-var(PathNodes) array<AEPathNodeEscortBotFriendly> pathNodes;
+//var(PathNodes) array<AEPathNodeEscortBotFriendly> pathNodes;
+var(PathNodes) array <AENavigationPoint_EscortBotPathNode> pathNodes;
 
 DefaultProperties
 {
