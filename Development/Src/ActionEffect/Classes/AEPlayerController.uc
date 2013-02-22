@@ -49,6 +49,7 @@ var string test;
 /** Initializations before any pawns spawn on the map. */
 simulated event PostBeginPlay()
 {
+	local AEInventory_Item item;
 	// Initializations of various variables.
 	super.PostBeginPlay();
 
@@ -63,8 +64,6 @@ simulated event PostBeginPlay()
 
 	myItemInventory = Spawn(class'AEInventory');
 	myItemInventory.PC = self;
-	myItemInventory.AddItem(Spawn(class'AEInventory_Item_HealthPack'));
-	myItemInventory.AddItem(Spawn(class'AEInventory_Item_Granade'));
 
 	myMenu = Spawn(class'AEHUDMenu');
 	myMenu.PC = self;
@@ -75,6 +74,7 @@ simulated event PostBeginPlay()
 	myPlayerInfo.PC = self;
 	myPlayerInfo.myTcpClient = myTcpLink;
 	myPlayerInfo.myWeaponCreator = myWeaponCreator;
+	myPlayerInfo.myInventory = myItemInventory;
 
 
 	// Connect to server.

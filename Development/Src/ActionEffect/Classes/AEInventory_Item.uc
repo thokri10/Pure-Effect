@@ -1,73 +1,113 @@
 class AEInventory_Item extends Actor
-	abstract placeable;
+	placeable;
+
+enum ItemEffects
+{
+	EFFECT_HEAL,
+	EFFECT_GRANADE
+};
+
+var Actor item; 
+
+var array<ItemEffects> Effects;
+var AEInventory_ItemEffects selectEffect;
  
 var AEPlayerController PC;
 
 var int StackCounter;
 var int UseCounter;
-var float CooldownTimer;
-var float Cooldown;
 
-var bool stillActive;
+var float Cooldown;
+var bool  bCanUse;
 
 var string ItemInfo;
+var string itemName;
+var int damage;
+var int radius;
+var float delay;
+
 
 simulated function PostBeginPlay()
 {
 	super.PostBeginPlay();
+
+	selectEffect = spawn(class'AEInventory_ItemEffects', self);
+	bCanUse = true;
 }
 
-// Here to initialize PlayerController and cooldownTimer
+/** Here to initialize PlayerController and cooldownTimer */
 simulated function Tick(float DeltaTime)
 {
 	super.Tick(DeltaTime);
 
 	if(PC == none)
 		PC = AEPlayerController( GetALocalPlayerController() );
-
-	if(CooldownTimer < Cooldown)
-	{
-		CooldownTimer += DeltaTime;
-		stillActive = true;
-	}else
-	{
-		stillActive = false;
-	}
 }
 
-// Adds an item of this type to the inventory. Can add more than a spesifed amount
-simulated function Add()
+/** Adds an item of this type to the inventory. Can add more than a spesifed amount */
+simulated function Add(int add)
 {
-	if(UseCounter < StackCounter)
-		++UseCounter;
-
-	PC.mHUD.postError("Inventory full of this type");
+	StackCounter += add;
 }
 
-// Tries to use an item. Returns false if item has cooldown or no more of this type.
+/** Tries to use an item. Returns false if item has cooldown or no more of this type. */
 simulated function bool Use()
 {
-	if( UseCounter <= 0)
+	local ItemEffects effect;
+
+	if( !bCanUse || StackCounter <= 0)
+		return false;
+
+	foreach Effects( effect )
 	{
-		PC.mHUD.postError("No more of this ItemType");
-		return false;
-	}
-	else if( CooldownTimer < Cooldown ){
-		PC.mHUD.postError("Item still on cooldown");
-		return false;
+		if( effect == EFFECT_GRANADE )
+			item = selectEffect.granade(PC.myPawn, delay);
+		else if( effect == EFFECT_HEAL ){
+			//item = self;
+		}
 	}
 
-	CooldownTimer = 0;
-	--UseCounter;
+	SetTimer(delay, false, 'explode');
+	SetTimer(Cooldown, false, 'resetCooldown');
+
+	bCanUse = false;
+	--StackCounter;
 
 	return true;
+}
+
+/** Timer function * reset cooldowns */
+function resetCooldown()
+{
+	bCanUse = true;
+}
+
+/** Timer function * Actives after item delay */
+function explode()
+{
+	local AEPawn target;
+	local ItemEffects effect;
+
+	if(Item == none)
+		item = PC.myPawn;
+
+	foreach WorldInfo.AllPawns(class'AEPawn', target, item.Location, radius)
+	{
+		foreach Effects( effect )
+		{
+			if( effect == EFFECT_HEAL )
+				selectEffect.heal(target, damage);
+			if( effect == EFFECT_GRANADE )
+				selectEffect.dealDamage( target, item, damage );
+		}
+	}	
 }
 
 DefaultProperties
 {
 	StackCounter=0
 	UseCounter=0
-	CooldownTimer=100
-
-	stillActive=false
+	Cooldown=1
+	delay=3
+	radius=500
 }

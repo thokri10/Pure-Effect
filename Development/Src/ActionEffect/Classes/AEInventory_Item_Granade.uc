@@ -1,7 +1,5 @@
 class AEInventory_Item_Granade extends AEInventory_Item;
 
-var class<UTProj_Grenade> granade;
- 
 var UTProj_Grenade nade;
 
 simulated function bool Use()
