@@ -1,3 +1,4 @@
+/** Mission objective contains information of your current mission. */
 class AEMissionObjective extends Actor
 	dependson(AEWeaponCreator)
 	dependson(AEJSONParser)
@@ -6,7 +7,8 @@ class AEMissionObjective extends Actor
 //-----------------------------------------------------------------------------
 // Structures
 
-/** Struct for to hold all the mission objectives. This is created with a string parser in this class. */
+/** Struct for to hold all the mission objectives. 
+    This is created with a string parser in this class. */
 struct MissionObjectives
 {
 	var int id;
@@ -47,29 +49,37 @@ enum AEGameType
 //-----------------------------------------------------------------------------
 // Variables
 
-// This is set trough AEtcpLink when the string is parsed.
-// QuickFix find a better solution.
+/** This is set trough AEtcpLink when the string is parsed.
+	QuickFix find a better solution. */
 var string rewardString;
 
-// Array that contains our rewards for our mission.
+/** Array that contains our rewards for our mission. */
 var array<string> rewardArray;
+
+/** Array that contains the mission information. */
 var array<SimpleMissionStruct> simpleMissionArray;
 
+/** Number of bots killed. */
 var int botsKilled;
+
+/** Escort bot life condition. */
+var bool escortbotIsAlive;
+
+/** Console client (press Tab ingame to access it). */
 var Console consoleClient;
 
-// Player controller 
+/** Player controller. */ 
 var AEPlayerController  PC;
 
-// We want to have control over all the pawns we have spawned in this objective. 
-// Now we have a easy way to check how many bots we have killed. 
+/** We want to have control over all the pawns we have spawned in this objective. 
+	Now we have a easy way to check how many bots we have killed. */
 var array<AEPawn_Bot>           SpawnedBots;
 
 /** The escort bots that we spawn in the gametype Escort. */
 var array<AEPawn_EscortBot>     SpawnedEscortBots;
 
-// Initialize the struct to hold the default variables of our mission.
-// Then we can easily restart our mission at any time.
+/** Initialize the struct to hold the default variables of our mission.
+	Then we can easily restart our mission at any time. */
 var MissionObjectives   AEObjectives;
 
 /** Gametype of the mission. */
@@ -78,6 +88,7 @@ var AEGameType missionGameType;
 //-----------------------------------------------------------------------------
 // Init
 
+/** Overrode this function. Currently doesn't do anything in particular. */
 simulated event PostBeginPlay()
 {
 	super.PostBeginPlay();
@@ -94,42 +105,56 @@ function Initialize(array<ValueStruct> missionArray)
 // Parsing
 
 /** Parses the a mission array to a simple mission struct. 
- *  It sets the info and rewars for the mission.*/
+	It sets the info and rewards for the mission. */
 function SimpleMissionStruct parseArrayToSimpleStruct(array<ValueStruct> missionArray)
 {
 	local SimpleMissionStruct   mission;
 	local Array2D               temp;
 	local string                Type;
-	local bool  existingReward;
-	local int   numberOfRewards;
-	local int   i;
+	local bool                  existingReward;
+	local int                   numberOfRewards;
+	local int                   i;
 
-	for( i = 0; i < missionArray.Length; i++) 
+	for ( i = 0; i < missionArray.Length; i++ ) 
 	{
 		//`log(missionArray[i].type $ " : " $ missionArray[i].value );
-		if( missionArray[i].type == "category" )
+		if ( missionArray[i].type == "category" )
 		{
 			Type = "info";
 		}
-		else if( missionArray[i].type == "properties" )
+		else if ( missionArray[i].type == "properties" )
 		{
 			Type = "reward";
 			mission.rewards.AddItem( temp );
 				
-			if(!existingReward)
-				existingReward=true;
+			if (!existingReward)
+			{
+				existingReward = true;
+			}	
 			else
+			{
 				++numberOfRewards;
+			}
 		}
-		else if( missionArray[i].type == "" )
+		else if ( missionArray[i].type == "" )
 		{
-			`log("[MissionSimpleParsing] Type is blank");
+			`log("[MissionSimpleParsing] Type is blank.");
 		}
 
 		switch( Type )
 		{
-		case "info": mission.information.AddItem( missionArray[i] ); break;
-		case "reward": mission.rewards[numberOfRewards].variables.AddItem( missionArray[i] ); break;
+			case "info": 
+				mission.information.AddItem( missionArray[i] ); 
+				break;
+
+			case "reward": 
+				mission.rewards[numberOfRewards].variables.AddItem( missionArray[i] ); 
+				break;
+
+			default:
+				`Log("[AEMissionObjective] failed to set Type in the function " $
+					"parseArrayToSimpleStruct");
+				break;
 		}
 	}
 
@@ -157,12 +182,15 @@ function MissionObjectives MissionFromSimpleStruct(SimpleMissionStruct simpleMis
 	{
 		foreach reward.variables( values )
 		{
-			if(values.type == "slot")
+			if (values.type == "slot")
 			{
 				`log(values.type $ " : " $ values.value );
-				if(values.value == "weapon"){
+				if (values.value == "weapon")
+				{
 					objective.rewards.AddItem( PC.myWeaponCreator.parseToStruct( reward.variables ) );
-				}else if( values.value == "item"){
+				}
+				else if ( values.value == "item")
+				{
 					objective.rewardItems.AddItem( 
 						PC.myItemInventory.createItem( 
 						reward.variables ) );
@@ -185,9 +213,14 @@ function getMissionRewards()
 	local AEInventory_Item item;
 
 	foreach AEObjectives.rewards( weap )
+	{
 		PC.addWeaponToInventory( PC.myWeaponCreator.CreateWeaponFromStruct( weap ) );
+	}
+		
 	foreach AEObjectives.rewardItems( item )
+	{
 		PC.myItemInventory.AddItem( item );
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -196,8 +229,10 @@ function getMissionRewards()
 /** Activates all the objectives. Check through a list and adds all the active objectives. */ 
 function activateObjectives(MissionObjectives objectives)
 {
-	if(objectives != AEObjectives)
+	if (objectives != AEObjectives)
+	{
 		AEObjectives = objectives;
+	}
 
 	// For testing purposes. Sets how many enemies we should spawn
 	objectives.MOEnemies = 5;
@@ -230,6 +265,20 @@ function activateObjectives(MissionObjectives objectives)
 /** Spawns an enemy at a set location in the map */
 function SpawnEnemies(int enemyNumber)
 {
+	// Spawn bots accordingly to gametype.
+	if (missionGameType == SEARCH_AND_DESTROY)
+	{
+		SpawnEnemyBots(enemyNumber);
+	}
+	else if (missionGameType == ESCORT)
+	{
+		SpawnEscortBot();
+	}
+}
+
+/** Spawns enemy bots on the map. */
+function SpawnEnemyBots(int enemyNumber)
+{
 	local AEVolume_BotSpawn spawnPoint; 
 	local AEVolume_BotSpawn target;
 	local int i;
@@ -243,21 +292,19 @@ function SpawnEnemies(int enemyNumber)
 	{
 		SpawnedBots.AddItem( spawnPoint.spawnBot(class'AEPawn_Bot', self) );
 	}
-
-	SpawnEscortBot(1);
 }
 
 /** Spawn the bot that the player is going to escort in the Escort gametype. */
-function SpawnEscortBot(int numberOfEscorts)
+function SpawnEscortBot()
 {
 	local AEVolume_EscortBotSpawn escortSpawnPoint; 
 	local AEVolume_EscortBotSpawn target;
 
+	// Finds the spawn point for the escort bot and spawns one there.
 	foreach WorldInfo.AllActors( class'AEVolume_EscortBotSpawn', target)
 	{
 		escortSpawnPoint = target;
 		SpawnedEscortBots.AddItem(escortSpawnPoint.spawnBot(class'AEPawn_EscortBot', self));
-		`Log("LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOL");
 	}
 }
 
@@ -281,6 +328,12 @@ function botDied()
 			target.resetSpawnPoints();
 		}
 	}
+}
+
+/** When an Escort target dies, this stuff runs. */
+function escortBotDied()
+{
+	escortbotIsAlive = false;
 }
 
 /** Complete and reset all variables and gives the reward to player. */
@@ -341,5 +394,5 @@ function printObjectiveMessage(string message, optional bool bReset)
 
 DefaultProperties
 {
-
+	escortbotIsAlive = true;
 }

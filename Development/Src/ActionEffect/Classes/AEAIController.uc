@@ -1,6 +1,7 @@
 /** Controller for AI-bots. */
 class AEAIController extends UTBot;
 
+/** Overrode this function. Has no special functionality, though. */
 function PostBeginPlay()
 {
 	super.PostBeginPlay();

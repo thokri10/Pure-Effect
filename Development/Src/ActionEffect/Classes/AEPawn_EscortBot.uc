@@ -67,7 +67,10 @@ function bool Died(Controller Killer, class<DamageType> damageType, Vector HitLo
 		spawnOwner = AEMissionObjective(Owner);
 	}
 		
+	// Remove later?
 	spawnOwner.botDied();
+
+	spawnOwner.escortBotDied();
 
 	return super.Died(Killer, damageType, HitLocation);
 }

@@ -14,17 +14,21 @@ simulated event PostBeginPlay()
 	//super.PostBeginPlay();
 	SetPhysics(PHYS_Walking);
 
-	if(ControllerClass == none)
+	if (ControllerClass == none)
 	{
 		ControllerClass = class'AEAIController';
 
-		if(MyController == none)
+		if (MyController == none)
+		{
 			MyController = AEAIController(Controller);
-
+		}
+			
 		spawnOwner = AEMissionObjective(Owner);
 
-		if(spawnOwner == none)
+		if (spawnOwner == none)
+		{
 			`log("[AEPawn_Bot] Owner does not exist. Or can't be casted to AEMissionObjective");
+		}
 	}
 	
 	SetCharacterClassFromInfo(class'UTFamilyInfo_Liandri_Male');
@@ -36,9 +40,11 @@ simulated event PostBeginPlay()
 
 function bool Died(Controller Killer, class<DamageType> damageType, Vector HitLocation)
 {
-	if(spawnOwner == none)
+	if (spawnOwner == none)
+	{
 		spawnOwner = AEMissionObjective(Owner);
-
+	}
+		
 	spawnOwner.botDied();
 
 	return super.Died(Killer, damageType, HitLocation);
@@ -46,5 +52,5 @@ function bool Died(Controller Killer, class<DamageType> damageType, Vector HitLo
 
 DefaultProperties
 {
-	ControllerClass=class'AEAIController'
+	ControllerClass = class'AEAIController';
 }
