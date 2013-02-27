@@ -6,12 +6,14 @@ event Tick(float DeltaTime)
 {
 	super.Tick(DeltaTime);
 
-	AEShield.SetLocation( Location );
+	if(AEShield != none)
+		AEShield.SetLocation( Location );
 }
 
 function bool Died(Controller Killer, class<DamageType> damageType, vector HitLocation)
 {
-	AEShield.Destroy();
+	if(AEShield != none)
+		AEShield.Destroy();
 
 	return super.Died(Killer, damageType, HitLocation);
 }
