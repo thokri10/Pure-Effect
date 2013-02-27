@@ -18,10 +18,14 @@ simulated event PostBeginPlay()
 		SpawnDefaultController();
 
 	if(MyController == none)
+		{
 		MyController = AEAIController(Controller);
-
+		}
+			
 	`log("TEAM SET");
 	AEAIController( Controller ).SetTeam(0);
+		{
+	}
 	
 	SetCharacterClassFromInfo(class'UTFamilyInfo_Liandri_Male');
 
@@ -35,9 +39,11 @@ simulated event PostBeginPlay()
 
 function bool Died(Controller Killer, class<DamageType> damageType, Vector HitLocation)
 {
-	if(spawnOwner == none)
+	if (spawnOwner == none)
+	{
 		spawnOwner = AEMissionObjective(Owner);
-
+	}
+		
 	spawnOwner.botDied();
 
 	return super.Died(Killer, damageType, HitLocation);
@@ -45,5 +51,5 @@ function bool Died(Controller Killer, class<DamageType> damageType, Vector HitLo
 
 DefaultProperties
 {
-	ControllerClass=class'AEAIController'
+	ControllerClass = class'AEAIController';
 }

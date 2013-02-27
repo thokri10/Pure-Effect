@@ -1,14 +1,6 @@
 /** AIController for the Escort bot in the Escort gametype. */
 class AEAIEscortBotController extends AEAIController;
 
-// CHANGE VECTORS OUT WITH AENAVIGATIONPOINT_ESCORTENEMYBOTSPAWN LATER.
-/** The goal (final path node) where the Escort bot is walking to. */
-var vector NavGoalLocation;
-
-/** The next path node the Escort bot needs to walk to, in order to reach
- *  the final location (the goal/final path node). */
-var vector NextLocationToGoal;
-
 /** Navigation points (path nodes). */
 var () array<AENavigationPoint_EscortBotPathNode> MyNavigationPoints;
 
@@ -36,97 +28,14 @@ var Float IdleInterval;
 function PostBeginPlay()
 {
 	super.PostBeginPlay();
-
-	//GotoState('Attacking');
-	`Log("NIIIIIIIIIIIGGGGGGGGEEEEEEEEEEEERRR!");
-	GotoState('FollowPath');
 }
+state Idle
+{
 
-//state Wandering
-//{
-//	// AI spots another pawn (potentially player)
-//	function SeePlayer(Pawn seenPlayer)
-//	{
-//		if (Enemy != none)
-//		{
-//			// Spotted enemy.
-//			if (seenPlayer.Controller.IsA('AEAIController'))
-//			{
-//				//if (!CheckForBlockingVolume(seenPlayer))
-//				//{
-//				//	Enemy = seenPlayer;
-//				//	// Probably doesn't work.
-//				//	GotoState('Attacking');
-//				//}
-//			}
-//		}
-//	}
-
-//	function GetNextPathNode()
-//	{
-//		 // Derp.
-//	}
-
-//	function GetNextRandomLocation()
-//	{
-//		// I have no idea... Think it finds a random spot to go to.
-//		class'NavMeshGoal_Random'.static.FindRandom(NavigationHandle, 256);
-//		class'NavMeshPath_Toward'.static.TowardPoint(NavigationHandle, NextLocationToGoal);
-
-//		// Create a path to the point.
-//		NavigationHandle.FindPath();
-
-//		// Get the goal (end point) of the path.
-//		NavGoalLocation = NavigationHandle.PathCache_GetGoalPoint();
-
-//		// Sets the newly goal location 
-//		NavigationHandle.SetFinalDestination(NavGoalLocation);
-
-//		// If the newly set goal location is possible to reach (nothing is
-//		// blocking and such), then set it as the next path to go to.
-//		if (NavigationHandle.PointReachable(NavGoalLocation))
-//		{
-//			NextLocationToGoal = NavGoalLocation;
-//		}
-//		else
-//		{
-//			// If not, try to find a node that can reach final destination.
-//			NavigationHandle.GetNextMoveLocation(NextLocationToGoal, 40);
-//		}
-//	}
-
-//	function SetNextLocationInPath()
-//	{
-//		NavigationHandle.GetNextMoveLocation(NextLocationToGoal, 40);
-//	}
-//}
+}
 
 auto state FollowPath
 {
-	//event SeePlayer(Pawn SeenPlayer)
-	//{
-	//	if( canSee )
-	//	{
-	//		playerPawn = SeenPlayer;
-	//		distanceToPlayer = VSize(playerPawn.Location - Pawn.Location);
-	//		if (distanceToPlayer < chaseMaxDistance)
-	//		{ 
-	//			`log("Chasing player");
-	//			GotoState('ChasePlayer');
-	//		} else if (distanceToPlayer < investigateMaxDistance)
-	//		{
-	//			if( lastPlayerSpot != none )
-	//			{
-	//				lastPlayerSpot.Destroy();
-	//			}
-	//			lastPlayerSpot = Spawn(class'HLastSeenSpot',,, playerPawn.Location,,, true);
-	//			`log("Investigating spot");
-	//			GotoState('GoToLastSeenPlayer');
-
-	//		}
-	//	}
- //   }
-
  Begin:
 	// Starts following the path nodes.
 	while (followingPath)
@@ -135,7 +44,8 @@ auto state FollowPath
 		if (MyNavigationPoints.Length <= 0)
 		{
 			followingPath = false;
-			//GotoState('Idle');
+			GotoState('Idle');
+			break;
 		}
 
 		// Set the desired pathnode target.
@@ -151,11 +61,14 @@ auto state FollowPath
 				// Increment to next pathnode target to the next one.
 				actual_node++;
 				
-				// Resets pathnode target to the very first one if goal
-				// has been reached.
+				// Makes sure the last node will remain the same.
 				if (actual_node >= MyNavigationPoints.Length)
 				{
 					//actual_node = 0;
+					//actual_node = MyNavigationPoints.Length - 1;
+					// Stops following his path.
+					followingPath = false;
+					break;
 				}
 				last_node = actual_node;
 
@@ -236,8 +149,6 @@ function Possess(Pawn aPawn, bool bVehicleTransition)
 DefaultProperties
 {
 	attackDistance = 50;
-    //investigateMaxDistance = 1300;
-	//chaseMaxDistance = 900;
 	
 	AnimSetName = "ATTACK";
 	actual_node = 0;

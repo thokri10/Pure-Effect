@@ -27,8 +27,8 @@ simulated function PostBeginPlay()
 
 	SetPhysics(PHYS_Walking);
 
-	if (ControllerClass == none)
-	{
+	//if (ControllerClass == none)
+	//{
 		ControllerClass = class'AEAIEscortBotController';
 
 		if (MyController == none)
@@ -38,11 +38,11 @@ simulated function PostBeginPlay()
 
 		spawnOwner = AEMissionObjective(Owner);
 
-		if (spawnOwner == none)
+		if (spawnOwner == None)
 		{
 			`log("[AEPawn_EscortBot] Owner does not exist. Or can't be casted to AEMissionObjective");
 		}
-	}
+	//}
 	
 	SetCharacterClassFromInfo(class'UTFamilyInfo_Liandri_Male');
 
@@ -67,7 +67,10 @@ function bool Died(Controller Killer, class<DamageType> damageType, Vector HitLo
 		spawnOwner = AEMissionObjective(Owner);
 	}
 		
+	// Remove later?
 	spawnOwner.botDied();
+	`Log("FSDFJKJKFDHKGFDKGJFDGFDGFSDFIDSYFISDOFGSDGFDSFGDSFDSFDSFDJF");
+	spawnOwner.escortBotDied();
 
 	return super.Died(Killer, damageType, HitLocation);
 }
