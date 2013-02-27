@@ -41,9 +41,9 @@ struct RewardStruct
 /** Game types. */
 enum AEGameType
 {
+	NO_GAMETYPE,
 	SEARCH_AND_DESTROY,
-	ESCORT,
-	NO_GAMETYPE
+	ESCORT
 };
 
 //-----------------------------------------------------------------------------
@@ -65,6 +65,9 @@ var int botsKilled;
 /** Escort bot life condition. */
 var bool escortbotIsAlive;
 
+/** Escort bot has reached target destination. */
+var bool escortBotHasReachedDestination;
+
 /** Console client (press Tab ingame to access it). */
 var Console consoleClient;
 
@@ -78,6 +81,9 @@ var array<AEPawn_Bot>           SpawnedBots;
 /** The escort bots that we spawn in the gametype Escort. */
 var array<AEPawn_EscortBot>     SpawnedEscortBots;
 
+/** The bots that will try to kill you and your Escort target. */
+var array<AEPawn_BotAgressive> SpawnedEnemyEscortBots;
+
 /** Initialize the struct to hold the default variables of our mission.
 	Then we can easily restart our mission at any time. */
 var MissionObjectives   AEObjectives;
@@ -85,13 +91,43 @@ var MissionObjectives   AEObjectives;
 /** Gametype of the mission. */
 var AEGameType missionGameType;
 
+/** Checks if a mission is in play. */
+var bool missionIsActive;
+
+/** Keeps track how much time has passed. */
+var float playerTimer;
+
+/** How many seconds should pass before to check to "update" the player. */
+var float timeToUpdate;
+
+/** Desired FPS. Used to calculate how often we want to "update" the player.
+	Used in conjunction with timeToUpdate (see below). */
+var float fps;
+
 //-----------------------------------------------------------------------------
 // Init
+
+event Tick(float DeltaTime)
+{
+	playerTimer += DeltaTime;
+
+	super.Tick(DeltaTime);
+
+	if ( playerTimer >= timeToUpdate )
+	{
+		playerTimer -= timeToUpdate;
+
+		CheckMissionProgress();
+	}
+}
 
 /** Overrode this function. Currently doesn't do anything in particular. */
 simulated event PostBeginPlay()
 {
 	super.PostBeginPlay();
+
+	timeToUpdate = 1.0f / fps;
+	//missionGameType = NO_GAMETYPE;
 }
 
 /** Initializes the missions wtih the array from jsonParser*/
@@ -234,21 +270,23 @@ function activateObjectives(MissionObjectives objectives)
 		AEObjectives = objectives;
 	}
 
-	// For testing purposes. Sets how many enemies we should spawn
-	objectives.MOEnemies = 5;
-	AEObjectives.MOEnemies = 5;
+	//// For testing purposes. Sets how many enemies we should spawn
+	//objectives.MOEnemies = 5;
+	//AEObjectives.MOEnemies = 5;
 
-	printObjectiveMessage("BotsKilled: " $ botsKilled $ " / " $ objectives.MOEnemies);
+	//printObjectiveMessage("BotsKilled: " $ botsKilled $ " / " $ objectives.MOEnemies);
 	createObjectiveInfo();
 
 	switch (AEObjectives.category)
 	{
 		case "Search and destroy":
 			missionGameType = SEARCH_AND_DESTROY;
+			missionIsActive = true;
 			break;
 
 		case "Escort":
 			missionGameType = ESCORT;
+			missionIsActive = true;
 			break;
 
 		default:
@@ -261,11 +299,19 @@ function activateObjectives(MissionObjectives objectives)
 
 	if (missionGameType == SEARCH_AND_DESTROY)
 	{
+		// For testing purposes. Sets how many enemies we should spawn
+		objectives.MOEnemies = 5;
+		AEObjectives.MOEnemies = 5;
+
+		printObjectiveMessage("BotsKilled: " $ botsKilled $ " / " $ objectives.MOEnemies);
+
 		SpawnEnemyBots(objectives.MOEnemies);
 	}
 	else if (missionGameType == ESCORT)
 	{
 		SpawnEscortBot();
+		SpawnEnemyEscortBots();
+		printObjectiveMessage("Escort target.");
 	}
 	
 	//SpawnEnemies(objectives.MOEnemies);
@@ -322,41 +368,63 @@ function SpawnEscortBot()
 	}
 }
 
+function SpawnEnemyEscortBots()
+{
+	local AEVolume_EscortEnemyBotSpawn enemySpawnPoint;
+	local AEVolume_EscortEnemyBotSpawn target;
+	local AEVolume_BotSpawn spawnPoint; 
+	//local AEVolume_BotSpawn target;
+	local int i;
+
+	//foreach WorldInfo.AllActors( class'AEVolume_EscortEnemyBotSpawn', target)
+	//{
+	//	enemySpawnPoint = target;
+	//	SpawnedEnemyEscortBots.AddItem(enemySpawnPoint.spawnBot(class'AEPawn_BotAgressive', self));
+	//}
+
+	foreach WorldInfo.AllActors( class'AEVolume_EscortEnemyBotSpawn', target )
+	{
+		enemySpawnPoint = target;
+	}
+
+	for (i = 0; i < 7; i++)
+	{
+		SpawnedEnemyEscortBots.AddItem( enemySpawnPoint.spawnBot(class'AEPawn_BotAgressive', self) );
+	}
+}
+
 /** When a bot dies he runs this method to update the bots killed. */
 function botDied()
 {
-	local AEVolume_BotSpawn target;
+	// CheckMissionProgress();
+	//local AEVolume_BotSpawn target;
 
 	++botsKilled;
 
-	if (botsKilled < AEObjectives.MOEnemies)
-	{
-		printObjectiveMessage("BotsKilled: " $ botsKilled $ " / " $ AEObjectives.MOEnemies);
-	}
-	else
-	{
-		MissionComplete();
+	//if (botsKilled < AEObjectives.MOEnemies)
+	//{
+	//	printObjectiveMessage("BotsKilled: " $ botsKilled $ " / " $ AEObjectives.MOEnemies);
+	//}
+	//else
+	//{
+	//	MissionComplete();
 
-		foreach WorldInfo.AllActors( class'AEVolume_BotSpawn', target )
-		{
-			target.resetSpawnPoints();
-		}
-	}
+	//	foreach WorldInfo.AllActors( class'AEVolume_BotSpawn', target )
+	//	{
+	//		target.resetSpawnPoints();
+	//	}
+	//}
 }
 
 /** When an Escort target dies, this stuff runs. */
 function escortBotDied()
 {
-	local AEVolume_EscortBotSpawn target;
-
 	escortbotIsAlive = false;
 
-	// MissionComplete();
-
-	foreach WorldInfo.AllActors( class'AEVolume_EscortBotSpawn', target )
-	{
-		target.resetSpawnPoints();
-	}
+	//foreach WorldInfo.AllActors( class'AEVolume_EscortBotSpawn', target )
+	//{
+	//	target.resetSpawnPoints();
+	//}
 }
 
 /** Complete and reset all variables and gives the reward to player. */
@@ -368,8 +436,60 @@ function MissionComplete()
 
 	botsKilled = 0;
 	escortbotIsAlive = true;
+	escortBotHasReachedDestination = false;
 
 	getMissionRewards();
+}
+
+function CheckMissionProgress()
+{
+	local AEVolume_BotSpawn targetBotSpawn;
+	local AEVolume_EscortBotSpawn targetEscortBotSpawn;
+	local bool victory;
+
+	victory = false;
+
+	if (missionIsActive)
+	{
+		if (missionGameType == SEARCH_AND_DESTROY)
+		{
+			if (botsKilled < AEObjectives.MOEnemies)
+			{
+				printObjectiveMessage("BotsKilled: " $ botsKilled $ " / " $ AEObjectives.MOEnemies);
+			}
+			else
+			{
+				victory = true;
+
+				foreach WorldInfo.AllActors( class'AEVolume_BotSpawn', targetBotSpawn )
+				{
+					targetBotSpawn.resetSpawnPoints();
+				}
+			}
+		}
+		else if (missionGameType == ESCORT)
+		{
+			if (escortBotHasReachedDestination)
+			{
+				victory = true;
+			}
+			else if (!escortbotIsAlive)
+			{
+				// Played failed to protect Escort bot and it died.
+				// So now the spawns for the Escort bots are reset to be used again.
+				foreach WorldInfo.AllActors( class'AEVolume_EscortBotSpawn', targetEscortBotSpawn )
+				{
+					targetEscortBotSpawn.resetSpawnPoints();
+				}
+			}
+		}
+	
+		if (victory)
+		{
+			`Log("VICTORRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRY");
+			MissionComplete();
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -419,4 +539,10 @@ function printObjectiveMessage(string message, optional bool bReset)
 DefaultProperties
 {
 	escortbotIsAlive = true;
+	escortBotHasReachedDestination = false;
+
+	playerTimer = 0.0f;
+	fps = 60.0f;
+
+	missionIsActive = false;
 }
