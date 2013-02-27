@@ -1,5 +1,5 @@
 /** Main game class. */
-class ActionEffectGame extends UTGame;
+class ActionEffectGame extends UTTeamGame;
 
 //var class<AEAIEscortBotController> dasdassa;
 //var AEAIEscortBotController doasdpas;
@@ -27,6 +27,7 @@ DefaultProperties
 	//bPlayersVsBots = true
 	bAutoNumBots = false
 	DesiredPlayerCount = 0
+	bTeamGame=true
 	
 	//dasdassa = class'AEAIEscortBotController';
 }

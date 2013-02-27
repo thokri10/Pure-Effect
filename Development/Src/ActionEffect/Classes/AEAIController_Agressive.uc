@@ -7,8 +7,9 @@ event Possess(Pawn aPawn, bool bVehicleTransition)
 	super.Possess(aPawn, bVehicleTransition);
 
 	Pawn.SetMovementPhysics();
+
 	
-	GotoState('Hunting');
+	GotoState('Defending');
 }
 
 /*

@@ -17,14 +17,10 @@ event Touch(Actor Other, PrimitiveComponent OtherComp, Vector HitLocation, Vecto
 	{
 		proj = Projectile(Other);
 
-		`log("DAmage: " $ proj.Damage);
 		if(proj != none){
 			Other.Destroy();
 		}
 	}
-
-	`log("[PlayerShield] Shiuld bloeck");
-
 }
 
 event Tick(float DeltaTime)
@@ -44,8 +40,6 @@ simulated function bool StopsProjectile(Projectile P)
 		return false;
 
 	health = health - p.Damage;
-
-	`log("Health: " $ health);
 	
 	if(health <= 0)
 		Destroy();
@@ -75,6 +69,7 @@ DefaultProperties
 		HiddenGame=true
 		CollideActors=true
 		BlockActors=true
+		BlockRigidBody=false
 	End Object
 
 	Begin Object class=StaticMeshComponent Name=Sphere
@@ -83,6 +78,7 @@ DefaultProperties
 		Scale=5
 		BlockActors=false
 		CollideActors=false
+		BlockRigidBody=false
 	End Object
 
 	Components.Add(CollisionSphere)
@@ -93,6 +89,7 @@ DefaultProperties
 	bCanBeDamaged=true
 	bCollideActors=true
 	bBlockActors=true
+	BlockRigidBody=false
 
 	CollisionType=COLLIDE_BlockAll
 }

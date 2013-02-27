@@ -21,7 +21,7 @@ simulated event PostBeginPlay()
 		MyController = AEAIController(Controller);
 			
 	`log("TEAM SET");
-	AEAIController( Controller ).SetTeam(0);
+	AEAIController( Controller ).SetTeam(1);
 
 	SetCharacterClassFromInfo(class'UTFamilyInfo_Liandri_Male');
 
@@ -39,8 +39,10 @@ function bool Died(Controller Killer, class<DamageType> damageType, Vector HitLo
 	{
 		spawnOwner = AEMissionObjective(Owner);
 	}
+
+	AEPlayerController( GetALocalPlayerController() ).myMissionObjective.botDied();
 		
-	spawnOwner.botDied();
+	//spawnOwner.botDied();
 
 	return super.Died(Killer, damageType, HitLocation);
 }
