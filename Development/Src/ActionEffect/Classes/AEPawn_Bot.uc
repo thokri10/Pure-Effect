@@ -18,15 +18,11 @@ simulated event PostBeginPlay()
 		SpawnDefaultController();
 
 	if(MyController == none)
-		{
 		MyController = AEAIController(Controller);
-		}
 			
 	`log("TEAM SET");
 	AEAIController( Controller ).SetTeam(0);
-		{
-	}
-	
+
 	SetCharacterClassFromInfo(class'UTFamilyInfo_Liandri_Male');
 
 	super.PostBeginPlay();
