@@ -5,6 +5,14 @@ exec function UseInventoryItem(int slot)
 	UseItem(slot);
 }
 
+exec function toggleShield()
+{
+	if(myPawn.AEShield.bBlockActors)
+		myPawn.AEShield.bBlockActors=false;
+	else
+		myPawn.AEShield.bBlockActors=true;
+}
+
 exec function MenuNext()
 {
 	myMenu.nextMenuSlot();

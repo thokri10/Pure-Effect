@@ -8,37 +8,8 @@ class ActionEffectGame extends UTGame;
 function PostBeginPlay()
 {
 	super.PostBeginPlay();
-
-	//doasdpas = new dasdassa;
-	//doasdpas = Spawn(class'AEAIEscortBotController');
 }
 
-/** Spawn and initialize a bot. */   
-function UTBot SpawnBot(optional string botName,optional bool bUseTeamIndex, optional int TeamIndex)
-{
-	local UTBot NewBot;
-	local UTTeamInfo BotTeam;
-	local CharacterInfo BotInfo; 
- 
-	BotTeam = GetBotTeam(,bUseTeamIndex,TeamIndex);
-	BotInfo = BotTeam.GetBotInfo(botName);
- 
-    //JTC - the below two lines are the only line changes from the original for our version of the function
-    LogInternal("New SpawnBot");
-	NewBot = Spawn(class'AEAIController');
- 
-	if ( NewBot != None )
-	{
-		InitializeBot(NewBot, BotTeam, BotInfo);
- 
-		if (BaseMutator != None)
-		{
-			BaseMutator.NotifyLogin(NewBot);
-		}
-	}
- 
-	return NewBot;
-}
 
 DefaultProperties
 {
@@ -53,5 +24,9 @@ DefaultProperties
 	HUDType = class'AEHUD';
 	bUseClassicHUD = true;
 
+	//bPlayersVsBots = true
+	bAutoNumBots = false
+	DesiredPlayerCount = 0
+	
 	//dasdassa = class'AEAIEscortBotController';
 }

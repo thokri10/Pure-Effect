@@ -4,7 +4,7 @@ class AEPawn_Bot extends AEPawn
 var AEAIController      MyController;
 var AEMissionObjective  spawnOwner;
 
-function SpawnDefaultController()
+simulated function SpawnDefaultController()
 {
 	Super.SpawnDefaultController();
 }
@@ -14,24 +14,23 @@ simulated event PostBeginPlay()
 	//super.PostBeginPlay();
 	SetPhysics(PHYS_Walking);
 
-	if(ControllerClass == none)
-	{
-		ControllerClass = class'AEAIController';
+	if(Controller == none)
+		SpawnDefaultController();
 
-		if(MyController == none)
-			MyController = AEAIController(Controller);
+	if(MyController == none)
+		MyController = AEAIController(Controller);
 
-		spawnOwner = AEMissionObjective(Owner);
-
-		if(spawnOwner == none)
-			`log("[AEPawn_Bot] Owner does not exist. Or can't be casted to AEMissionObjective");
-	}
+	`log("TEAM SET");
+	AEAIController( Controller ).SetTeam(0);
 	
 	SetCharacterClassFromInfo(class'UTFamilyInfo_Liandri_Male');
 
 	super.PostBeginPlay();
 
 	AddDefaultInventory();
+
+	//AEShield = Spawn(class'AEPlayerShield', self,, Location,,, true);
+	//AEShield.PawnController = self;
 }
 
 function bool Died(Controller Killer, class<DamageType> damageType, Vector HitLocation)

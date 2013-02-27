@@ -241,7 +241,7 @@ function SpawnEnemies(int enemyNumber)
 
 	for (i = 0; i < enemyNumber; i++)
 	{
-		SpawnedBots.AddItem( spawnPoint.spawnBot(class'AEPawn_Bot', self) );
+		SpawnedBots.AddItem( spawnPoint.spawnBot(class'AEPawn_BotAgressive', self) );
 	}
 
 	SpawnEscortBot(1);

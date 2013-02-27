@@ -49,7 +49,6 @@ var string test;
 /** Initializations before any pawns spawn on the map. */
 simulated event PostBeginPlay()
 {
-	local AEInventory_Item item;
 	// Initializations of various variables.
 	super.PostBeginPlay();
 
@@ -75,7 +74,6 @@ simulated event PostBeginPlay()
 	myPlayerInfo.myTcpClient = myTcpLink;
 	myPlayerInfo.myWeaponCreator = myWeaponCreator;
 	myPlayerInfo.myInventory = myItemInventory;
-
 
 	// Connect to server.
 	//myTcpLink.ResolveMe();

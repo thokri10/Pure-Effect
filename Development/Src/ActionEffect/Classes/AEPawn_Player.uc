@@ -33,6 +33,8 @@ event Tick(float DeltaTime)
 {
 	playerTimer += DeltaTime;
 
+	super.Tick(DeltaTime);
+
 	if ( playerTimer >= timeToUpdate )
 	{
 		playerTimer -= timeToUpdate;
@@ -49,6 +51,10 @@ simulated event PostBeginPlay()
 	timeToUpdate = 1.0f / fps;
 	
 	AEPC = AEPlayerController(GetALocalPlayerController());
+	AEShield = Spawn(class'AEPlayerShield', self,, Location,,, true);
+	AEShield.PawnController = self;
+	AEShield.bOwnedByPlayer = true;
+
 	if (AEPC != None)
 	{
 		AEPC.myPawn = self;
@@ -59,6 +65,21 @@ simulated event PostBeginPlay()
 		`log("[AEPawn_Player] No controller to pawn");
 	}
 }
+
+simulated function StartFire(byte FireModeNum)
+{
+	AEShield.bBlockActors=false;
+
+	super.StartFire(FireModeNum);
+}
+
+simulated function StopFire(byte FireModeNum)
+{
+	AEShield.bBlockActors=false;
+
+	super.StopFire(FireModeNum);
+}
+
 
 function AddWeaponToInventory(UTWeapon type)
 {

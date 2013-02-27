@@ -88,8 +88,7 @@ function explode()
 	local AEPawn target;
 	local ItemEffects effect;
 
-	if(Item == none)
-		item = PC.myPawn;
+	if(Item == none) return;
 
 	foreach WorldInfo.AllPawns(class'AEPawn', target, item.Location, radius)
 	{
