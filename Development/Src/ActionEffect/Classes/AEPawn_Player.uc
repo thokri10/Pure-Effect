@@ -68,14 +68,16 @@ simulated event PostBeginPlay()
 
 simulated function StartFire(byte FireModeNum)
 {
-	AEShield.bBlockActors=false;
+	if(AEShield != none)
+		AEShield.bBlockActors=false;
 
 	super.StartFire(FireModeNum);
 }
 
 simulated function StopFire(byte FireModeNum)
 {
-	AEShield.bBlockActors=false;
+	if(AEShield != none)
+		AEShield.bBlockActors=true;
 
 	super.StopFire(FireModeNum);
 }

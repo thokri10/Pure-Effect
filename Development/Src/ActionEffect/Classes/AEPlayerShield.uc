@@ -58,7 +58,7 @@ event Bump(Actor Other, PrimitiveComponent OtherComp, Vector HitNormal)
 {
 	super.Bump(Other, OtherComp, HitNormal);
 
-	`log("jkasdlkasjkdhakjshd");
+	`log("BUMP");
 }
 
 DefaultProperties
