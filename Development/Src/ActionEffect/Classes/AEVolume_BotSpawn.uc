@@ -9,7 +9,11 @@ function AEPawn_Bot spawnBot(class<AEPawn_Bot> bot, AEMissionObjective spawnOwne
 
 	foreach spawnPoints( point )
 	{
-		if(!point.bInUse){ point.bInUse=true; break; }
+		if (!point.bInUse)
+		{ 
+			point.bInUse = true; 
+			break; 
+		}
 	}
 
 	return spawn(bot, spawnOwner,, point.Location, point.Rotation,, true);

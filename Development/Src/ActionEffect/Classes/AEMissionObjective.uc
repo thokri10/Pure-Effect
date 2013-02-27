@@ -259,7 +259,16 @@ function activateObjectives(MissionObjectives objectives)
 
 	// long "if section" for all the objectives. 
 
-	SpawnEnemies(objectives.MOEnemies);
+	if (missionGameType == SEARCH_AND_DESTROY)
+	{
+		SpawnEnemyBots(objectives.MOEnemies);
+	}
+	else if (missionGameType == ESCORT)
+	{
+		SpawnEscortBot();
+	}
+	
+	//SpawnEnemies(objectives.MOEnemies);
 }
 
 /** Spawns an enemy at a set location in the map */
@@ -273,6 +282,11 @@ function SpawnEnemies(int enemyNumber)
 	else if (missionGameType == ESCORT)
 	{
 		SpawnEscortBot();
+	}
+	else
+	{
+		`Log("[AEMissionObjective] Well, this is awkward. Mission couldn't start "
+			$ "due to gametype not being set properly.");
 	}
 }
 
@@ -333,7 +347,16 @@ function botDied()
 /** When an Escort target dies, this stuff runs. */
 function escortBotDied()
 {
+	local AEVolume_EscortBotSpawn target;
+
 	escortbotIsAlive = false;
+
+	// MissionComplete();
+
+	foreach WorldInfo.AllActors( class'AEVolume_EscortBotSpawn', target )
+	{
+		target.resetSpawnPoints();
+	}
 }
 
 /** Complete and reset all variables and gives the reward to player. */
@@ -344,6 +367,7 @@ function MissionComplete()
 	printObjectiveInfo("", true);
 
 	botsKilled = 0;
+	escortbotIsAlive = true;
 
 	getMissionRewards();
 }
