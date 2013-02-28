@@ -45,7 +45,12 @@ simulated function PostBeginPlay()
 	//}
 	
 	SetCharacterClassFromInfo(class'UTFamilyInfo_Liandri_Male');
-
+	AEAIController( Controller ).SetTeam(0);
+	
+	MyController.PlayerReplicationInfo.PlayerName = "ESCORT TARGET";
+	GroundSpeed = 4000.0f;
+	Health = Health * 10.0f;
+	
 	AddDefaultInventory();
 }
 
@@ -67,10 +72,7 @@ function bool Died(Controller Killer, class<DamageType> damageType, Vector HitLo
 		spawnOwner = AEMissionObjective(Owner);
 	}
 		
-	// Remove later?
-	spawnOwner.botDied();
-	`Log("FSDFJKJKFDHKGFDKGJFDGFDGFSDFIDSYFISDOFGSDGFDSFGDSFDSFDSFDJF");
-	spawnOwner.escortBotDied();
+	AEPlayerController( GetALocalPlayerController() ).myMissionObjective.escortBotDied();
 
 	return super.Died(Killer, damageType, HitLocation);
 }

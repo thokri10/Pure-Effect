@@ -41,9 +41,9 @@ struct RewardStruct
 /** Game types. */
 enum AEGameType
 {
+	NO_GAMETYPE,
 	SEARCH_AND_DESTROY,
-	ESCORT,
-	NO_GAMETYPE
+	ESCORT
 };
 
 //-----------------------------------------------------------------------------
@@ -55,7 +55,7 @@ var UTSquadAI defensiveSquad;
 //-----------------------------------------------------------------------------
 // Variables
 
-/** This is set trough AEtcpLink when the string is parsed.
+/** This is set through AETcpLinkClient when the string is parsed.
 	QuickFix find a better solution. */
 var string rewardString;
 
@@ -71,6 +71,9 @@ var int botsKilled;
 /** Escort bot life condition. */
 var bool escortbotIsAlive;
 
+/** Escort bot has reached target destination. */
+var bool escortBotHasReachedDestination;
+
 /** Console client (press Tab ingame to access it). */
 var Console consoleClient;
 
@@ -84,6 +87,9 @@ var array<AEPawn_Bot>           SpawnedBots;
 /** The escort bots that we spawn in the gametype Escort. */
 var array<AEPawn_EscortBot>     SpawnedEscortBots;
 
+/** The bots that will try to kill you and your Escort target. */
+var array<AEPawn_BotAgressive>  SpawnedEnemyEscortBots;
+
 /** Initialize the struct to hold the default variables of our mission.
 	Then we can easily restart our mission at any time. */
 var MissionObjectives   AEObjectives;
@@ -91,8 +97,36 @@ var MissionObjectives   AEObjectives;
 /** Gametype of the mission. */
 var AEGameType missionGameType;
 
+/** Checks if a mission is in play. */
+var bool missionIsActive;
+
+/** Keeps track how much time has passed. */
+var float playerTimer;
+
+/** How many seconds should pass before to check to "update" the player. */
+var float timeToUpdate;
+
+/** Desired FPS. Used to calculate how often we want to "update" the player.
+	Used in conjunction with timeToUpdate (see below). */
+var float fps;
+
 //-----------------------------------------------------------------------------
 // Init
+
+/** Overrode this function. It currently checks mission progress. */
+event Tick(float DeltaTime)
+{
+	playerTimer += DeltaTime;
+
+	super.Tick(DeltaTime);
+
+	if ( playerTimer >= timeToUpdate )
+	{
+		playerTimer -= timeToUpdate;
+
+		CheckMissionProgress();
+	}
+}
 
 /** Overrode this function. Currently doesn't do anything in particular. */
 simulated event PostBeginPlay()
@@ -101,9 +135,12 @@ simulated event PostBeginPlay()
 
 	agressiveSquad = Spawn(class'UTSquadAI');
 	defensiveSquad = Spawn(class'UTSquadAI');
+	timeToUpdate = 1.0f / fps;
+
+	missionGameType = NO_GAMETYPE;
 }
 
-/** Initializes the missions wtih the array from jsonParser*/
+/** Initializes the missions with the array from JSONParser*/
 function Initialize(array<ValueStruct> missionArray)
 {
 	activateObjectives( MissionFromSimpleStruct( parseArrayToSimpleStruct( missionArray ) ) );
@@ -179,11 +216,11 @@ function MissionObjectives MissionFromSimpleStruct(SimpleMissionStruct simpleMis
 	
 	foreach simpleMission.information(values)
 	{
-		if     (values.type == "id")            objective.id           = int( values.value );
-		else if(values.type == "category")      objective.category     = values.value;
-		else if(values.type == "city_name")     objective.mapName      = values.value;
-		else if(values.type == "description" )  objective.description  = values.value;
-		else if(values.type == "title")         objective.title        = values.value;
+		if      (values.type == "id")            objective.id           = int( values.value );
+		else if (values.type == "category")      objective.category     = values.value;
+		else if (values.type == "city_name")     objective.mapName      = values.value;
+		else if (values.type == "description" )  objective.description  = values.value;
+		else if (values.type == "title")         objective.title        = values.value;
 		//else `log("[SimpleMissionParse] No known name of this type: " $ values.type);
 	}
 
@@ -243,21 +280,18 @@ function activateObjectives(MissionObjectives objectives)
 		AEObjectives = objectives;
 	}
 
-	// For testing purposes. Sets how many enemies we should spawn
-	objectives.MOEnemies = 5;
-	AEObjectives.MOEnemies = 5;
-
-	printObjectiveMessage("BotsKilled: " $ botsKilled $ " / " $ objectives.MOEnemies);
 	createObjectiveInfo();
 
 	switch (AEObjectives.category)
 	{
 		case "Search and destroy":
 			missionGameType = SEARCH_AND_DESTROY;
+			missionIsActive = true;
 			break;
 
 		case "Escort":
 			missionGameType = ESCORT;
+			missionIsActive = true;
 			break;
 
 		default:
@@ -270,34 +304,41 @@ function activateObjectives(MissionObjectives objectives)
 
 	if (missionGameType == SEARCH_AND_DESTROY)
 	{
+		// For testing purposes. Sets how many enemies we should spawn
+		objectives.MOEnemies = 5;
+		AEObjectives.MOEnemies = 5;
+
+		printObjectiveMessage("BotsKilled: " $ botsKilled $ " / " $ objectives.MOEnemies);
+
 		SpawnEnemyBots(objectives.MOEnemies);
 	}
 	else if (missionGameType == ESCORT)
 	{
 		SpawnEscortBot();
+		// Hardcoded number of enemies. Implement it more dynamically later.
+		SpawnEnemyEscortBots(13);
+		printObjectiveMessage("Escort target.");
 	}
-	
-	//SpawnEnemies(objectives.MOEnemies);
 }
 
-/** Spawns an enemy at a set location in the map */
-function SpawnEnemies(int enemyNumber)
-{
-	// Spawn bots accordingly to gametype.
-	if (missionGameType == SEARCH_AND_DESTROY)
-	{
-		SpawnEnemyBots(enemyNumber);
-	}
-	else if (missionGameType == ESCORT)
-	{
-		SpawnEscortBot();
-	}
-	else
-	{
-		`Log("[AEMissionObjective] Well, this is awkward. Mission couldn't start "
-			$ "due to gametype not being set properly.");
-	}
-}
+///** Spawns an enemy at a set location in the map */
+//function SpawnEnemies(int enemyNumber)
+//{
+//	// Spawn bots accordingly to gametype.
+//	if (missionGameType == SEARCH_AND_DESTROY)
+//	{
+//		SpawnEnemyBots(enemyNumber);
+//	}
+//	else if (missionGameType == ESCORT)
+//	{
+//		SpawnEscortBot();
+//	}
+//	else
+//	{
+//		`Log("[AEMissionObjective] Well, this is awkward. Mission couldn't start "
+//			$ "due to gametype not being set properly.");
+//	}
+//}
 
 /** Spawns enemy bots on the map. */
 function SpawnEnemyBots(int enemyNumber)
@@ -355,41 +396,33 @@ function SpawnEscortBot()
 	}
 }
 
+function SpawnEnemyEscortBots(int enemyNumber)
+{
+	local AEVolume_EscortEnemyBotSpawn enemySpawnPoint;
+	local AEVolume_EscortEnemyBotSpawn target;
+	local int i;
+
+	foreach WorldInfo.AllActors( class'AEVolume_EscortEnemyBotSpawn', target )
+	{
+		enemySpawnPoint = target;
+	}
+
+	for (i = 0; i < enemyNumber; i++)
+	{
+		SpawnedEnemyEscortBots.AddItem( enemySpawnPoint.spawnBot(class'AEPawn_BotAgressive', self) );
+	}
+}
+
 /** When a bot dies he runs this method to update the bots killed. */
 function botDied()
 {
-	local AEVolume_BotSpawn target;
-
 	++botsKilled;
-
-	if (botsKilled < AEObjectives.MOEnemies)
-	{
-		printObjectiveMessage("BotsKilled: " $ botsKilled $ " / " $ AEObjectives.MOEnemies);
-	}
-	else
-	{
-		MissionComplete();
-
-		foreach WorldInfo.AllActors( class'AEVolume_BotSpawn', target )
-		{
-			target.resetSpawnPoints();
-		}
-	}
 }
 
 /** When an Escort target dies, this stuff runs. */
 function escortBotDied()
 {
-	local AEVolume_EscortBotSpawn target;
-
 	escortbotIsAlive = false;
-
-	// MissionComplete();
-
-	foreach WorldInfo.AllActors( class'AEVolume_EscortBotSpawn', target )
-	{
-		target.resetSpawnPoints();
-	}
 }
 
 /** Complete and reset all variables and gives the reward to player. */
@@ -401,8 +434,87 @@ function MissionComplete()
 
 	botsKilled = 0;
 	escortbotIsAlive = true;
+	escortBotHasReachedDestination = false;
+	missionIsActive = false;
 
 	getMissionRewards();
+}
+
+/** Reset spawn points of bots. */
+function ResetSpawnPoints()
+{
+	local AEVolume_BotSpawn targetBotSpawn;
+	local AEVolume_EscortBotSpawn targetEscortBotSpawn;
+	local AEVolume_EscortEnemyBotSpawn targetEnemyBotSpawn;
+
+	if (missionGameType == SEARCH_AND_DESTROY)
+	{
+		foreach WorldInfo.AllActors( class'AEVolume_BotSpawn', targetBotSpawn )
+		{
+			targetBotSpawn.resetSpawnPoints();
+		}
+	}
+	else if (missionGameType == ESCORT)
+	{
+		// Spawns for the escort bots are reset to be used again.
+		foreach WorldInfo.AllActors( class'AEVolume_EscortBotSpawn', targetEscortBotSpawn )
+		{
+			targetEscortBotSpawn.resetSpawnPoints();
+		}
+
+		foreach WorldInfo.AllActors( class'AEVolume_EscortEnemyBotSpawn', targetEnemyBotSpawn )
+		{
+			targetEnemyBotSpawn.resetSpawnPoints();
+		}
+	}
+	else
+	{
+		`Log("[AEMissionObjective] Could not reset bot spawn points due to " $
+			"gametype not being set to anything.");
+	}
+
+}
+
+/** Checks the current mission progress and updates information accordingly. */
+function CheckMissionProgress()
+{
+	local bool victory;
+
+	victory = false;
+
+	if (missionIsActive)
+	{
+		if (missionGameType == SEARCH_AND_DESTROY)
+		{
+			if (botsKilled < AEObjectives.MOEnemies)
+			{
+				printObjectiveMessage("BotsKilled: " $ botsKilled $ " / " $ AEObjectives.MOEnemies);
+			}
+			else
+			{
+				victory = true;
+				ResetSpawnPoints();
+			}
+		}
+		else if (missionGameType == ESCORT)
+		{
+			if (escortBotHasReachedDestination)
+			{
+				victory = true;
+			}
+
+			if (victory || !escortbotIsAlive)
+			{
+				ResetSpawnPoints();
+			}
+		}
+	
+		if (victory)
+		{
+			`Log("VICTORRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRY");
+			MissionComplete();
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -452,4 +564,10 @@ function printObjectiveMessage(string message, optional bool bReset)
 DefaultProperties
 {
 	escortbotIsAlive = true;
+	escortBotHasReachedDestination = false;
+
+	playerTimer = 0.0f;
+	fps = 60.0f;
+
+	missionIsActive = false;
 }

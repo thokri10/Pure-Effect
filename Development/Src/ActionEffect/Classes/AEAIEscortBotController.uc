@@ -68,6 +68,8 @@ auto state FollowPath
 					//actual_node = MyNavigationPoints.Length - 1;
 					// Stops following his path.
 					followingPath = false;
+					//aiPawn.spawnOwner.escortBotHasReachedDestination = true;
+					AEPlayerController( GetALocalPlayerController() ).myMissionObjective.escortBotHasReachedDestination = true;
 					break;
 				}
 				last_node = actual_node;

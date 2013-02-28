@@ -3,11 +3,11 @@
 class AEVolume_EscortEnemyBotSpawn extends Actor
 	placeable;
 
-var(SpawnPoints) array<AENavigationPoint_Spawn> spawnPoints;
+var(SpawnPoints) array<AENavigationPoint_EscortEnemyBotSpawn> spawnPoints;
 
-function AEPawn_Bot spawnBot(class<AEPawn_Bot> bot, AEMissionObjective spawnOwner)
+function AEPawn_BotAgressive spawnBot(class<AEPawn_BotAgressive> bot, AEMissionObjective spawnOwner)
 {
-	local AENavigationPoint_Spawn point;
+	local AENavigationPoint_EscortEnemyBotSpawn point;
 
 	foreach spawnPoints( point )
 	{
@@ -19,7 +19,7 @@ function AEPawn_Bot spawnBot(class<AEPawn_Bot> bot, AEMissionObjective spawnOwne
 
 function resetSpawnPoints()
 {
-	local AENavigationPoint_Spawn point;
+	local AENavigationPoint_EscortEnemyBotSpawn point;
 
 	foreach spawnPoints( point )
 	{
