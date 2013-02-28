@@ -1,5 +1,6 @@
 class AEInventory_ItemEffects extends Actor;
 
+var AEPlayerShield      AEShield;
 
 function heal(pawn target, int damage)
 {
@@ -31,6 +32,17 @@ function UTProj_Grenade granade(pawn target, float delay)
 function dealDamage(pawn target, actor item, int damage)
 {
 	target.TakeDamage(damage, GetALocalPlayerController(), item.Location, vect(0,0,-3000), class'UTDmgType_Grenade');
+}
+
+function AEPlayerShield shield(AEPawn target)
+{
+	local AEPlayerShield shield;
+
+	shield = spawn(class'AEPlayerShield', target);
+	shield.ControllerPawn = target;
+	shield.bOwnedByPlayer = true;
+
+	return shield;
 }
 
 DefaultProperties

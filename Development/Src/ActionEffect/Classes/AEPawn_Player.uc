@@ -51,9 +51,6 @@ simulated event PostBeginPlay()
 	timeToUpdate = 1.0f / fps;
 	
 	AEPC = AEPlayerController(GetALocalPlayerController());
-	AEShield = Spawn(class'AEPlayerShield', self,, Location,,, true);
-	AEShield.PawnController = self;
-	AEShield.bOwnedByPlayer = true;
 
 	if (AEPC != None)
 	{
@@ -66,6 +63,7 @@ simulated event PostBeginPlay()
 	}
 }
 
+/*
 simulated function StartFire(byte FireModeNum)
 {
 	if(AEShield != none)
@@ -81,7 +79,7 @@ simulated function StopFire(byte FireModeNum)
 
 	super.StopFire(FireModeNum);
 }
-
+*/
 
 function AddWeaponToInventory(UTWeapon type)
 {

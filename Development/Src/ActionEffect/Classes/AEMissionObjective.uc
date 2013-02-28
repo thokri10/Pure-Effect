@@ -47,6 +47,12 @@ enum AEGameType
 };
 
 //-----------------------------------------------------------------------------
+// Bots
+
+var UTSquadAI agressiveSquad;
+var UTSquadAI defensiveSquad;
+
+//-----------------------------------------------------------------------------
 // Variables
 
 /** This is set trough AEtcpLink when the string is parsed.
@@ -92,6 +98,9 @@ var AEGameType missionGameType;
 simulated event PostBeginPlay()
 {
 	super.PostBeginPlay();
+
+	agressiveSquad = Spawn(class'UTSquadAI');
+	defensiveSquad = Spawn(class'UTSquadAI');
 }
 
 /** Initializes the missions wtih the array from jsonParser*/
@@ -295,6 +304,8 @@ function SpawnEnemyBots(int enemyNumber)
 {
 	local AEVolume_BotSpawn spawnPoint; 
 	local AEVolume_BotSpawn target;
+	local AEPawn_Bot        bot;
+	local UTGameObjective   objective;
 	local int i;
 
 	foreach WorldInfo.AllActors( class'AEVolume_BotSpawn', target )
@@ -302,9 +313,31 @@ function SpawnEnemyBots(int enemyNumber)
 		spawnPoint = target;
 	}
 
+	bot = spawnPoint.spawnBot(class'AEPawn_BotLeader', self);
+	if(bot != none){
+		`log("aalsdlkajsdkljasd");
+		SpawnedBots.AddItem( bot );
+		defensiveSquad.Initialize(PC.myGame.Teams[1], objective, bot.Controller); 
+		
+		//agressiveSquad.Initialize(PC.myGame.Teams[1], objective, bot.Controller);
+	}
+
 	for (i = 0; i < enemyNumber; i++)
 	{
-		SpawnedBots.AddItem( spawnPoint.spawnBot(class'AEPawn_BotAgressive', self) );
+		bot = spawnPoint.spawnBot(class'AEPawn_BotAgressive', self);
+		if(bot != none){
+			bot.setSquad(agressiveSquad);
+			SpawnedBots.AddItem( bot );
+		}
+	}
+
+	for( i = 0; i < enemyNumber; i++ )
+	{
+		bot = spawnPoint.spawnBot(class'AEPawn_BotDefensive', self);
+		if(bot != none){
+			bot.setSquad(defensiveSquad);
+			SpawnedBots.AddItem( bot );
+		}
 	}
 }
 

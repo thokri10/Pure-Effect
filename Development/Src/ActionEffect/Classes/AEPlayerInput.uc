@@ -5,6 +5,7 @@ exec function UseInventoryItem(int slot)
 	UseItem(slot);
 }
 
+/*
 exec function toggleShield()
 {
 	if(myPawn.AEShield.bBlockActors)
@@ -12,6 +13,7 @@ exec function toggleShield()
 	else
 		myPawn.AEShield.bBlockActors=true;
 }
+*/
 
 exec function MenuNext()
 {

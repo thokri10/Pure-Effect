@@ -3,9 +3,7 @@ class AEPlayerShield extends Actor
 
 var bool bOwnedByPlayer;
 
-var AEPawn PawnController;
-
-var int health;
+var AEPawn ControllerPawn;
 
 event Touch(Actor Other, PrimitiveComponent OtherComp, Vector HitLocation, Vector HitNormal)
 {
@@ -27,6 +25,8 @@ event Tick(float DeltaTime)
 {
 	local Projectile target;
 
+	SetLocation( ControllerPawn.Location );
+
 	foreach CollidingActors(class'Projectile', target, 80)
 	{
 		if( !bOwnedByPlayer || target.InstigatorController != GetALocalPlayerController() )
@@ -36,13 +36,8 @@ event Tick(float DeltaTime)
 
 simulated function bool StopsProjectile(Projectile P)
 {
-	if(P.InstigatorController.Pawn == PawnController)
+	if(P.InstigatorController.Pawn == ControllerPawn)
 		return false;
-
-	health = health - p.Damage;
-	
-	if(health <= 0)
-		Destroy();
 
 	return super.StopsProjectile(P);
 }
@@ -65,7 +60,7 @@ DefaultProperties
 {
 	Begin Object Class=StaticMeshComponent Name=CollisionSphere
 		StaticMesh=StaticMesh'Level1pack.FalloffSphere.Mesh.CollisionSphere'
-		Scale=1.3
+		Scale=2
 		HiddenGame=true
 		CollideActors=true
 		BlockActors=true
@@ -75,16 +70,14 @@ DefaultProperties
 	Begin Object class=StaticMeshComponent Name=Sphere
 		StaticMesh=StaticMesh'Level1pack.Mesh.ShieldSphere'
 		HiddenGame=false
-		Scale=5
-		BlockActors=false
-		CollideActors=false
+		Scale=6
+		BlockActors=true
+		CollideActors=true
 		BlockRigidBody=false
 	End Object
 
 	Components.Add(CollisionSphere)
 	Components.Add(Sphere)
-
-	health = 100;
 
 	bCanBeDamaged=true
 	bCollideActors=true

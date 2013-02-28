@@ -4,7 +4,8 @@ class AEInventory_Item extends Actor
 enum ItemEffects
 {
 	EFFECT_HEAL,
-	EFFECT_GRANADE
+	EFFECT_GRANADE,
+	EFFECT_SHIELD
 };
 
 var Actor item; 
@@ -64,6 +65,8 @@ simulated function bool Use()
 			item = selectEffect.granade(PC.myPawn, delay);
 		else if( effect == EFFECT_HEAL ){
 			//item = self;
+		}else if( effect == EFFECT_SHIELD ){
+			item = selectEffect.shield(PC.myPawn);
 		}
 	}
 
@@ -98,6 +101,8 @@ function explode()
 				selectEffect.heal(target, damage);
 			if( effect == EFFECT_GRANADE )
 				selectEffect.dealDamage( target, item, damage );
+			if( effect == EFFECT_SHIELD )
+				item.Destroy();
 		}
 	}	
 }

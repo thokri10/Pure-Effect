@@ -1,15 +1,21 @@
 /** Main game class. */
 class ActionEffectGame extends UTTeamGame;
 
-//var class<AEAIEscortBotController> dasdassa;
-//var AEAIEscortBotController doasdpas;
+var bool initialized;
 
-/** Overrode this function. Currently doesn't do anything special. */
 function PostBeginPlay()
 {
 	super.PostBeginPlay();
 }
 
+event Tick(float DeltaTime)
+{
+	if(!initialized)
+	{
+		if(AEPlayerController( GetALocalPlayerController() ).myGame == none)
+			AEPlayerController( GetALocalPlayerController() ).myGame = self;
+	}
+}
 
 DefaultProperties
 {
@@ -24,10 +30,7 @@ DefaultProperties
 	HUDType = class'AEHUD';
 	bUseClassicHUD = true;
 
-	//bPlayersVsBots = true
 	bAutoNumBots = false
 	DesiredPlayerCount = 0
 	bTeamGame=true
-	
-	//dasdassa = class'AEAIEscortBotController';
 }

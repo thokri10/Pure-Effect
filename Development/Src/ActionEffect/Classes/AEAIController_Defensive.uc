@@ -1,10 +1,12 @@
-class AEAIController_Agressive extends AEAIController;
+class AEAIController_Defensive extends AEAIController;
 
 event Possess(Pawn aPawn, bool bVehicleTransition)
 {
 	super.Possess(aPawn, bVehicleTransition);
 
 	Pawn.SetMovementPhysics();
+
+	GotoState('Defending');
 }
 
 
@@ -13,12 +15,14 @@ function SetAttractionState()
 {
         if ( Enemy != None )
         {         
-            GotoState('Roaming');
+			StrafingAbility = 1;
+			`log("Strafing");
+            GotoState('Startled');
         }
         else
         { //want to change this to whatever your default state is you   
                //want for your bot.
-            GotoState('Hunting');
+            GotoState('Defending');
  
         }//close if
 }
@@ -26,7 +30,7 @@ function SetAttractionState()
 
 DefaultProperties
 {
-	Aggressiveness=+1
-	BaseAggressiveness=+1
-	CombatStyle=+1
+	BaseAggressiveness=-1
+	Aggression=-1
+	CombatStyle=-1
 }

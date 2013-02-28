@@ -11,12 +11,19 @@ function AEPawn_Bot spawnBot(class<AEPawn_Bot> bot, AEMissionObjective spawnOwne
 	{
 		if (!point.bInUse)
 		{ 
-			point.bInUse = true; 
-			break; 
+			if(bot == point.typeOfBot)
+			{
+				point.bInUse = true; 
+				break; 
+			}
 		}
 	}
 
-	return spawn(bot, spawnOwner,, point.Location, point.Rotation,, true);
+	if( point != none ) 
+		return spawn(bot, spawnOwner,, point.Location, point.Rotation,, true);
+
+	`Log("[AEVolume_BotSpawn] Could not spawn bot. No more free spawns or no type for this bot");
+	return none;
 }
 
 function resetSpawnPoints()

@@ -33,6 +33,11 @@ simulated event PostBeginPlay()
 	//AEShield.PawnController = self;
 }
 
+function setSquad(UTSquadAI squad)
+{
+	AEAIController( Controller ).Squad = squad;
+}
+
 function bool Died(Controller Killer, class<DamageType> damageType, Vector HitLocation)
 {
 	if (spawnOwner == none)

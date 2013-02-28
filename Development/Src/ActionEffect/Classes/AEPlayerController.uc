@@ -5,6 +5,8 @@ class AEPlayerController extends UTPlayerController
 //-----------------------------------------------------------------------------
 // Classes
 
+var ActionEffectGame        myGame;
+
 // Character that the player controls.
 var AEPawn_Player           myPawn;
 
@@ -35,7 +37,7 @@ var AEWeaponCreator         myWeaponCreator;
 
 
 //-----------------------------------------------------------------------------
-// Vriables
+// Variables
 
 var HudLocalizedMessage     message;
 var int                     credits;
@@ -49,6 +51,8 @@ var string test;
 /** Initializations before any pawns spawn on the map. */
 simulated event PostBeginPlay()
 {
+	local AEInventory_Item item;
+
 	// Initializations of various variables.
 	super.PostBeginPlay();
 
@@ -63,6 +67,14 @@ simulated event PostBeginPlay()
 
 	myItemInventory = Spawn(class'AEInventory');
 	myItemInventory.PC = self;
+
+	item = spawn(class'AEInventory_Item', self);
+	item.delay = 10;
+	item.Effects.AddItem(EFFECT_SHIELD);
+	item.Cooldown = 10;
+	item.StackCounter = 10;
+
+	myItemInventory.AddItem(item);
 
 	myMenu = Spawn(class'AEHUDMenu');
 	myMenu.PC = self;
