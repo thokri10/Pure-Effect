@@ -49,6 +49,7 @@ simulated function PostBeginPlay()
 	
 	MyController.PlayerReplicationInfo.PlayerName = "ESCORT TARGET";
 	GroundSpeed = 4000.0f;
+	Health = Health * 10.0f;
 	
 	AddDefaultInventory();
 }
