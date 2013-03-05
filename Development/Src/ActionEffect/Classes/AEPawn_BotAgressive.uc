@@ -5,7 +5,7 @@ simulated function PostBeginPlay()
 	super.PostBeginPlay();
 }
 
-function AddDefaultInventory()
+simulated function AddDefaultInventory()
 {
 	local UTWeapon rocket;
 

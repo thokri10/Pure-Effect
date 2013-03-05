@@ -1,10 +1,10 @@
 /** AIController for the Escort bot in the Escort gametype. */
-class AEAIEscortBotController extends AEAIController;
+class AEAIController_Escort extends AEAIController;
 
 /** Navigation points (path nodes). */
 var () array<AENavigationPoint_EscortBotPathNode> MyNavigationPoints;
 
-var AEPawn_EscortBot aiPawn;
+var AEPawn_BotEscort aiPawn;
 
 var     int         actual_node;
 var     int         last_node;
@@ -134,7 +134,7 @@ function Possess(Pawn aPawn, bool bVehicleTransition)
 	{
 		Super.Possess(aPawn, bVehicleTransition);
 
-		aiPawn = AEPawn_EscortBot(Pawn);
+		aiPawn = AEPawn_BotEscort(Pawn);
 		MyNavigationPoints = aiPawn.MyNavigationPoints;
 		waitAtNode = aiPawn.waitAtNode;
 		Pawn.SetMovementPhysics();

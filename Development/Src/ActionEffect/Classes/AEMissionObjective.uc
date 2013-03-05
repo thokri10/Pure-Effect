@@ -85,7 +85,7 @@ var AEPlayerController  PC;
 var array<AEPawn_Bot>           SpawnedBots;
 
 /** The escort bots that we spawn in the gametype Escort. */
-var array<AEPawn_EscortBot>     SpawnedEscortBots;
+var array<AEPawn_BotEscort>     SpawnedEscortBots;
 
 /** The bots that will try to kill you and your Escort target. */
 var array<AEPawn_BotAgressive>  SpawnedEnemyEscortBots;
@@ -123,7 +123,6 @@ event Tick(float DeltaTime)
 	if ( playerTimer >= timeToUpdate )
 	{
 		playerTimer -= timeToUpdate;
-
 		CheckMissionProgress();
 	}
 }
@@ -302,43 +301,21 @@ function activateObjectives(MissionObjectives objectives)
 
 	// long "if section" for all the objectives. 
 
+	// For testing purposes. Sets how many enemies we should spawn
+	objectives.MOEnemies = 5;
+	AEObjectives.MOEnemies = 5;
+
 	if (missionGameType == SEARCH_AND_DESTROY)
 	{
-		// For testing purposes. Sets how many enemies we should spawn
-		objectives.MOEnemies = 5;
-		AEObjectives.MOEnemies = 5;
-
 		printObjectiveMessage("BotsKilled: " $ botsKilled $ " / " $ objectives.MOEnemies);
-
-		SpawnEnemyBots(objectives.MOEnemies);
 	}
 	else if (missionGameType == ESCORT)
 	{
-		SpawnEscortBot();
-		// Hardcoded number of enemies. Implement it more dynamically later.
-		SpawnEnemyEscortBots(13);
 		printObjectiveMessage("Escort target.");
 	}
-}
 
-///** Spawns an enemy at a set location in the map */
-//function SpawnEnemies(int enemyNumber)
-//{
-//	// Spawn bots accordingly to gametype.
-//	if (missionGameType == SEARCH_AND_DESTROY)
-//	{
-//		SpawnEnemyBots(enemyNumber);
-//	}
-//	else if (missionGameType == ESCORT)
-//	{
-//		SpawnEscortBot();
-//	}
-//	else
-//	{
-//		`Log("[AEMissionObjective] Well, this is awkward. Mission couldn't start "
-//			$ "due to gametype not being set properly.");
-//	}
-//}
+	SpawnEnemyBots(objectives.MOEnemies);
+}
 
 /** Spawns enemy bots on the map. */
 function SpawnEnemyBots(int enemyNumber)
@@ -354,62 +331,64 @@ function SpawnEnemyBots(int enemyNumber)
 		spawnPoint = target;
 	}
 
-	bot = spawnPoint.spawnBot(class'AEPawn_BotLeader', self);
-	if(bot != none){
-		`log("aalsdlkajsdkljasd");
-		SpawnedBots.AddItem( bot );
-		defensiveSquad.Initialize(PC.myGame.Teams[1], objective, bot.Controller); 
+	// Initialize Objective here, Emil?
+
+	if (missionGameType == SEARCH_AND_DESTROY)
+	{
+		bot = spawnPoint.spawnBot(class'AEPawn_BotLeader', self);
+		if (bot != none)
+		{
+			`log("aalsdlkajsdkljasd");
+			SpawnedBots.AddItem( bot );
+			defensiveSquad.Initialize(PC.myGame.Teams[1], objective, bot.Controller); 
 		
-		//agressiveSquad.Initialize(PC.myGame.Teams[1], objective, bot.Controller);
-	}
+			//agressiveSquad.Initialize(PC.myGame.Teams[1], objective, bot.Controller);
+		}
 
-	for (i = 0; i < enemyNumber; i++)
-	{
-		bot = spawnPoint.spawnBot(class'AEPawn_BotAgressive', self);
-		if(bot != none){
-			bot.setSquad(agressiveSquad);
-			SpawnedBots.AddItem( bot );
+		for (i = 0; i < enemyNumber; i++)
+		{
+			bot = spawnPoint.spawnBot(class'AEPawn_BotAgressive', self);
+			if(bot != none){
+				bot.setSquad(agressiveSquad);
+				SpawnedBots.AddItem( bot );
+			}
+		}
+
+		for( i = 0; i < enemyNumber; i++ )
+		{
+			bot = spawnPoint.spawnBot(class'AEPawn_BotDefensive', self);
+			if(bot != none){
+				bot.setSquad(defensiveSquad);
+				SpawnedBots.AddItem( bot );
+			}
 		}
 	}
-
-	for( i = 0; i < enemyNumber; i++ )
+	else if (missionGameType == ESCORT)
 	{
-		bot = spawnPoint.spawnBot(class'AEPawn_BotDefensive', self);
-		if(bot != none){
-			bot.setSquad(defensiveSquad);
+		// Adds the bot that you are supposed to escort.
+		bot = spawnPoint.spawnBot(class'AEPawn_BotEscort', self);
+		if (bot != none)
+		{
 			SpawnedBots.AddItem( bot );
 		}
-	}
-}
 
-/** Spawn the bot that the player is going to escort in the Escort gametype. */
-function SpawnEscortBot()
-{
-	local AEVolume_EscortBotSpawn escortSpawnPoint; 
-	local AEVolume_EscortBotSpawn target;
+		// HARDCODED. MAKE MORE DYNAMIC!
+		for( i = 0; i < 10; i++ )
+		{
+			bot = spawnPoint.spawnBot(class'AEPawn_BotDefensiveEscortEnemy', self);
+			if(bot != none){
+				SpawnedBots.AddItem( bot );
+			}
+		}
 
-	// Finds the spawn point for the escort bot and spawns one there.
-	foreach WorldInfo.AllActors( class'AEVolume_EscortBotSpawn', target)
-	{
-		escortSpawnPoint = target;
-		SpawnedEscortBots.AddItem(escortSpawnPoint.spawnBot(class'AEPawn_EscortBot', self));
-	}
-}
-
-function SpawnEnemyEscortBots(int enemyNumber)
-{
-	local AEVolume_EscortEnemyBotSpawn enemySpawnPoint;
-	local AEVolume_EscortEnemyBotSpawn target;
-	local int i;
-
-	foreach WorldInfo.AllActors( class'AEVolume_EscortEnemyBotSpawn', target )
-	{
-		enemySpawnPoint = target;
-	}
-
-	for (i = 0; i < enemyNumber; i++)
-	{
-		SpawnedEnemyEscortBots.AddItem( enemySpawnPoint.spawnBot(class'AEPawn_BotAgressive', self) );
+		// HARDCODED. MAKE MORE DYNAMIC!
+		for( i = 0; i < 10; i++ )
+		{
+			bot = spawnPoint.spawnBot(class'AEPawn_BotAggressiveEscortEnemy', self);
+			if(bot != none){
+				SpawnedBots.AddItem( bot );
+			}
+		}
 	}
 }
 
@@ -444,27 +423,12 @@ function MissionComplete()
 function ResetSpawnPoints()
 {
 	local AEVolume_BotSpawn targetBotSpawn;
-	local AEVolume_EscortBotSpawn targetEscortBotSpawn;
-	local AEVolume_EscortEnemyBotSpawn targetEnemyBotSpawn;
 
-	if (missionGameType == SEARCH_AND_DESTROY)
+	if (missionGameType != NO_GAMETYPE)
 	{
 		foreach WorldInfo.AllActors( class'AEVolume_BotSpawn', targetBotSpawn )
 		{
 			targetBotSpawn.resetSpawnPoints();
-		}
-	}
-	else if (missionGameType == ESCORT)
-	{
-		// Spawns for the escort bots are reset to be used again.
-		foreach WorldInfo.AllActors( class'AEVolume_EscortBotSpawn', targetEscortBotSpawn )
-		{
-			targetEscortBotSpawn.resetSpawnPoints();
-		}
-
-		foreach WorldInfo.AllActors( class'AEVolume_EscortEnemyBotSpawn', targetEnemyBotSpawn )
-		{
-			targetEnemyBotSpawn.resetSpawnPoints();
 		}
 	}
 	else
