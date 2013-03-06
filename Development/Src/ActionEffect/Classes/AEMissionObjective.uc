@@ -337,10 +337,10 @@ function SpawnEnemyBots(int enemyNumber)
 		//defensiveSquad.SetDefenseScriptFor( UTBot(bot.Controller) );
 		
 		//agressiveSquad.Initialize(PC.myGame.Teams[1], objective, bot.Controller);
-		if(bot != none){
+		// if(bot != none){
 			//agressiveSquad.Initialize(PC.myGame.Teams[1], objective2, bot.Controller);
 			//agressiveSquad.SquadMembers = UTBot(bot.Controller);
-		}
+		//}
 		
 	}
 
