@@ -259,7 +259,9 @@ function DrawLivingHud()
 
 	DrawHealthBar(200.0f, 80.0f, 80.0f);
 	DrawStaminaBar(80.0f, 200.0f, 80.0f);
-	DrawFuelBar(200.0f, 200.0f, 200.0f);
+	
+	// Uncommented for debugging purposes.
+	//DrawFuelBar(200.0f, 200.0f, 200.0f);
 }
 
 DefaultProperties

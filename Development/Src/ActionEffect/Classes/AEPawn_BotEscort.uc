@@ -1,9 +1,8 @@
 /** A bot that the player escorts during the Escort gametype. */
-class AEPawn_EscortBot extends AEPawn
+class AEPawn_BotEscort extends AEPawn_Bot
 	placeable;
 
-var AEAIEscortBotController     MyController;
-var AEMissionObjective          spawnOwner;
+var AEAIController_Escort       MyCustomController;
 
 var () array<AENavigationPoint_EscortBotPathNode> MyNavigationPoints;
 
@@ -22,32 +21,29 @@ simulated function PostBeginPlay()
 		MyNavigationPoints.AddItem(escortPathNode);
 	}
 
-	MyController = Spawn(class'AEAIEscortBotController');
-	MyController.Possess(self, false);
+	MyCustomController = Spawn(class'AEAIController_Escort');
+	MyCustomController.Possess(self, false);
 
 	SetPhysics(PHYS_Walking);
 
-	//if (ControllerClass == none)
-	//{
-		ControllerClass = class'AEAIEscortBotController';
+	ControllerClass = class'AEAIController_Escort';
 
-		if (MyController == none)
-		{
-			MyController = AEAIEscortBotController(Controller);
-		}
+	if (MyCustomController == none)
+	{
+		MyCustomController = AEAIController_Escort(Controller);
+	}
 
-		spawnOwner = AEMissionObjective(Owner);
+	spawnOwner = AEMissionObjective(Owner);
 
-		if (spawnOwner == None)
-		{
-			`log("[AEPawn_EscortBot] Owner does not exist. Or can't be casted to AEMissionObjective");
-		}
-	//}
+	if (spawnOwner == None)
+	{
+		`log("[AEPawn_BotEscort] Owner does not exist. Or can't be casted to AEMissionObjective");
+	}
 	
 	SetCharacterClassFromInfo(class'UTFamilyInfo_Liandri_Male');
-	AEAIController( Controller ).SetTeam(0);
+	AEAIController_Escort( Controller ).SetTeam(0);
 	
-	MyController.PlayerReplicationInfo.PlayerName = "ESCORT TARGET";
+	MyCustomController.PlayerReplicationInfo.PlayerName = "ESCORT TARGET";
 	GroundSpeed = 4000.0f;
 	Health = Health * 10.0f;
 	
@@ -57,10 +53,10 @@ simulated function PostBeginPlay()
 /** Makes sure the bot is on the ground upon possible possession. */
 function Possess(Pawn aPawn, bool bVehicleTransition)
 {
-	MyController.Possess(aPawn, bVehicleTransition);
+	MyCustomController.Possess(aPawn, bVehicleTransition);
 }
 
-function SpawnDefaultController()
+simulated function SpawnDefaultController()
 {
 	Super.SpawnDefaultController();
 }
@@ -79,6 +75,6 @@ function bool Died(Controller Killer, class<DamageType> damageType, Vector HitLo
 
 DefaultProperties
 {
-	ControllerClass = class'AEAIEscortBotController';
+	ControllerClass = class'AEAIController_Escort';
 }
 

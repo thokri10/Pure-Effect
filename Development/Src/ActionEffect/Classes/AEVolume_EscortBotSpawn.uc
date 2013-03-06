@@ -6,7 +6,7 @@ class AEVolume_EscortBotSpawn extends Actor
 var(SpawnPoints) array<AENavigationPoint_EscortBotSpawn> spawnPoints;
 
 /** Spawns an Escort bot for each spawnpoint for that type of unit. */
-function AEPawn_EscortBot spawnBot(class<AEPawn_EscortBot> bot, AEMissionObjective spawnOwner)
+function AEPawn_BotEscort spawnBot(class<AEPawn_BotEscort> bot, AEMissionObjective spawnOwner)
 {
 	local AENavigationPoint_EscortBotSpawn point;
 	
