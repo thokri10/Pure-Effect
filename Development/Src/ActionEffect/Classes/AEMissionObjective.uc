@@ -49,9 +49,6 @@ enum AEGameType
 //-----------------------------------------------------------------------------
 // Bots
 
-var UTSquadAI agressiveSquad;
-var UTSquadAI defensiveSquad;
-
 //-----------------------------------------------------------------------------
 // Variables
 
@@ -133,8 +130,6 @@ simulated event PostBeginPlay()
 {
 	super.PostBeginPlay();
 
-	agressiveSquad = Spawn(class'UTSquadAI');
-	defensiveSquad = Spawn(class'UTSquadAI');
 	timeToUpdate = 1.0f / fps;
 
 	missionGameType = NO_GAMETYPE;
@@ -173,12 +168,9 @@ function SimpleMissionStruct parseArrayToSimpleStruct(array<ValueStruct> mission
 			Type = "reward";
 			mission.rewards.AddItem( temp );
 				
-			if (!existingReward)
-			{
+			if (!existingReward){
 				existingReward = true;
-			}	
-			else
-			{
+			}else{
 				++numberOfRewards;
 			}
 		}
@@ -192,11 +184,9 @@ function SimpleMissionStruct parseArrayToSimpleStruct(array<ValueStruct> mission
 			case "info": 
 				mission.information.AddItem( missionArray[i] ); 
 				break;
-
 			case "reward": 
 				mission.rewards[numberOfRewards].variables.AddItem( missionArray[i] ); 
 				break;
-
 			default:
 				`Log("[AEMissionObjective] failed to set Type in the function " $
 					"parseArrayToSimpleStruct");
@@ -346,7 +336,8 @@ function SpawnEnemyBots(int enemyNumber)
 	local AEVolume_BotSpawn spawnPoint; 
 	local AEVolume_BotSpawn target;
 	local AEPawn_Bot        bot;
-	local UTGameObjective   objective;
+	local AEGameObjective_Defend   objective;
+	//local UTGameObjective           objective2;
 	local int i;
 
 	foreach WorldInfo.AllActors( class'AEVolume_BotSpawn', target )
@@ -354,15 +345,27 @@ function SpawnEnemyBots(int enemyNumber)
 		spawnPoint = target;
 	}
 
-	bot = spawnPoint.spawnBot(class'AEPawn_BotLeader', self);
-	if(bot != none){
-		`log("aalsdlkajsdkljasd");
-		SpawnedBots.AddItem( bot );
-		defensiveSquad.Initialize(PC.myGame.Teams[1], objective, bot.Controller); 
-		
-		//agressiveSquad.Initialize(PC.myGame.Teams[1], objective, bot.Controller);
+	foreach WorldInfo.AllActors( class'AEGameObjective_Defend', objective )
+	{
+
 	}
 
+	bot = spawnPoint.spawnBot(class'AEPawn_BotLeader', self);
+	if(bot != none){
+		SpawnedBots.AddItem( bot );
+		//defensiveSquad.Initialize(PC.myGame.Teams[1], objective, bot.Controller);
+		//defensiveSquad.SquadMembers = UTBot(bot.Controller);
+		//defensiveSquad.SetDefenseScriptFor( UTBot(bot.Controller) );
+		
+		//bot = spawnPoint.spawnBot(class'AEPawn_BotLeader', self);
+		if(bot != none){
+			//agressiveSquad.Initialize(PC.myGame.Teams[1], objective2, bot.Controller);
+			//agressiveSquad.SquadMembers = UTBot(bot.Controller);
+		}
+		
+	}
+
+	/*
 	for (i = 0; i < enemyNumber; i++)
 	{
 		bot = spawnPoint.spawnBot(class'AEPawn_BotAgressive', self);
@@ -371,12 +374,12 @@ function SpawnEnemyBots(int enemyNumber)
 			SpawnedBots.AddItem( bot );
 		}
 	}
+	*/
 
 	for( i = 0; i < enemyNumber; i++ )
 	{
 		bot = spawnPoint.spawnBot(class'AEPawn_BotDefensive', self);
 		if(bot != none){
-			bot.setSquad(defensiveSquad);
 			SpawnedBots.AddItem( bot );
 		}
 	}
@@ -414,7 +417,7 @@ function SpawnEnemyEscortBots(int enemyNumber)
 }
 
 /** When a bot dies he runs this method to update the bots killed. */
-function botDied()
+function botDied(UTBot bot)
 {
 	++botsKilled;
 }

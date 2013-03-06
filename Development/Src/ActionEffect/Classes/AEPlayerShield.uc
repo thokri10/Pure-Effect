@@ -25,7 +25,10 @@ event Tick(float DeltaTime)
 {
 	local Projectile target;
 
-	SetLocation( ControllerPawn.Location );
+	if( ControllerPawn != none )
+		SetLocation( ControllerPawn.Location );
+	else
+		Destroy();
 
 	foreach CollidingActors(class'Projectile', target, 80)
 	{

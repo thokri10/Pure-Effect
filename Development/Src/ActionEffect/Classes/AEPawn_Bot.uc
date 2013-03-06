@@ -45,7 +45,7 @@ function bool Died(Controller Killer, class<DamageType> damageType, Vector HitLo
 		spawnOwner = AEMissionObjective(Owner);
 	}
 
-	AEPlayerController( GetALocalPlayerController() ).myMissionObjective.botDied();
+	AEPlayerController( GetALocalPlayerController() ).myMissionObjective.botDied( MyController );
 		
 	//spawnOwner.botDied();
 

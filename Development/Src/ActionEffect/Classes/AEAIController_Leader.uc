@@ -3,20 +3,23 @@ class AEAIController_Leader extends AEAIController;
 /** Derived from bot class */
 function SetAttractionState()
 {
-        if ( Enemy != None )
-        {         
-			StrafingAbility = 1;
-			`log("Strafing");
-            GotoState('Defending');
-        }
-        else
-        { //want to change this to whatever your default state is you   
-               //want for your bot.
-            GotoState('Defending');
+    if ( Enemy != None )
+    {         
+		StrafingAbility = 1;
+        GotoState('RangedAttack');
+    }
+    else
+    { //want to change this to whatever your default state is you   
+            //want for your bot.
+
+		if(GetStateName() != 'Defending')
+			GotoState('Defending');
  
-        }//close if
+    }//close if
 }
 
 DefaultProperties
 {
+	ReTaskTime = 5
+	Skill=10
 }

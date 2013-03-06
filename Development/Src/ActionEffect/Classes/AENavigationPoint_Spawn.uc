@@ -1,4 +1,4 @@
-class AENavigationPoint_Spawn extends AENavigationPoint
+class AENavigationPoint_Spawn extends Actor
 	placeable;
 
 var bool bInUse;
@@ -8,5 +8,15 @@ var(BotType) class<AEPawn_Bot> typeOfBot;
 
 DefaultProperties
 {
+	Begin Object Class=SpriteComponent Name=Sprite
+		Sprite=Texture2D'EditorResources.Crowd.T_Crowd_Spawn'
+		HiddenGame=true
+		HiddenEditor=false
+		AlwaysLoadOnClient=False
+		AlwaysLoadOnServer=False
+		SpriteCategoryName="Navigation"
+	End Object
+
+	Components.Add(Sprite)
 	bInUse=false
 }

@@ -26,6 +26,7 @@ function SetAttractionState()
 
 DefaultProperties
 {
+	StrafingAbility=+1
 	Aggressiveness=+1
 	BaseAggressiveness=+1
 	CombatStyle=+1

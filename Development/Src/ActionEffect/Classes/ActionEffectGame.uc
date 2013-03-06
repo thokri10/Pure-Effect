@@ -26,6 +26,9 @@ DefaultProperties
 	bDelayedStart = false;
 	BotClass = class'AEAIController';
 	bCustomBots = true;
+	
+	// EDIT: !!! FOR BOT TESTING REMOVE THIS WHEN DONE !!!
+	bForceAllRed=false
 
 	HUDType = class'AEHUD';
 	bUseClassicHUD = true;
@@ -33,4 +36,5 @@ DefaultProperties
 	bAutoNumBots = false
 	DesiredPlayerCount = 0
 	bTeamGame=true
+
 }
