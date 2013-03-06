@@ -313,7 +313,7 @@ function SpawnEnemyBots(int enemyNumber)
 	local AEVolume_BotSpawn spawnPoint; 
 	local AEVolume_BotSpawn target;
 	local AEPawn_Bot        bot;
-	local AEGameObjective_Defend   objective;
+	//local AEGameObjective_Defend   objective;
 	//local UTGameObjective           objective2;
 	local int i;
 
