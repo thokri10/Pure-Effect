@@ -1,11 +1,10 @@
 class AEAIController_Leader extends AEAIController;
 
 /** Derived from bot class */
-function SetAttractionState()
+simulated function SetAttractionState()
 {
     if ( Enemy != None )
     {         
-		StrafingAbility = 1;
         GotoState('RangedAttack');
     }
     else
@@ -20,6 +19,4 @@ function SetAttractionState()
 
 DefaultProperties
 {
-	ReTaskTime = 5
-	Skill=10
 }

@@ -1,5 +1,5 @@
 /** AIController for the Escort bot in the Escort gametype. */
-class AEAIController_Escort extends AEAIController;
+class AEAIController_Escort extends UTBot;
 
 /** Navigation points (path nodes). */
 var () array<AENavigationPoint_EscortBotPathNode> MyNavigationPoints;
@@ -28,6 +28,8 @@ var Float IdleInterval;
 function PostBeginPlay()
 {
 	super.PostBeginPlay();
+	
+	PlayerReplicationInfo.bOutOfLives=true;
 }
 state Idle
 {
@@ -124,6 +126,8 @@ auto state FollowPath
 
 function Possess(Pawn aPawn, bool bVehicleTransition)
 {
+	PlayerReplicationInfo.bOutOfLives=true;
+
     if (aPawn.bDeleteMe)
 	{
 		`Warn(self @ GetHumanReadableName() @ "attempted to possess destroyed Pawn" @ aPawn);

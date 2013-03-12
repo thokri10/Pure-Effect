@@ -326,23 +326,11 @@ function SpawnEnemyBots(int enemyNumber)
 
 	if (missionGameType == SEARCH_AND_DESTROY)
 	{
-
 		bot = spawnPoint.spawnBot(class'AEPawn_BotLeader', self);
 		if (bot != none)
 		{
-			`log("aalsdlkajsdkljasd");
 			SpawnedBots.AddItem( bot );
-		//defensiveSquad.Initialize(PC.myGame.Teams[1], objective, bot.Controller);
-		//defensiveSquad.SquadMembers = UTBot(bot.Controller);
-		//defensiveSquad.SetDefenseScriptFor( UTBot(bot.Controller) );
-		
-		//agressiveSquad.Initialize(PC.myGame.Teams[1], objective, bot.Controller);
-		if(bot != none){
-			//agressiveSquad.Initialize(PC.myGame.Teams[1], objective2, bot.Controller);
-			//agressiveSquad.SquadMembers = UTBot(bot.Controller);
 		}
-		
-	}
 
 	/*
 		for (i = 0; i < enemyNumber; i++)
@@ -393,7 +381,7 @@ function SpawnEnemyBots(int enemyNumber)
 }
 
 /** When a bot dies he runs this method to update the bots killed. */
-function botDied(UTBot bot)
+function botDied(AEAIController bot)
 {
 	++botsKilled;
 }

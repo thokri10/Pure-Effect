@@ -10,10 +10,19 @@ function PostBeginPlay()
 
 event Tick(float DeltaTime)
 {
+	local AEVolume_BotSpawn target;
 	if(!initialized)
 	{
-		if(AEPlayerController( GetALocalPlayerController() ).myGame == none)
+		if(AEPlayerController( GetALocalPlayerController() ).myGame == none){
+			initialized = true;
 			AEPlayerController( GetALocalPlayerController() ).myGame = self;
+		}
+
+		foreach WorldInfo.AllActors( class'AEVolume_BotSpawn', target )
+		{
+			target.spawnBot(class'AEPawn_BotDefensive', self);
+			break;
+		}
 	}
 }
 
@@ -28,7 +37,7 @@ DefaultProperties
 	bCustomBots = true;
 	
 	// EDIT: !!! FOR BOT TESTING REMOVE THIS WHEN DONE !!!
-	bForceAllRed=false
+	bForceAllRed=true
 
 	HUDType = class'AEHUD';
 	bUseClassicHUD = true;
@@ -36,5 +45,4 @@ DefaultProperties
 	bAutoNumBots = false
 	DesiredPlayerCount = 0
 	bTeamGame=true
-
 }

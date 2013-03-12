@@ -9,7 +9,7 @@ event Possess(Pawn aPawn, bool bVehicleTransition)
 
 
 /** Derived from bot class */
-function SetAttractionState()
+simulated function SetAttractionState()
 {
         if ( Enemy != None )
         {         
@@ -26,8 +26,4 @@ function SetAttractionState()
 
 DefaultProperties
 {
-	StrafingAbility=+1
-	Aggressiveness=+1
-	BaseAggressiveness=+1
-	CombatStyle=+1
 }

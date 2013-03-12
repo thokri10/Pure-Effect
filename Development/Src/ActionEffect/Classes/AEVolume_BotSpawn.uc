@@ -3,7 +3,7 @@ class AEVolume_BotSpawn extends Actor
 
 var(SpawnPoints) array<AENavigationPoint_Spawn> spawnPoints;
 
-function AEPawn_Bot spawnBot(class<AEPawn_Bot> bot, AEMissionObjective spawnOwner)
+function AEPawn_Bot spawnBot(class<AEPawn_Bot> bot, Actor spawnOwner)
 {
 	local AENavigationPoint_Spawn point;
 
