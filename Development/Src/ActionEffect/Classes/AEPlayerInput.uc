@@ -33,13 +33,7 @@ exec function MenuEnter()
 // Press LeftShift to sprint.
 simulated exec function Sprint()
 {
-	if ( WorldInfo.NetMode == NM_Client )
-		ServerSprint();
-	else
-	{
-		myPawn.isSprinting = true;
-		myPawn.regenerateSprintEnergy = false;
-	}
+	myPawn.Sprint();
 	
 	/*
 	 * myPawn.isSprinting = true;
@@ -47,11 +41,7 @@ simulated exec function Sprint()
 	*/
 }
 
-reliable server function ServerSprint()
-{
-	myPawn.isSprinting = true;
-	myPawn.regenerateSprintEnergy = false;
-}
+
 
 // Release LeftShift to stop sprinting.
 simulated exec function StopSprinting()

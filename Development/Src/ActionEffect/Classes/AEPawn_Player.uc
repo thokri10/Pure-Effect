@@ -50,6 +50,24 @@ event Tick(float DeltaTime)
 	}
 }
 
+function Sprint()
+{
+	if ( WorldInfo.NetMode == NM_Client )
+		ServerSprint();
+	else
+	{
+		isSprinting = true;
+		regenerateSprintEnergy = false;
+	}
+}
+
+reliable server function ServerSprint()
+{
+	`log("serverSprint is being used!");
+	isSprinting = true;
+	regenerateSprintEnergy = false;
+}
+
 simulated event PostBeginPlay()
 {
 	super.PostBeginPlay();
@@ -150,6 +168,7 @@ function StartSprinting(float DeltaTime)
 
 	if (isSprinting)
 	{
+		`log("spirinttttttttttttttttttttttttttttttttttttttttttttt");
 		GroundSpeed = 1000.0f;
 	}
 	else

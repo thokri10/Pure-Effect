@@ -228,6 +228,7 @@ function DrawStaminaBar(float barValueR, float barValueG, float barValueB)
 			Canvas.SizeY - (Canvas.SizeY * 0.100f),
 			barValueR, barValueG, barValueB);
     }
+    */
 }
 
 /** Draws the fuel bar on the screen. */
@@ -255,6 +256,7 @@ function DrawFuelBar(float barValueR, float barValueG, float barValueB)
 			Canvas.DrawText("OUT OF FUEL");
 		}
     }
+    */
 }
 
 /** Overrode this function to make our custom HUD. */

@@ -197,6 +197,8 @@ exec function ppp()
 {
 	mHUD = AEHUD( myHUD );
 	myMenu.setMainMenu();
+
+	`log("isSprinting: " $ myPawn.isSprinting $ " regenerateSprintEnergy: " $ myPawn.regenerateSprintEnergy);
 }
 
 /** Login with username and password */
