@@ -31,6 +31,7 @@ function UTProj_Grenade granade(pawn target, float delay)
 
 function dealDamage(pawn target, actor item, int damage)
 {
+	// TODO: Fix this so that it won't bug in multiplayer.
 	target.TakeDamage(damage, GetALocalPlayerController(), item.Location, vect(0,0,-3000), class'UTDmgType_Grenade');
 }
 

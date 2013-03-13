@@ -13,6 +13,7 @@ event Tick(float DeltaTime)
 	local AEVolume_BotSpawn target;
 	if(!initialized)
 	{
+		// TODO: Fix so that it works for multiplayer.
 		if(AEPlayerController( GetALocalPlayerController() ).myGame == none){
 			initialized = true;
 			AEPlayerController( GetALocalPlayerController() ).myGame = self;

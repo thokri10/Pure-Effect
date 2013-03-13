@@ -212,6 +212,7 @@ function DrawHealthBar(float barValueR, float barValueG, float barValueB)
 /** Draws the stamina bar on the screen. */
 function DrawStaminaBar(float barValueR, float barValueG, float barValueB)
 {
+	// TODO: Fix so that it works for multiplayer.
 	local AEPlayerController playerPC;
 	playerPC = AEPlayerController(GetALocalPlayerController());
 
@@ -234,6 +235,7 @@ function DrawFuelBar(float barValueR, float barValueG, float barValueB)
 	local AEPlayerController playerPC;
 	local float fuelRatio;
 
+	// // TODO: Fix so that it works for multiplayer.
 	playerPC = AEPlayerController(GetALocalPlayerController());
 	fuelRatio = playerPC.myPawn.fuelEnergy / playerPC.myPawn.maxFuelEnergy;
 

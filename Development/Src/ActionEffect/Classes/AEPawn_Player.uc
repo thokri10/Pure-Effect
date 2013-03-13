@@ -50,6 +50,7 @@ simulated event PostBeginPlay()
 	
 	timeToUpdate = 1.0f / fps;
 	
+	// TODO: Fix this so that it won't bug in multiplayer.
 	AEPC = AEPlayerController(GetALocalPlayerController());
 
 	if (AEPC != None)

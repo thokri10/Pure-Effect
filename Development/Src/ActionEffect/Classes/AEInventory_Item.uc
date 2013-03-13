@@ -41,6 +41,7 @@ simulated function Tick(float DeltaTime)
 {
 	super.Tick(DeltaTime);
 
+	// TODO: Fix so that it works for multiplayer.
 	if(PC == none)
 		PC = AEPlayerController( GetALocalPlayerController() );
 }

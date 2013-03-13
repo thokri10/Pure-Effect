@@ -70,7 +70,7 @@ auto state FollowPath
 					//actual_node = MyNavigationPoints.Length - 1;
 					// Stops following his path.
 					followingPath = false;
-					//aiPawn.spawnOwner.escortBotHasReachedDestination = true;
+					// TODO: Fix so that it works for multiplayer.
 					AEPlayerController( GetALocalPlayerController() ).myMissionObjective.escortBotHasReachedDestination = true;
 					break;
 				}
