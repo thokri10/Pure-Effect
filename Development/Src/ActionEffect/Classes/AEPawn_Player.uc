@@ -45,9 +45,6 @@ event Tick(float DeltaTime)
 	{
 		playerTimer -= timeToUpdate;
 
-		if(isSprinting)
-			`log("sprinting " $ isSprinting);
-
 		StartSprinting(DeltaTime);
 		StartUsingTheJetpack(DeltaTime);
 	}
@@ -56,7 +53,9 @@ event Tick(float DeltaTime)
 function Sprint()
 {
 	if ( WorldInfo.NetMode == NM_Client )
+	{
 		ServerSprint();
+	}
 	else
 	{
 		isSprinting = true;
@@ -67,7 +66,9 @@ function Sprint()
 function StopSprint()
 {
 	if ( WorldInfo.NetMode == NM_Client )
+	{
 		ServerStopSprint();
+	}
 	else
 	{
 		isSprinting = false;
@@ -78,7 +79,9 @@ function StopSprint()
 function StartJetpacking()
 {
 	if ( WorldInfo.NetMode == NM_Client )
+	{
 		ServerJetpacking();
+	}
 	else
 	{
 		isUsingJetPack = true;
@@ -88,7 +91,9 @@ function StartJetpacking()
 function StopJetpacking()
 {
 	if ( WorldInfo.NetMode == NM_Client )
+	{
 		ServerStopJetpacking();
+	}
 	else
 	{
 		isUsingJetPack = false;
@@ -97,7 +102,6 @@ function StopJetpacking()
 
 reliable server function ServerSprint()
 {
-	`log("serverSprint is being used!");
 	isSprinting = true;
 	regenerateSprintEnergy = false;
 }

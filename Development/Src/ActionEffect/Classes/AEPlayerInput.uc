@@ -34,36 +34,23 @@ exec function MenuEnter()
 simulated exec function Sprint()
 {
 	myPawn.Sprint();
-	
-	/*
-	 * myPawn.isSprinting = true;
-	myPawn.regenerateSprintEnergy = false;
-	*/
 }
 
 // Release LeftShift to stop sprinting.
 simulated exec function StopSprinting()
 {
 	myPawn.StopSprint();
-
-	//myPawn.isSprinting = false;
-	//myPawn.regenerateSprintEnergy = true;
 }
 
 // Hold Space to use jetpack.
 simulated exec function UseJetpack()
 {
-	//`Log("JETPACK: ON");
-	//myPawn.isUsingJetPack = true;
-	
 	myPawn.StartJetpacking();
 }
 
 // Release Space to stop using the jetpack.
 simulated exec function StopUsingJetpack()
 {
-	//`Log("JETPACK: OFF");
-	//myPawn.isUsingJetPack = false;
 	myPawn.StopJetpacking();
 }
 

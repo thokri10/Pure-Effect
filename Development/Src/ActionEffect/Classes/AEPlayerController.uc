@@ -114,71 +114,8 @@ function Tick(float DeltaTime)
 			mHUD = AEHUD( myHUD );
 		}
 	}
-
-	//StartSprinting(DeltaTime);
-	//StartUsingTheJetpack(DeltaTime);
 }
 
-/*
-function UpdateSprintEnergy(float DeltaTime)
-{
-	local int regeneratorFactor;
-	regeneratorFactor = -1.0f;
-
-	if (myPawn.regenerateSprintEnergy)
-	{
-		regeneratorFactor = 1.0f;
-	}
-
-	myPawn.sprintEnergy += regeneratorFactor * (myPawn.sprintEnergyLossPerSecond * DeltaTime);
-
-	if (myPawn.sprintEnergy < 0.0f)
-	{
-		myPawn.sprintEnergy = 0.0f;
-		myPawn.isSprinting = false;
-	}
-	else if (myPawn.sprintEnergy > myPawn.maxSprintEnergy)
-	{
-		myPawn.sprintEnergy = myPawn.maxSprintEnergy;
-	}
-}
-
-function StartSprinting(float DeltaTime)
-{
-	UpdateSprintEnergy(DeltaTime);
-
-	if (myPawn.isSprinting)
-	{
-		myPawn.GroundSpeed = 1000.0f;
-	}
-	else
-	{
-		myPawn.GroundSpeed = 600.0f;
-	}
-}
-
-function StartUsingTheJetpack(float DeltaTime)
-{
-	if (isUsingJetPack)
-	{
-		if (fuelEnergy > 0.0f)
-		{
-			CustomGravityScaling = -1.0f;
-			// Commented out temporarily for debugging reasons.
-			//fuelEnergy -= (fuelEnergyLossPerSecond * DeltaTime);
-		}
-		
-		if (fuelEnergy < 0.0f)
-		{
-			fuelEnergy = 0.0f;
-		}
-	}
-	else
-	{
-		CustomGravityScaling = 1.0f;
-	}
-}
-*/
 //-----------------------------------------------------------------------------
 // Inventory 
 
