@@ -29,6 +29,12 @@ var float fps;
 // How many seconds should pass before to check to "update" the player.
 var float timeToUpdate;
 
+replication
+{
+	if (bNetDirty && bNetOwner && Role == ROLE_Authority)
+		isSprinting, regenerateSprintEnergy;
+}
+
 event Tick(float DeltaTime)
 {
 	playerTimer += DeltaTime;

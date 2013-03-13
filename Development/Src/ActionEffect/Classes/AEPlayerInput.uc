@@ -33,12 +33,42 @@ exec function MenuEnter()
 // Press LeftShift to sprint.
 simulated exec function Sprint()
 {
+	if ( WorldInfo.NetMode == NM_Client )
+		ServerSprint();
+	else
+	{
+		myPawn.isSprinting = true;
+		myPawn.regenerateSprintEnergy = false;
+	}
+	
+	/*
+	 * myPawn.isSprinting = true;
+	myPawn.regenerateSprintEnergy = false;
+	*/
+}
+
+reliable server function ServerSprint()
+{
 	myPawn.isSprinting = true;
 	myPawn.regenerateSprintEnergy = false;
 }
 
 // Release LeftShift to stop sprinting.
 simulated exec function StopSprinting()
+{
+	if ( WorldInfo.NetMode == NM_Client )
+		ServerStopSprint();
+	else
+	{
+		myPawn.isSprinting = false;
+		myPawn.regenerateSprintEnergy = true;
+	}
+
+	//myPawn.isSprinting = false;
+	//myPawn.regenerateSprintEnergy = true;
+}
+
+reliable server function ServerStopSprint()
 {
 	myPawn.isSprinting = false;
 	myPawn.regenerateSprintEnergy = true;
