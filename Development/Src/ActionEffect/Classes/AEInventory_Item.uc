@@ -40,6 +40,7 @@ simulated function PostBeginPlay()
 simulated function Tick(float DeltaTime)
 {
 	super.Tick(DeltaTime);
+	// TODO: Fix so that it works for multiplayer.
 }
 
 /** Adds an item of this type to the inventory. Can add more than a spesifed amount */

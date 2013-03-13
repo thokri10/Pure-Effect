@@ -45,6 +45,9 @@ function bool Died(Controller Killer, class<DamageType> damageType, Vector HitLo
 		spawnOwner = AEMissionObjective(Owner);
 	}
 
+	// TODO: Fix it so the host (server) is the only one being used to check
+	// for mission objectives. Right now it messes up if you get a player who
+	// doesn't have ownership to any MissionObjective.
 	AEPlayerController( GetALocalPlayerController() ).myMissionObjective.botDied( MyController );
 		
 	//spawnOwner.botDied();
