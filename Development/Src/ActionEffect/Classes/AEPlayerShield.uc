@@ -5,6 +5,9 @@ var bool bOwnedByPlayer;
 
 var AEPawn ControllerPawn;
 
+var Vector loc;
+
+
 event Touch(Actor Other, PrimitiveComponent OtherComp, Vector HitLocation, Vector HitNormal)
 {
 	local Projectile proj;
@@ -25,9 +28,9 @@ event Tick(float DeltaTime)
 {
 	local Projectile target;
 
-	if( ControllerPawn != none )
+	if( ControllerPawn != none ){
 		SetLocation( ControllerPawn.Location );
-	else
+	}else
 		Destroy();
 
 	foreach CollidingActors(class'Projectile', target, 80)
@@ -35,6 +38,8 @@ event Tick(float DeltaTime)
 		if( !bOwnedByPlayer || target.InstigatorController != GetALocalPlayerController() )
 			target.Destroy();
 	}
+
+	super.Tick(DeltaTime);
 }
 
 simulated function bool StopsProjectile(Projectile P)

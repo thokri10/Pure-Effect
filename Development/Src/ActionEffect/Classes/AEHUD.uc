@@ -240,6 +240,7 @@ function DrawFuelBar(float barValueR, float barValueG, float barValueB)
 	local AEPlayerController playerPC;
 	local float fuelRatio;
 
+	/*
 	// // TODO: Fix so that it works for multiplayer.
 	playerPC = AEPlayerController(GetALocalPlayerController());
 	fuelRatio = playerPC.myPawn.fuelEnergy / playerPC.myPawn.maxFuelEnergy;

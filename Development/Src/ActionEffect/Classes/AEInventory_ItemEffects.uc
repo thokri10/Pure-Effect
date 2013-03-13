@@ -39,8 +39,9 @@ simulated function AEPlayerShield shield(AEPawn target)
 {
 	local AEPlayerShield shield;
 
+	`log("asdjas");
 	shield = spawn(class'AEPlayerShield', target);
-	shield.RemoteRole=ROLE_SimulatedProxy;
+	shield.RemoteRole=ROLE_None;
 	shield.ControllerPawn = target;
 	shield.bOwnedByPlayer = true;
 
@@ -49,5 +50,5 @@ simulated function AEPlayerShield shield(AEPawn target)
 
 DefaultProperties
 {
-	//RemoteRole=ROLE_MAX;
+
 }
