@@ -36,11 +36,10 @@ simulated function PostBeginPlay()
 	bCanUse = true;
 }
 
-/** Here to initialize PlayerController and cooldownTimer */
+/** Here to initialize PlayerController  */
 simulated function Tick(float DeltaTime)
 {
 	super.Tick(DeltaTime);
-	// TODO: Fix so that it works for multiplayer.
 }
 
 /** Adds an item of this type to the inventory. Can add more than a spesifed amount */
@@ -55,11 +54,12 @@ simulated function bool Use()
 	local ItemEffects effect;
 
 	if( !bCanUse ){
-		`log("[Item] On cooldown");
+		`log("[Item] On cooldown : " $ GetTimerCount('resetCooldown') );
 		return false;
 	}
 	if( StackCounter <= 0 ){
 		`log("[Item] No more of this type");
+		return false;
 	}
 
 	foreach Effects( effect )
@@ -112,7 +112,6 @@ function explode()
 
 DefaultProperties
 {
-	//RemoteRole=ROLE_MAX;
 	StackCounter=0
 	UseCounter=0
 	Cooldown=1

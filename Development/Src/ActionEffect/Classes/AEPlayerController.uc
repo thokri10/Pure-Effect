@@ -94,6 +94,12 @@ simulated event PostBeginPlay()
 
 }
 
+event Possess(Pawn inPawn, bool bVehicleTrasition)
+{
+	myPawn = AEPawn_Player( inPawn );
+	super.Possess(inPawn, bVehicleTrasition);
+}
+
 function Tick(float DeltaTime)
 {
 	if (myHUD != none)
@@ -226,9 +232,9 @@ exec function UseItem(int slot)
 		mHUD = AEHUD(myHUD);
 	}
 
-	if(WorldInfo.NetMode != NM_ListenServer)
+	if(WorldInfo.NetMode == NM_Client)
 	{
-		//myItemInventory.Use(slot);
+		myItemInventory.Use(slot);
 		// Runs antoher function on the server side. This will the use the item.
 		serverUseItem(slot);
 	}else{
@@ -248,6 +254,4 @@ DefaultProperties
 	PlayerInfo = class'AEPlayerInfo'
 	InputClass = class'AEPlayerInput'
 	pars = class'AEJSONParser'
-	
-	
 }
