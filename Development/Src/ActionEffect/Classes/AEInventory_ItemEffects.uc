@@ -39,9 +39,7 @@ simulated function AEPlayerShield shield(AEPawn target)
 {
 	local AEPlayerShield shield;
 
-	`log("asdjas");
 	shield = spawn(class'AEPlayerShield', target);
-	shield.RemoteRole=ROLE_None;
 	shield.ControllerPawn = target;
 	shield.bOwnedByPlayer = true;
 

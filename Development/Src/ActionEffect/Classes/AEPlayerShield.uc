@@ -5,8 +5,18 @@ var bool bOwnedByPlayer;
 
 var AEPawn ControllerPawn;
 
-var Vector loc;
+/*
+replication
+{
+	if(bNetDirty && Role == ROLE_Authority)
+		ControllerPawn;
+}
+*/
 
+simulated function PostBeginPlay()
+{
+	super.PostBeginPlay();
+}
 
 event Touch(Actor Other, PrimitiveComponent OtherComp, Vector HitLocation, Vector HitNormal)
 {
@@ -90,7 +100,7 @@ DefaultProperties
 	Components.Add(CollisionSphere)
 	Components.Add(Sphere)
 	
-	RemoteRole=ROLE_MAX;
+	RemoteRole=ROLE_Authority;
 
 	bOnlyOwnerSee=false
 

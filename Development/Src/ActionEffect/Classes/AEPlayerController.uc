@@ -44,6 +44,11 @@ var int                     credits;
 
 var string test;
 
+replication
+{
+	if(bNetDirty && bNetOwner && Role == ROLE_Authority)
+		myPawn;
+}
 
 //-----------------------------------------------------------------------------
 // Events 
@@ -232,9 +237,9 @@ exec function UseItem(int slot)
 		mHUD = AEHUD(myHUD);
 	}
 
-	if(WorldInfo.NetMode == NM_Client)
+	if(WorldInfo.NetMode != NM_ListenServer)
 	{
-		myItemInventory.Use(slot);
+		//myItemInventory.Use(slot);
 		// Runs antoher function on the server side. This will the use the item.
 		serverUseItem(slot);
 	}else{
