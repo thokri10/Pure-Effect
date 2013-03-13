@@ -65,7 +65,6 @@ simulated event PostBeginPlay()
 	{
 		`log("[AEPawn_Player] No controller to pawn");
 	}
-	*/
 }
 
 /*
