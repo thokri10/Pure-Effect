@@ -212,7 +212,6 @@ function DrawHealthBar(float barValueR, float barValueG, float barValueB)
 /** Draws the stamina bar on the screen. */
 function DrawStaminaBar(float barValueR, float barValueG, float barValueB)
 {
-	/*
 	// TODO: Fix so that it works for multiplayer.
 	local AEPlayerController playerPC;
 	playerPC = AEPlayerController(GetALocalPlayerController());
@@ -228,13 +227,11 @@ function DrawStaminaBar(float barValueR, float barValueG, float barValueB)
 			Canvas.SizeY - (Canvas.SizeY * 0.100f),
 			barValueR, barValueG, barValueB);
     }
-    */
 }
 
 /** Draws the fuel bar on the screen. */
 function DrawFuelBar(float barValueR, float barValueG, float barValueB)
 {
-	/*
 	local AEPlayerController playerPC;
 	local float fuelRatio;
 
@@ -256,7 +253,6 @@ function DrawFuelBar(float barValueR, float barValueG, float barValueB)
 			Canvas.DrawText("OUT OF FUEL");
 		}
     }
-    */
 }
 
 /** Overrode this function to make our custom HUD. */

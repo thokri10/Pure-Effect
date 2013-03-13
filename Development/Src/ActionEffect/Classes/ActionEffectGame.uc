@@ -19,11 +19,13 @@ event Tick(float DeltaTime)
 			AEPlayerController( GetALocalPlayerController() ).myGame = self;
 		}
 
+		/* EMIL BOT SPAWN
 		foreach WorldInfo.AllActors( class'AEVolume_BotSpawn', target )
 		{
 			target.spawnBot(class'AEPawn_BotDefensive', self);
 			break;
 		}
+		*/
 	}
 }
 

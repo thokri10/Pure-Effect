@@ -46,22 +46,10 @@ simulated exec function Sprint()
 // Release LeftShift to stop sprinting.
 simulated exec function StopSprinting()
 {
-	if ( WorldInfo.NetMode == NM_Client )
-		ServerStopSprint();
-	else
-	{
-		myPawn.isSprinting = false;
-		myPawn.regenerateSprintEnergy = true;
-	}
+	myPawn.StopSprint();
 
 	//myPawn.isSprinting = false;
 	//myPawn.regenerateSprintEnergy = true;
-}
-
-reliable server function ServerStopSprint()
-{
-	myPawn.isSprinting = false;
-	myPawn.regenerateSprintEnergy = true;
 }
 
 // Hold Space to use jetpack.

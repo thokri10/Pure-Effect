@@ -31,7 +31,7 @@ var float timeToUpdate;
 
 replication
 {
-	if (bNetDirty && bNetOwner && Role == ROLE_Authority)
+	if (bNetDirty && Role == ROLE_Authority)
 		isSprinting, regenerateSprintEnergy;
 }
 
@@ -44,6 +44,9 @@ event Tick(float DeltaTime)
 	if ( playerTimer >= timeToUpdate )
 	{
 		playerTimer -= timeToUpdate;
+
+		if(isSprinting)
+			`log("sprinting " $ isSprinting);
 
 		StartSprinting(DeltaTime);
 		StartUsingTheJetpack(DeltaTime);
@@ -61,11 +64,28 @@ function Sprint()
 	}
 }
 
+function StopSprint()
+{
+	if ( WorldInfo.NetMode == NM_Client )
+		ServerStopSprint();
+	else
+	{
+		isSprinting = false;
+		regenerateSprintEnergy = true;
+	}
+}
+
 reliable server function ServerSprint()
 {
 	`log("serverSprint is being used!");
 	isSprinting = true;
 	regenerateSprintEnergy = false;
+}
+
+reliable server function ServerStopSprint()
+{
+	isSprinting = false;
+	regenerateSprintEnergy = true;
 }
 
 simulated event PostBeginPlay()
@@ -168,7 +188,6 @@ function StartSprinting(float DeltaTime)
 
 	if (isSprinting)
 	{
-		`log("spirinttttttttttttttttttttttttttttttttttttttttttttt");
 		GroundSpeed = 1000.0f;
 	}
 	else
