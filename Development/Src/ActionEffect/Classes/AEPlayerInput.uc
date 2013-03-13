@@ -41,8 +41,6 @@ simulated exec function Sprint()
 	*/
 }
 
-
-
 // Release LeftShift to stop sprinting.
 simulated exec function StopSprinting()
 {
@@ -56,14 +54,17 @@ simulated exec function StopSprinting()
 simulated exec function UseJetpack()
 {
 	//`Log("JETPACK: ON");
-	myPawn.isUsingJetPack = true;
+	//myPawn.isUsingJetPack = true;
+	
+	myPawn.StartJetpacking();
 }
 
 // Release Space to stop using the jetpack.
 simulated exec function StopUsingJetpack()
 {
 	//`Log("JETPACK: OFF");
-	myPawn.isUsingJetPack = false;
+	//myPawn.isUsingJetPack = false;
+	myPawn.StopJetpacking();
 }
 
 DefaultProperties
