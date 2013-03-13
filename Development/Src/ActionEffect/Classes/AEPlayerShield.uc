@@ -5,14 +5,6 @@ var bool bOwnedByPlayer;
 
 var AEPawn ControllerPawn;
 
-/*
-replication
-{
-	if(bNetDirty && Role == ROLE_Authority)
-		ControllerPawn;
-}
-*/
-
 simulated function PostBeginPlay()
 {
 	super.PostBeginPlay();
@@ -100,7 +92,7 @@ DefaultProperties
 	Components.Add(CollisionSphere)
 	Components.Add(Sphere)
 	
-	RemoteRole=ROLE_Authority;
+	RemoteRole=ROLE_MAX;
 
 	bOnlyOwnerSee=false
 
