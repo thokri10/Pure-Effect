@@ -196,7 +196,6 @@ function DrawBar(String barTitle, float barValue, float barMaxValue,
 /** Draws the health bar on the screen. */
 function DrawHealthBar(float barValueR, float barValueG, float barValueB)
 {
-	/*
     if ( !PlayerOwner.IsDead() && !UTPlayerOwner.IsInState('Spectating'))
     {
 		Canvas.SetPos(Canvas.SizeX - (Canvas.SizeX * 0.990f), Canvas.SizeY - (Canvas.SizeY * 0.050f));
@@ -208,7 +207,6 @@ function DrawHealthBar(float barValueR, float barValueG, float barValueB)
         	Canvas.SizeY - (Canvas.SizeY * 0.050f),
         	barValueR, barValueG, barValueB);
     }
-    */
 }
 
 /** Draws the stamina bar on the screen. */
@@ -218,7 +216,6 @@ function DrawStaminaBar(float barValueR, float barValueG, float barValueB)
 	local AEPlayerController playerPC;
 	playerPC = AEPlayerController(GetALocalPlayerController());
 
-	/*
 	if ( !PlayerOwner.IsDead() && !UTPlayerOwner.IsInState('Spectating'))
     {
 		Canvas.SetPos(Canvas.SizeX - (Canvas.SizeX * 0.990f), Canvas.SizeY - (Canvas.SizeY * 0.100f));
@@ -230,7 +227,6 @@ function DrawStaminaBar(float barValueR, float barValueG, float barValueB)
 			Canvas.SizeY - (Canvas.SizeY * 0.100f),
 			barValueR, barValueG, barValueB);
     }
-    */
 }
 
 /** Draws the fuel bar on the screen. */
@@ -239,7 +235,6 @@ function DrawFuelBar(float barValueR, float barValueG, float barValueB)
 	local AEPlayerController playerPC;
 	local float fuelRatio;
 
-	/*
 	// // TODO: Fix so that it works for multiplayer.
 	playerPC = AEPlayerController(GetALocalPlayerController());
 	fuelRatio = playerPC.myPawn.fuelEnergy / playerPC.myPawn.maxFuelEnergy;
@@ -257,7 +252,6 @@ function DrawFuelBar(float barValueR, float barValueG, float barValueB)
 			Canvas.DrawText("OUT OF FUEL");
 		}
     }
-    */
 }
 
 /** Overrode this function to make our custom HUD. */

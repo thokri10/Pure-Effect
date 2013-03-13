@@ -62,16 +62,21 @@ simulated function bool Use()
 		return false;
 	}
 
-	foreach Effects( effect )
+	if(WorldInfo.NetMode != NM_Client)
 	{
-		if( effect == EFFECT_GRANADE )
-			item = selectEffect.granade(PC.myPawn, delay);
-		else if( effect == EFFECT_HEAL ){
-			//item = self;
-		}else if( effect == EFFECT_SHIELD ){
-			item = selectEffect.shield(PC.myPawn);
+		foreach Effects( effect )
+		{
+			if( effect == EFFECT_GRANADE )
+				item = selectEffect.granade(PC.myPawn, delay);
+			else if( effect == EFFECT_HEAL ){
+				//item = self;
+			}else if( effect == EFFECT_SHIELD ){
+				item = selectEffect.shield(PC.myPawn);
+			}
 		}
 	}
+	else
+		`log("This is a client");
 
 	SetTimer(delay, false, 'explode');
 	SetTimer(Cooldown, false, 'resetCooldown');
