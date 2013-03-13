@@ -13,7 +13,7 @@ function Use(int itemSlot)
 {
 	if( !ItemListFUCK[itemSlot].use() )
 	{
-		`log("FAILED TO USE ITEM");
+		`log("[Item] Failed to use item : Look above for error");
 	}
 }
 
@@ -55,6 +55,8 @@ function AEInventory_Item createItem(array<ValueStruct> itemValues)
 function AddItem(AEInventory_Item item)
 {
 	local int i;
+
+	item.PC = PC;
 
 	for(i = 0; i < ItemListFUCK.Length; i++)
 	{

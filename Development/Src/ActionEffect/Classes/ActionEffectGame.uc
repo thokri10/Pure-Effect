@@ -45,4 +45,5 @@ DefaultProperties
 	bAutoNumBots = false
 	DesiredPlayerCount = 0
 	bTeamGame=true
+	
 }

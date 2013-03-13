@@ -8,7 +8,7 @@ function heal(pawn target, int damage)
 	target.Health += damage;
 }
 
-function UTProj_Grenade granade(pawn target, float delay)
+simulated function UTProj_Grenade granade(pawn target, float delay)
 {
 	local Vector Aim;
 	local Vector spawnLocation;
@@ -34,11 +34,12 @@ function dealDamage(pawn target, actor item, int damage)
 	target.TakeDamage(damage, GetALocalPlayerController(), item.Location, vect(0,0,-3000), class'UTDmgType_Grenade');
 }
 
-function AEPlayerShield shield(AEPawn target)
+simulated function AEPlayerShield shield(AEPawn target)
 {
 	local AEPlayerShield shield;
 
 	shield = spawn(class'AEPlayerShield', target);
+	shield.RemoteRole=ROLE_SimulatedProxy;
 	shield.ControllerPawn = target;
 	shield.bOwnedByPlayer = true;
 
@@ -47,4 +48,5 @@ function AEPlayerShield shield(AEPawn target)
 
 DefaultProperties
 {
+	//RemoteRole=ROLE_MAX;
 }

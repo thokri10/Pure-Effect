@@ -50,7 +50,11 @@ simulated event PostBeginPlay()
 	
 	timeToUpdate = 1.0f / fps;
 	
-	AEPC = AEPlayerController(GetALocalPlayerController());
+	/*
+	if(Controller != none)
+		AEPC = AEPlayerController(Controller);
+	else
+		`log("[AEPawn_Player] Controller not set");
 
 	if (AEPC != None)
 	{
@@ -61,6 +65,7 @@ simulated event PostBeginPlay()
 	{
 		`log("[AEPawn_Player] No controller to pawn");
 	}
+	*/
 }
 
 /*

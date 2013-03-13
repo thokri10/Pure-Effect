@@ -87,6 +87,8 @@ simulated event PostBeginPlay()
 	myPlayerInfo.myWeaponCreator = myWeaponCreator;
 	myPlayerInfo.myInventory = myItemInventory;
 
+	`log("SETTING UP A NEW PLAYERCONTROLLER!!!!! : " $ self $ " : " $ WorldInfo.NetMode);
+
 	// Connect to server.
 	//myTcpLink.ResolveMe();
 
@@ -103,6 +105,11 @@ function Tick(float DeltaTime)
 	}
 }
 
+event Possess(Pawn inPawn, bool bVehicleTransition)
+{
+	super.Possess(inPawn, bVehicleTransition);
+	myPawn = AEPawn_Player( inPawn );
+}
 
 //-----------------------------------------------------------------------------
 // Inventory 
@@ -161,14 +168,29 @@ exec function UseItem(int slot)
 	{
 		mHUD = AEHUD(myHUD);
 	}
-	myItemInventory.Use(slot);
+
+	if(WorldInfo.NetMode != NM_ListenServer)
+	{
+		//myItemInventory.Use(slot);
+		// Runs antoher function on the server side. This will the use the item.
+		serverUseItem(slot);
+	}else{
+		myItemInventory.Use(slot);
+	}
 }
 
+/** This function is only runned on the server client. 
+ *  It uses the item with a spesified slot */
+reliable server function serverUseItem(int slot)
+{
+	myItemInventory.Use(slot);
+}
 
 DefaultProperties
 {
 	PlayerInfo = class'AEPlayerInfo'
 	InputClass = class'AEPlayerInput'
 	pars = class'AEJSONParser'
-
+	
+	
 }

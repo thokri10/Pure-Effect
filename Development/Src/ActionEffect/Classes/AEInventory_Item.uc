@@ -40,9 +40,6 @@ simulated function PostBeginPlay()
 simulated function Tick(float DeltaTime)
 {
 	super.Tick(DeltaTime);
-
-	if(PC == none)
-		PC = AEPlayerController( GetALocalPlayerController() );
 }
 
 /** Adds an item of this type to the inventory. Can add more than a spesifed amount */
@@ -56,8 +53,13 @@ simulated function bool Use()
 {
 	local ItemEffects effect;
 
-	if( !bCanUse || StackCounter <= 0)
+	if( !bCanUse ){
+		`log("[Item] On cooldown");
 		return false;
+	}
+	if( StackCounter <= 0 ){
+		`log("[Item] No more of this type");
+	}
 
 	foreach Effects( effect )
 	{
@@ -109,6 +111,7 @@ function explode()
 
 DefaultProperties
 {
+	//RemoteRole=ROLE_MAX;
 	StackCounter=0
 	UseCounter=0
 	Cooldown=1

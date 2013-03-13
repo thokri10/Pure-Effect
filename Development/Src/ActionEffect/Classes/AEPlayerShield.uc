@@ -63,7 +63,7 @@ DefaultProperties
 {
 	Begin Object Class=StaticMeshComponent Name=CollisionSphere
 		StaticMesh=StaticMesh'Level1pack.FalloffSphere.Mesh.CollisionSphere'
-		Scale=2
+		Scale=1.5
 		HiddenGame=true
 		CollideActors=true
 		BlockActors=true
@@ -72,6 +72,9 @@ DefaultProperties
 
 	Begin Object class=StaticMeshComponent Name=Sphere
 		StaticMesh=StaticMesh'Level1pack.Mesh.ShieldSphere'
+		bOnlyOwnerSee=false
+		bForceNetUpdate=true
+		bAlwaysRelevant=true
 		HiddenGame=false
 		Scale=6
 		BlockActors=true
@@ -81,11 +84,21 @@ DefaultProperties
 
 	Components.Add(CollisionSphere)
 	Components.Add(Sphere)
+	
+	RemoteRole=ROLE_MAX;
 
-	bCanBeDamaged=true
+	bOnlyOwnerSee=false
+
 	bCollideActors=true
 	bBlockActors=true
+
 	BlockRigidBody=false
+
+	bForceNetUpdate=true
+	bAlwaysRelevant=true
+
+	bNoDelete=false
+	bStatic=false
 
 	CollisionType=COLLIDE_BlockAll
 }
