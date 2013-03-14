@@ -44,7 +44,7 @@ simulated function PostBeginPlay()
 	AEAIController_Escort( Controller ).SetTeam(0);
 	
 	MyCustomController.PlayerReplicationInfo.PlayerName = "ESCORT TARGET";
-	GroundSpeed = 300.0f;
+	GroundSpeed = 500.0f;
 	Health = Health * 10.0f;
 	
 	AddDefaultInventory();
