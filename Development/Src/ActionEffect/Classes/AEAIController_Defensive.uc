@@ -50,8 +50,11 @@ simulated function SetAttractionState()
 		{
 			SetDefendingSpot();
 		}
- 
+		super.SetAttractionState();
+    } else {
+		super.SetAttractionState();
     }
+    
 }
 
 /** Finds a defensive objective and finds a defending positition at that point
