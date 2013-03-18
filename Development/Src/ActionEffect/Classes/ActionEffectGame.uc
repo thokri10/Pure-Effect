@@ -41,13 +41,13 @@ event Tick(float DeltaTime)
 				AEPlayerController( GetALocalPlayerController() ).InitMission(missionToStart);
 		}
 
-		/* EMIL BOT SPAWN
+		// EMIL BOT SPAWN
 		foreach WorldInfo.AllActors( class'AEVolume_BotSpawn', target )
 		{
 			target.spawnBot(class'AEPawn_BotDefensive', self);
 			break;
 		}
-		*/
+		
 	}
 }
 

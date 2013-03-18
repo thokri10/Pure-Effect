@@ -6,6 +6,11 @@ class AEAIController extends UDKBot;
 
 var bool bCurrentlyOccupied;
 
+var float shootBurstCounter;
+var float shootDelay;
+
+var bool bCanFire;
+
 
 //---------------------------------------
 // Target Varaibles
@@ -20,12 +25,14 @@ function PostBeginPlay()
 	
 	PlayerReplicationInfo.bOutOfLives=true;
 
+	bCanFire = true;
+
 	setTimer(2, true, 'CheckAttractionState');
 }
 
 function ReceiveProjectileWarning(Projectile Proj)
 {
-	`log("DODGE");
+	`log("DODGE " $ Proj);
 }
 
 function ReceiveWarning(Pawn shooter, float projSpeed, vector FireDir)
@@ -35,7 +42,7 @@ function ReceiveWarning(Pawn shooter, float projSpeed, vector FireDir)
 
 event HearNoise(float Loudness, Actor NoiseMaker, optional Name NoiseType)
 {
-	`log("Who's there? Oh its you: " $ NoiseMaker);
+	//`log("Who's there? Oh its you: " $ NoiseMaker);
 }
 
 event SeePlayer(Pawn Seen)
@@ -45,10 +52,11 @@ event SeePlayer(Pawn Seen)
 	// Will Only fire at player.
 	if(myEnemy != none){
 		SetFocalPoint( Seen.Location );
+
 		Focus = Seen;	
 		EnemyLastPosition = Seen.Location;
 
-		if( FireWeaponAt( Seen ) ){}
+		if( !FireWeaponAt( Seen ) ){  }
 	}
 
 	myEnemy = none;
@@ -151,14 +159,26 @@ simulated event GetPlayerViewPoint( out vector out_Location, out Rotator out_rot
 /** Fires the equiped weapon at Actor A */
 function bool FireWeaponAt(Actor A)
 {
-	bFire = 1;
+	if( bCanFire )
+	{
+		bFire = 1;
+		bCanFire = false;
+		SetTimer( 3, false, 'burstFire' );
 
-	if ( Pawn.Weapon != None )
-		if ( Pawn.Weapon.HasAnyAmmo() )
+		if ( Pawn.Weapon != None )
+			if ( Pawn.Weapon.HasAnyAmmo() )
+				return Pawn.BotFire(true); // TRUE DONT DO SHIT
+		else
 			return Pawn.BotFire(true); // TRUE DONT DO SHIT
-	else
-		return Pawn.BotFire(true); // TRUE DONT DO SHIT
+
+	}
 
 	return false;
+}
+
+event burstFire()
+{
+	`log("asjdkaljsdkljaklsdjlk");
+	bCanFire = true;
 }
 

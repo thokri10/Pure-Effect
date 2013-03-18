@@ -32,7 +32,7 @@ var float timeToUpdate;
 replication
 {
 	if (bNetDirty && Role == ROLE_Authority)
-		isSprinting, regenerateSprintEnergy;
+		isSprinting, regenerateSprintEnergy, isUsingJetPack, regenerateFuelEnergy;
 }
 
 event Tick(float DeltaTime)
@@ -45,9 +45,6 @@ event Tick(float DeltaTime)
 	{
 		playerTimer -= timeToUpdate;
 
-		if(isSprinting)
-			`log("sprinting " $ isSprinting);
-
 		StartSprinting(DeltaTime);
 		StartUsingTheJetpack(DeltaTime);
 	}
@@ -56,7 +53,9 @@ event Tick(float DeltaTime)
 function Sprint()
 {
 	if ( WorldInfo.NetMode == NM_Client )
+	{
 		ServerSprint();
+	}
 	else
 	{
 		isSprinting = true;
@@ -67,7 +66,9 @@ function Sprint()
 function StopSprint()
 {
 	if ( WorldInfo.NetMode == NM_Client )
+	{
 		ServerStopSprint();
+	}
 	else
 	{
 		isSprinting = false;
@@ -75,9 +76,32 @@ function StopSprint()
 	}
 }
 
+function StartJetpacking()
+{
+	if ( WorldInfo.NetMode == NM_Client )
+	{
+		ServerJetpacking();
+	}
+	else
+	{
+		isUsingJetPack = true;
+	}
+}
+
+function StopJetpacking()
+{
+	if ( WorldInfo.NetMode == NM_Client )
+	{
+		ServerStopJetpacking();
+	}
+	else
+	{
+		isUsingJetPack = false;
+	}
+}
+
 reliable server function ServerSprint()
 {
-	`log("serverSprint is being used!");
 	isSprinting = true;
 	regenerateSprintEnergy = false;
 }
@@ -86,6 +110,16 @@ reliable server function ServerStopSprint()
 {
 	isSprinting = false;
 	regenerateSprintEnergy = true;
+}
+
+reliable server function ServerJetpacking()
+{
+	isUsingJetPack = true;
+}
+
+reliable server function ServerStopJetpacking()
+{
+	isUsingJetPack = false;
 }
 
 simulated event PostBeginPlay()
