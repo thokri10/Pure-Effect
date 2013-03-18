@@ -77,7 +77,7 @@ function SetDefendingSpot(optional AEGameObjective_Defend IgnoreSpot = None)
 		defendingSpot = getDefensePointAtObjective( CurrentDefensePosition );
 
 		if(defendingSpot != none){
-			`log("DEFENDING: " $ defendingSpot);
+			//`log("DEFENDING: " $ defendingSpot);
 			GotoState('Defending');
 		}
 		else
@@ -85,7 +85,7 @@ function SetDefendingSpot(optional AEGameObjective_Defend IgnoreSpot = None)
 			if(IgnoreSpot != None)
 				SetDefendingSpot(CurrentDefensePosition);
 			else{
-				`log("FROM SET DEFEND SPOT");
+				//`log("FROM SET DEFEND SPOT");
 				GotoState('LastStand');
 			}
 		}
@@ -143,7 +143,7 @@ state Defending
 	}
 
 Begin:
-	`log("DEFENDING: " $ defendingSpot);
+	//`log("DEFENDING: " $ defendingSpot);
 	//if( ActorReachable( defendingSpot ) ){
 	MoveToward(defendingSpot, LastDefendedSpot);
 	//}
@@ -173,7 +173,7 @@ state FallBack
 		}
 
 		if(lastSpot == defendingSpot){
-			`log("FROM FALL BACK");
+			//`log("FROM FALL BACK");
 			GotoState('LastStand');
 			return none;
 		}
@@ -183,7 +183,7 @@ state FallBack
 		return lastSpot;
 	}
 begin:
-	`log("Falling back");
+	//`log("Falling back");
 
 	LastDefendedSpot = defendingSpot;
 	
@@ -195,7 +195,7 @@ begin:
 state LastStand
 {
 begin:
-	`log("Last Stand");
+	//`log("Last Stand");
 }
 
 

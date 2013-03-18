@@ -158,7 +158,7 @@ function SimpleMissionStruct parseArrayToSimpleStruct(array<ValueStruct> mission
 
 	for ( i = 0; i < missionArray.Length; i++ ) 
 	{
-		`log(missionArray[i].type $ " : " $ missionArray[i].value );
+		//`log(missionArray[i].type $ " : " $ missionArray[i].value );
 		if ( missionArray[i].type == "category" )
 		{
 			Type = "info";

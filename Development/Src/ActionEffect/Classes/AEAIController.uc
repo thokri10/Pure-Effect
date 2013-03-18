@@ -178,7 +178,6 @@ function bool FireWeaponAt(Actor A)
 
 event burstFire()
 {
-	`log("asjdkaljsdkljaklsdjlk");
 	bCanFire = true;
 }
 
