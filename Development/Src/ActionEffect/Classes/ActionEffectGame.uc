@@ -1,4 +1,5 @@
 /** Main game class. */
+// TEST
 class ActionEffectGame extends UTTeamGame;
 
 var bool initialized;
