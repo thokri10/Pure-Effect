@@ -94,9 +94,29 @@ simulated event PostBeginPlay()
 
 	`log("SETTING UP A NEW PLAYERCONTROLLER!!!!! : " $ self $ " : " $ WorldInfo.NetMode);
 
+	
+
 	// Connect to server.
 	//myTcpLink.ResolveMe();
 
+}
+
+/** Function that is used from ActionGameEffect to activate our desired mission after a map change */
+function InitMission(int MissionID)
+{
+	myTcpLink.getMission(MissionID);
+}
+
+/** Initializes a mission from server string */
+function InitializeMission(string serverText)
+{
+	local array<array2D> arr;
+
+	arr = parser.fullParse(serverText);
+
+	mHUD = AEHUD( myHUD );
+
+	myMissionObjective.Initialize(arr[0].variables);
 }
 
 event Possess(Pawn inPawn, bool bVehicleTrasition)
