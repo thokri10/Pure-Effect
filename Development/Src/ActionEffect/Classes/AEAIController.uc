@@ -86,17 +86,23 @@ event SeePlayer(Pawn Seen)
 	}	
 }
 
-
-
 function CheckAttractionState()
 {
 	if(myEnemy == none){
 		bFire = 0;
 		StopFiring();
 	}
+	else if( !LineOfSightTo( myEnemy ) && bEnemyIsVisible )
+	{
+		StopFiring();
+		EnemyVisibilityTime = RunTime;
+		bEnemyIsVisible = false;
+	}else{
+		if(bEnemyAcquired && bEnemyIsVisible)
+			SaveEnemyPosition();
+	}
 
-	if(!bCurrentlyOccupied)
-		SetAttractionState();
+	SetAttractionState();
 }
 
 simulated function SetAttractionState()
@@ -111,18 +117,8 @@ simulated function SetAttractionState()
 			MoveToLocation( EnemyLastPosition );
 		}
 		*/
-	}
-	else if( !LineOfSightTo( myEnemy ) && bEnemyIsVisible )
-	{
-		StopFiring();
-		EnemyVisibilityTime = RunTime;
-		bEnemyIsVisible = false;
-		SetEnemyAtraction();
 	}else{
-		if(bEnemyAcquired && !bEnemyIsVisible)
-			SetEnemyAtraction();
-		else
-			SaveEnemyPosition();
+		SetEnemyAtraction();
 	}
 }
 
@@ -130,6 +126,7 @@ function SaveEnemyPosition()
 {
 	local EnemyPosition pos;
 
+	EnemyVisibilityTime = RunTime;
 	pos.Position = myEnemy.Location;
 	pos.Time = RunTime;
 	pos.Velocity = myEnemy.Velocity;
@@ -142,6 +139,10 @@ event Tick(float DeltaTime)
 	super.Tick(DeltaTime);
 
 	RunTime += DeltaTime;
+
+	if(bEnemyIsVisible)
+		bEnemyIsVisible = LineOfSightTo(myEnemy);
+
 }
 
 function SetEnemyAtraction()
