@@ -237,17 +237,18 @@ function DrawFuelBar(float barValueR, float barValueG, float barValueB)
 
 	// // TODO: Fix so that it works for multiplayer.
 	playerPC = AEPlayerController(GetALocalPlayerController());
-	fuelRatio = playerPC.myPawn.fuelEnergy / playerPC.myPawn.maxFuelEnergy;
+	fuelRatio = playerPC.myJetpack.fuelEnergy / playerPC.myJetpack.maxFuelEnergy;
+	//fuelRatio = playerPC.myPawn.fuelEnergy / playerPC.myPawn.maxFuelEnergy;
 
 	
 	if ( !PlayerOwner.IsDead() && !UTPlayerOwner.IsInState('Spectating') && playerPC.myPawn.isUsingJetPack)
     {
-		DrawBar("", playerPC.myPawn.fuelEnergy, playerPC.myPawn.maxFuelEnergy,
+		DrawBar("", playerPC.myJetpack.fuelEnergy, playerPC.myJetpack.maxFuelEnergy,
 			(Canvas.SizeX / 2) - ((barWidth * fuelRatio) / 2),
 			(Canvas.SizeY / 2) + (barHeight * 4),
 			barValueR, barValueG, barValueB);
 		
-		if (playerPC.myPawn.fuelEnergy <= 0.0f)
+		if (playerPC.myJetpack.fuelEnergy <= 0.0f)
 		{
 			Canvas.SetPos((Canvas.SizeX / 2) - 55.0f, (Canvas.SizeY / 2) + (barHeight * 2));
 			Canvas.DrawText("OUT OF FUEL");

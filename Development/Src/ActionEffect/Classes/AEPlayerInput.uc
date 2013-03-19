@@ -45,13 +45,13 @@ simulated exec function StopSprinting()
 // Hold Space to use jetpack.
 simulated exec function UseJetpack()
 {
-	myPawn.StartJetpacking();
+	useJetpacking();
 }
 
 // Release Space to stop using the jetpack.
 simulated exec function StopUsingJetpack()
 {
-	myPawn.StopJetpacking();
+	stopJetpacking();
 }
 
 DefaultProperties
