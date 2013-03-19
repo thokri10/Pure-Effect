@@ -27,7 +27,7 @@ var int damage;
 var int radius;
 var float delay;
 
-
+/** Here to initialize PlayerController  */
 simulated function PostBeginPlay()
 {
 	super.PostBeginPlay();
@@ -36,7 +36,6 @@ simulated function PostBeginPlay()
 	bCanUse = true;
 }
 
-/** Here to initialize PlayerController  */
 simulated function Tick(float DeltaTime)
 {
 	super.Tick(DeltaTime);
