@@ -46,17 +46,16 @@ simulated function SetAttractionState()
 {    
     if ( Enemy == None )
     {    
-		if(GetStateName() != 'Defending' || defendingSpot == none)
+		if(GetStateName() != 'Defending' && GetStateName() != 'LastStand' && CurrentDefensePosition == none)
 		{
 			SetDefendingSpot();
 		}
- 
     }
 }
 
 /** Finds a defensive objective and finds a defending positition at that point
  *  Tries this two times if no position are free at taht time. 
- *  If this fails it will change to state 'last stand' */
+ *  If this fails it will change to state 'lastStand' */
 function SetDefendingSpot(optional AEGameObjective_Defend IgnoreSpot = None)
 {
 	local AEGameObjective_Defend spot;
@@ -77,7 +76,6 @@ function SetDefendingSpot(optional AEGameObjective_Defend IgnoreSpot = None)
 		defendingSpot = getDefensePointAtObjective( CurrentDefensePosition );
 
 		if(defendingSpot != none){
-			`log("DEFENDING: " $ defendingSpot);
 			GotoState('Defending');
 		}
 		else
@@ -85,7 +83,6 @@ function SetDefendingSpot(optional AEGameObjective_Defend IgnoreSpot = None)
 			if(IgnoreSpot != None)
 				SetDefendingSpot(CurrentDefensePosition);
 			else{
-				`log("FROM SET DEFEND SPOT");
 				GotoState('LastStand');
 			}
 		}
@@ -150,7 +147,7 @@ Begin:
 	
 	WaitToSeeEnemy();
 
-	//GotoState('FallBack');
+	GotoState('FallBack');
 };
 
 state FallBack
