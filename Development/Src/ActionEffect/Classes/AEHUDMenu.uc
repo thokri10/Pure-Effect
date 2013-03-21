@@ -298,8 +298,9 @@ function Select()
 			{
 				if( menuSelections[selectedMenuSlot].name == "Accept" )
 				{
-					PC.myMissionObjective.activateObjectives( activeMission );
-					resetMenuSelection();
+					//PC.myMissionObjective.activateObjectives( activeMission );
+					SetUpForMapChange(activeMission.id, activeMission.levelID);
+					//resetMenuSelection();
 				} 
 			}
 		}
@@ -314,6 +315,12 @@ function Select()
 	}
 }
 
+
+function SetUpForMapChange(int missionID, int LevelID)
+{
+	//`log("open AE-level" $ LevelID $ "?MissionID=" $ missionID);
+	ConsoleCommand("open AE-level" $ LevelID $ "?MissionID=" $ missionID);
+}
 
 //-----------------------------------------------------------------------------
 // Menu Selection Init

@@ -13,12 +13,6 @@ var float maxSprintEnergy;
 var float sprintEnergyLossPerSecond;
 var bool regenerateSprintEnergy;
 
-// Jetpack variables
-var float fuelEnergy;
-var float maxFuelEnergy;
-var float fuelEnergyLossPerSecond;
-var bool regenerateFuelEnergy;
-
 // Keeps track how much time has passed.
 var float playerTimer;
 
@@ -32,7 +26,7 @@ var float timeToUpdate;
 replication
 {
 	if (bNetDirty && Role == ROLE_Authority)
-		isSprinting, regenerateSprintEnergy, isUsingJetPack, regenerateFuelEnergy;
+		isSprinting, regenerateSprintEnergy, isUsingJetPack;
 }
 
 event Tick(float DeltaTime)
@@ -46,7 +40,6 @@ event Tick(float DeltaTime)
 		playerTimer -= timeToUpdate;
 
 		StartSprinting(DeltaTime);
-		StartUsingTheJetpack(DeltaTime);
 	}
 }
 
@@ -76,30 +69,6 @@ function StopSprint()
 	}
 }
 
-function StartJetpacking()
-{
-	if ( WorldInfo.NetMode == NM_Client )
-	{
-		ServerJetpacking();
-	}
-	else
-	{
-		isUsingJetPack = true;
-	}
-}
-
-function StopJetpacking()
-{
-	if ( WorldInfo.NetMode == NM_Client )
-	{
-		ServerStopJetpacking();
-	}
-	else
-	{
-		isUsingJetPack = false;
-	}
-}
-
 reliable server function ServerSprint()
 {
 	isSprinting = true;
@@ -110,16 +79,6 @@ reliable server function ServerStopSprint()
 {
 	isSprinting = false;
 	regenerateSprintEnergy = true;
-}
-
-reliable server function ServerJetpacking()
-{
-	isUsingJetPack = true;
-}
-
-reliable server function ServerStopJetpacking()
-{
-	isUsingJetPack = false;
 }
 
 simulated event PostBeginPlay()
@@ -230,28 +189,6 @@ function StartSprinting(float DeltaTime)
 	}
 }
 
-function StartUsingTheJetpack(float DeltaTime)
-{
-	if (isUsingJetPack)
-	{
-		if (fuelEnergy > 0.0f)
-		{
-			CustomGravityScaling = -1.0f;
-			// Commented out temporarily for debugging reasons.
-			//fuelEnergy -= (fuelEnergyLossPerSecond * DeltaTime);
-		}
-		
-		if (fuelEnergy < 0.0f)
-		{
-			fuelEnergy = 0.0f;
-		}
-	}
-	else
-	{
-		CustomGravityScaling = 1.0f;
-	}
-}
-
 DefaultProperties
 {
 	InventoryManagerClass = class'ActionEffect.AEInventoryManager';
@@ -269,11 +206,6 @@ DefaultProperties
 	sprintEnergy = 100.0f;
 	sprintEnergyLossPerSecond = 10.0f;
 	regenerateSprintEnergy = true;
-
-	maxFuelEnergy = 100.0f;
-	fuelEnergy = 100.0f;
-	fuelEnergyLossPerSecond = 30.0f;
-	regenerateFuelEnergy = false;
 
 	playerTimer = 0.0f;
 	fps = 60.0f;

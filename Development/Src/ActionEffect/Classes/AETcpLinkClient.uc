@@ -193,11 +193,10 @@ event ReceivedText(string Text)
 			Text = tempString;
 
 		returnedMessage = Text;
-		returnedArray = parseToArray(Text);
 		
 		if (bWaitingForMission)
 		{
-			`log("[TCP] NEED CODE OR REMOVE");
+			PC.InitializeMission( Text );
 			bWaitingForMission = false;
 		}
 		else if (bWaitingForWeapon)

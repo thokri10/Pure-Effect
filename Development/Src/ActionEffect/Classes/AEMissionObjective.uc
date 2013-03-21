@@ -12,6 +12,7 @@ class AEMissionObjective extends Actor
 struct MissionObjectives
 {
 	var int id;
+	var int levelID;
 	var string category;
 	var string mapName;
 	var string title;
@@ -206,12 +207,15 @@ function MissionObjectives MissionFromSimpleStruct(SimpleMissionStruct simpleMis
 	foreach simpleMission.information(values)
 	{
 		if      (values.type == "id")            objective.id           = int( values.value );
+		else if (values.type == "city_id")       objective.levelID      = int( values.value );
 		else if (values.type == "category")      objective.category     = values.value;
 		else if (values.type == "city_name")     objective.mapName      = values.value;
 		else if (values.type == "description" )  objective.description  = values.value;
 		else if (values.type == "title")         objective.title        = values.value;
-		//else `log("[SimpleMissionParse] No known name of this type: " $ values.type);
+		else `log("[SimpleMissionParse] No known name of this type: " $ values.type);
 	}
+
+	`log("sldfhkjsdfkjsdhf: " $ objective.levelID);
 
 	foreach simpleMission.rewards( reward )
 	{

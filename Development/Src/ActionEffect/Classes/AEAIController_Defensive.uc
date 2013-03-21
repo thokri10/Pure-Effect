@@ -1,9 +1,39 @@
 class AEAIController_Defensive extends AEAIController;
 
-var AEGameObjective_Defend CurrentDefensePosition;
-var AEDefensePoint defendingSpot;
-var AEDefensePoint LastDefendedSpot;
+//--------------------------------
+// Defending variables
 
+struct DefendStruct
+{
+	/** Current defensive position */
+	var AEDefensePoint defendingSpot;
+
+	/** Distance from Objective.
+	 *  To keep bot defending a spot farther away */
+	var float Distance; 
+};
+
+/** Objective the bot currently are defending */
+var AEGameObjective_Defend CurrentDefensePosition;
+
+/** Current defense position */
+var DefendStruct defendPosition;
+
+/** The defense position our bot last defended */
+var DefendStruct LastDefendedPosition;
+
+/** True if bot should update its position in states */
+var bool bUpdatePosition;
+
+/** If bot are hiding behind cover. 
+ *  Should not peek before this projectile stop living. */
+var Projectile DodgingProjectile;
+
+/** True if bot has changed position since last vision of bot.
+ *  Stops the bot to change position more than once */
+var bool bChangedPosition;
+//----------------------------
+// Timers
 var bool timerActive;
 
 event Possess(Pawn aPawn, bool bVehicleTransition)
@@ -16,6 +46,15 @@ event Possess(Pawn aPawn, bool bVehicleTransition)
 event Tick(float DeltaTime)
 {
 	super.Tick(DeltaTime);
+}
+
+function ReceiveProjectileWarning(Projectile Proj)
+{
+	if( GetStateName() == 'Defending' )
+	{
+		DodgingProjectile = Proj;
+		pawn.ShouldCrouch(true);
+	}
 }
 
 /** Call for help to other bots in the vicinity. */
@@ -45,17 +84,19 @@ function help()
 simulated function SetAttractionState()
 {    
     if ( Enemy == None )
-    {    
-		if(GetStateName() != 'Defending' && GetStateName() != 'LastStand' && CurrentDefensePosition == none)
+    {
+		if(GetStateName() != 'Defending' || defendPosition.defendingSpot == none)
 		{
+			`log("ATTRACTION DEFEND");
 			SetDefendingSpot();
 		}
-    }
+    }    
 }
 
 /** Finds a defensive objective and finds a defending positition at that point
  *  Tries this two times if no position are free at taht time. 
- *  If this fails it will change to state 'lastStand' */
+ *  If this fails it will change to state 'last stand' 
+ *  @param IgnoreSpot Ignore this objective */
 function SetDefendingSpot(optional AEGameObjective_Defend IgnoreSpot = None)
 {
 	local AEGameObjective_Defend spot;
@@ -66,16 +107,19 @@ function SetDefendingSpot(optional AEGameObjective_Defend IgnoreSpot = None)
 		{
 			if(CurrentDefensePosition == None)
 				CurrentDefensePosition = spot;
-			else if(CurrentDefensePosition.DefensePriority <= spot.DefensePriority)
+			else if(CurrentDefensePosition.DefensePriority < spot.DefensePriority)
 				CurrentDefensePosition = spot;
 		}
 	}
 
 	if(CurrentDefensePosition != None)
 	{
-		defendingSpot = getDefensePointAtObjective( CurrentDefensePosition );
+		defendPosition = getDefensePointAtObjective( CurrentDefensePosition );
+		`log(defendPosition.defendingSpot $ " : " $ defendPosition.Distance);
 
-		if(defendingSpot != none){
+		if(defendPosition.defendingSpot != none){
+			`log("DEFENDING: " $ defendPosition.defendingSpot);
+			bUpdatePosition = true;
 			GotoState('Defending');
 		}
 		else
@@ -83,52 +127,62 @@ function SetDefendingSpot(optional AEGameObjective_Defend IgnoreSpot = None)
 			if(IgnoreSpot != None)
 				SetDefendingSpot(CurrentDefensePosition);
 			else{
+				//`log("FROM SET DEFEND SPOT");
 				GotoState('LastStand');
 			}
 		}
+	}else{
+		`log("[AIControllerDef] No defense positions in this map");
+		GotoState('Patrol');
 	}
 }
 
-/** Returns a free defendpoint at spesified objective */
-function AEDefensePoint getDefensePointAtObjective(AEGameObjective_Defend objective)
+/** Returns the first free defendpoint at spesified objective. The returned point are the farthest off 
+ *  @param objective Objective that contains the defend position 
+ *  @return A free point farthest away form our objective */
+function DefendStruct getDefensePointAtObjective(AEGameObjective_Defend objective)
 {
+	local DefendStruct def;
 	local AEDefensePoint spot;
-	local AEDefensePoint temp;
 
 	foreach objective.DefenseSpots( spot )
 	{
+		`log("aklsjdklasjdlk");
 		if(spot.CurrentUser == None)
 		{
-			if(temp == None)
-				temp = spot;
-			else
+			if(def.defendingSpot == None){
+				def.defendingSpot = spot;
+				def.distance = getDistance( objective, spot );
+			}else
 			{
-				if(temp.DefensePriority < spot.DefensePriority)
+				if( getDistance( objective, spot ) > def.distance )
 				{
-					temp = spot;
+					def.defendingSpot = spot;
+					def.distance = getDistance( objective, spot );
 				}
 			}
 		}
 	}
 
-	if(temp != None)
-		return temp;
+	if(def.defendingSpot != None)
+		return def;
 	else
-		return none;
+		return def;
 }
 
 state Defending
 {
 	event Tick(float DeltaTime)
 	{
+		super.Tick(DeltaTime);
 		if(!IsDead())
 		{
 			if(Enemy != None)
 			{
-				if(defendingSpot != none)
+				if(defendPosition.defendingSpot != none)
 				{
-					defendingSpot.CurrentUser = None;
-					defendingSpot = None;
+					defendPosition.defendingSpot.CurrentUser = None;
+					defendPosition.defendingSpot = None;
 				}
 
 				if(!timerActive){
@@ -139,10 +193,139 @@ state Defending
 		}
 	}
 
+	simulated function SetAttractionState()
+	{
+		if(bCurrentlyOccupied)
+		{
+			if( Sqrt( getDistance( pawn, defendPosition.defendingSpot ) ) < 50 ){
+				`log("RESETING OCCUPIED");
+				bCurrentlyOccupied = false;
+			}
+		}
+
+		if(myEnemy != None)
+		{
+			if(!bCurrentlyOccupied){
+				if( (RunTime - EnemyVisibilityTime) > 4 ){
+				`log("Reset bChangePosition");
+				bChangedPosition = false;
+				}
+			}
+			if( (RunTime - EnemyVisibilityTime) > 7 ){
+				myEnemy = None;
+				`log("ENEMY NONE");
+			}
+		}
+
+		if(!bCurrentlyOccupied)
+			CheckDefensiveBehavior();
+	}
+
+	function CheckDefensiveBehavior()
+	{
+		if(DodgingProjectile != None)
+		{
+			if(VSize( DodgingProjectile.Velocity ) == 0)
+			{
+				if(Pawn.bIsCrouched){
+					DodgingProjectile = None;
+					`log("UNCROUCH");
+					Pawn.ShouldCrouch(false);
+				}
+			}
+		}
+
+		if(myEnemy != None)
+		{
+			if(DodgingProjectile == None && !bCurrentlyOccupied)
+			{
+				if( Sqrt( getDistance( pawn, myEnemy ) ) < 1000 ){
+					GotoState('AEFallBack');
+				}
+				else
+				{
+					if(!bChangedPosition)
+					{
+						bEnemyIsVisible = LineOfSightTo(myEnemy);
+
+						if(!bEnemyIsVisible){
+							defendPosition = changeDefensivePosition( defendPosition );
+							bUpdatePosition = true;
+							bChangedPosition = true;
+							bCurrentlyOccupied = true;
+							GotoState('Defending');
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	/** Finds the closest defensive position to this point. 
+	 *  @param lastSpot The defensive spot we want to move from. */
+	function DefendStruct changeDefensivePosition(DefendStruct lastSpot)
+	{
+		local Array<DefendStruct> possiblePositions;
+		local AEDefensePoint point;
+		local DefendStruct possible;
+		local DefendStruct defend;
+		local float tempDistance;
+		local float distance;
+
+		foreach WorldInfo.AllNavigationPoints(class'AEDefensePoint', point)
+		{
+			if( point != lastSpot.defendingSpot )
+			{
+				distance = getDistance(lastSpot.defendingSpot, point);
+
+				if( distance < 2000**2 ) 
+				{
+					`log("ADDED DEFENSE POS: " $ point);
+					defend.defendingSpot = point;
+					defend.Distance = distance;
+					possiblePositions.AddItem(defend);
+				}
+			}
+		}
+
+		distance = 2000**2;
+
+		foreach possiblePositions(possible)
+		{
+			tempDistance = getDistance( lastSpot.defendingSpot, possible.defendingSpot );
+
+			if(tempDistance < distance)
+			{
+				distance = tempDistance;
+				defend.defendingSpot = possible.defendingSpot;
+				defend.Distance = distance;
+			}
+		}
+
+		if(defend.defendingSpot == None){
+			`log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+			defend.defendingSpot = lastSpot.defendingSpot;
+			defend.Distance = lastSpot.Distance;
+		}else{
+			`log("Moving to: " $ defend.defendingSpot);
+		}
+
+		return defend;
+	}
+
 Begin:
-	`log("DEFENDING: " $ defendingSpot);
+	//`log("DEFENDING: " $ defendingSpot);
 	//if( ActorReachable( defendingSpot ) ){
-	MoveToward(defendingSpot, LastDefendedSpot);
+
+	if(bUpdatePosition)
+	{
+		`log("MOVE");
+		MoveToward(defendPosition.defendingSpot , LastDefendedPosition.defendingSpot);
+		bCurrentlyOccupied = true;
+		bUpdatePosition = false;
+	}else{
+		CheckDefensiveBehavior();
+	}
 	//}
 	
 	WaitToSeeEnemy();
@@ -150,14 +333,16 @@ Begin:
 	GotoState('FallBack');
 };
 
-state FallBack
+state AEFallBack
 {
-	function AEDefensePoint FindFallingBackPosition(AEDefensePoint lastSpot)
+	function DefendStruct FindFallingBackPosition(DefendStruct lastSpot)
 	{
 		local AEDefensePoint point;
 
-		defendingSpot = lastSpot;
+		defendPosition.defendingSpot = lastSpot.defendingSpot;
+		defendPosition.Distance = lastSpot.Distance;
 
+		/*
 		foreach lastSpot.ClosePoints(point)
 		{
 			if(defendingSpot != point)
@@ -168,31 +353,36 @@ state FallBack
 				}
 			}
 		}
+		*/
 
-		if(lastSpot == defendingSpot){
-			`log("FROM FALL BACK");
+		/*
+		if(lastSpot.defendingSpot == defendPosition.defendingSpot){
+			//`log("FROM FALL BACK");
 			GotoState('LastStand');
 			return none;
 		}
 		
 		defendingSpot = lastSpot;
-
+		*/
+		`log("FIND FALLING BACK FUNCTION! SHOULD NOT BE HERE!");
 		return lastSpot;
 	}
 begin:
 	`log("Falling back");
 
-	LastDefendedSpot = defendingSpot;
+	/*
+	LastDefendedPosition.defendingSpot = defendPosition.defendingSpot;
 	
-	if( FindFallingBackPosition( LastDefendedSpot ) != none )
+	if( FindFallingBackPosition( lastDestinationtNode ).defendingSpot != none )
 		MoveToward( FindFallingBackPosition( LastDefendedSpot ), LastDefendedSpot );
+		*/
 	
 }
 
 state LastStand
 {
 begin:
-	`log("Last Stand");
+	//`log("Last Stand");
 }
 
 

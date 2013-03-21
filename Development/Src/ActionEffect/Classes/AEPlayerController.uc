@@ -23,6 +23,7 @@ var AEJSONParser            parser;
 
 // HudMenu
 var AEHUDMenu               myMenu;
+
 // Print out our textmenu on the screen
 var AEHUD                   mHUD;
 
@@ -34,6 +35,9 @@ var AEInventory             myItemInventory;
 
 // Responsible for generating weapons.
 var AEWeaponCreator         myWeaponCreator;
+
+/** Jetpack */
+var AEJetpack               myJetpack;
 
 
 //-----------------------------------------------------------------------------
@@ -92,11 +96,33 @@ simulated event PostBeginPlay()
 	myPlayerInfo.myWeaponCreator = myWeaponCreator;
 	myPlayerInfo.myInventory = myItemInventory;
 
+	myJetpack = Spawn(class'AEJetpack');
+	myJetpack.PC = self;
+	myJetpack.jetpackEnabled = true;
+
 	`log("SETTING UP A NEW PLAYERCONTROLLER!!!!! : " $ self $ " : " $ WorldInfo.NetMode);
 
 	// Connect to server.
 	//myTcpLink.ResolveMe();
 
+}
+
+/** Function that is used from ActionGameEffect to activate our desired mission after a map change */
+function InitMission(int MissionID)
+{
+	myTcpLink.getMission(MissionID);
+}
+
+/** Initializes a mission from server string */
+function InitializeMission(string serverText)
+{
+	local array<array2D> arr;
+
+	arr = parser.fullParse(serverText);
+
+	mHUD = AEHUD( myHUD );
+
+	myMissionObjective.Initialize(arr[0].variables);
 }
 
 event Possess(Pawn inPawn, bool bVehicleTrasition)
@@ -119,12 +145,26 @@ function Tick(float DeltaTime)
 //-----------------------------------------------------------------------------
 // Inventory 
 
-/** Puts a weapon to your intventory */
+/** Puts a weapon to your inventory. */
 function addWeaponToInventory(UTWeapon weap)
 {
 	myPawn.AddWeaponToInventory( weap );
 }
 
+//-----------------------------------------------------------------------------
+// Jetpack
+
+/** Uses the motherfuckin' jetpack. */
+function useJetpacking()
+{
+	myJetpack.StartJetpacking();
+}
+
+/** Stops using that motheruckin' jetpack. */
+function stopJetpacking()
+{
+	myJetpack.StopJetpacking();
+}
 
 //-----------------------------------------------------------------------------
 // Console commands

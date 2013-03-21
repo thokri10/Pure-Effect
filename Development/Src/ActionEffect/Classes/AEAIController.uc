@@ -1,6 +1,8 @@
 /** Controller for AI-bots. */
 class AEAIController extends UDKBot;
 
+var float RunTime;
+
 //-------------------------------
 // Bot variables
 
@@ -11,6 +13,17 @@ var float shootDelay;
 
 var bool bCanFire;
 
+//---------------------------------
+// Path variables
+
+/** PathNode the bots standing on */
+var PathNode currentNode;
+/** The Pathnode the bot are moving from */
+var PathNode lastDestinationtNode;
+/** Pathnode the bot are moving towards */
+var PathNode destinationNode;
+/** The actor the bot should look at when moving around */ 
+var Actor    viewNode;
 
 //---------------------------------------
 // Target Varaibles
@@ -22,12 +35,22 @@ function PostBeginPlay()
 {
 	WorldInfo.NetMode = NM_ListenServer;
 	super.PostBeginPlay();
+
+	RunTime = 0;
 	
 	PlayerReplicationInfo.bOutOfLives=true;
 
 	bCanFire = true;
 
-	setTimer(2, true, 'CheckAttractionState');
+	setTimer(3, true, 'CheckAttractionState');
+}
+
+function resetPosition()
+{
+	viewNode = None;
+	destinationNode = none;
+	lastDestinationtNode = None;
+	currentNode = None;
 }
 
 function ReceiveProjectileWarning(Projectile Proj)
@@ -47,7 +70,10 @@ event HearNoise(float Loudness, Actor NoiseMaker, optional Name NoiseType)
 
 event SeePlayer(Pawn Seen)
 {
+	
 	myEnemy = AEPawn_Player( Seen );
+	bEnemyAcquired = true;
+	bEnemyIsVisible = true;
 
 	// Will Only fire at player.
 	if(myEnemy != none){
@@ -57,9 +83,7 @@ event SeePlayer(Pawn Seen)
 		EnemyLastPosition = Seen.Location;
 
 		if( !FireWeaponAt( Seen ) ){  }
-	}
-
-	myEnemy = none;
+	}	
 }
 
 function CheckAttractionState()
@@ -68,25 +92,74 @@ function CheckAttractionState()
 		bFire = 0;
 		StopFiring();
 	}
+	else if( !LineOfSightTo( myEnemy ) && bEnemyIsVisible )
+	{
+		StopFiring();
+		EnemyVisibilityTime = RunTime;
+		bEnemyIsVisible = false;
+	}else{
+		if(bEnemyAcquired && bEnemyIsVisible)
+			SaveEnemyPosition();
+	}
 
-	if(!bCurrentlyOccupied)
-		SetAttractionState();
+	SetAttractionState();
 }
 
 simulated function SetAttractionState()
 {
+	`log(myEnemy);
 	if(myEnemy == None)
 	{
+		GoToState('Patrol');
 		/*
 		if( EnemyLastPosition != Vector(0,0,0) )
 		{
 			MoveToLocation( EnemyLastPosition );
 		}
 		*/
+	}else{
+		SetEnemyAtraction();
 	}
-	else 
+}
+
+function SaveEnemyPosition()
+{
+	local EnemyPosition pos;
+
+	EnemyVisibilityTime = RunTime;
+	pos.Position = myEnemy.Location;
+	pos.Time = RunTime;
+	pos.Velocity = myEnemy.Velocity;
+
+	SavedPositions.AddItem( pos );
+}
+
+event Tick(float DeltaTime)
+{
+	super.Tick(DeltaTime);
+
+	RunTime += DeltaTime;
+
+	if(bEnemyIsVisible)
+		bEnemyIsVisible = LineOfSightTo(myEnemy);
+
+}
+
+function SetEnemyAtraction()
+{
+	if(!bEnemyIsVisible)
 	{
-		GoToState('Idle');
+		if( (RunTime - EnemyVisibilityTime) > 5 ){
+			SavedPositions.Length = 0;
+			bEnemyAcquired = false;
+			myEnemy = None;
+			resetPosition();
+			Pawn.StopFiring();
+			GotoState('Patrol');
+		}else
+		{
+			GotoState('Investigate');
+		}
 	}
 }
 
@@ -100,20 +173,105 @@ event Possess(Pawn aPawn, bool bVehicleTransition)
 //----------------------------
 // Other Functions
 
-function MoveToLocation( Vector LastPosition )
+/** Finds the best viewpoint for bot.
+ *  @param desiredViewPoint . If there is no better option */
+function setBestViewPoint(optional Actor desiredViewPoint)
 {
-	local Actor targetLocation;
-
-	targetLocation = Spawn(class'Actor', self,, LastPosition);
-
-	if( ActorReachable( targetLocation ) ){
-		//MoveToward( targetLocation );
-		bCurrentlyOccupied = true;
+	if(Enemy == None)
+	{
+		if(GetStateName() == 'Patrol')
+			viewNode = desiredViewPoint;
+	}else{
+		viewNode = Enemy;
 	}
+}
+
+/** Finds the closest pathnode and find the bots viewpoint */
+function UpdateMovePosition()
+{
+	local Actor desiredView;
+
+	lastDestinationtNode = currentNode;
+	currentNode = destinationNode;
+
+	if(GetStateName() == 'Patrol')
+	{
+		destinationNode = FindClosestPathNode( Pawn, true, currentNode );
+		desiredView = FindClosestPathNode( destinationNode, true, currentNode );
+		setBestViewPoint( desiredView );
+	}
+
+}
+
+/** Finds and returns the closest pathnode
+ *  @param obj Adjacent to this actor
+ *  @param skipLastDestNode Skips the node the bot last visited
+ *  @param ignoreNode Ignore this node
+ *  @return Closest pathnode to param obj
+ *  TODO: Update so it wont try to walk through walls */
+function PathNode FindClosestPathNode(Actor obj, optional bool skipLastDestNode, optional PathNode ignoreNode)
+{
+	local PathNode targetNode;
+	local PathNode node;
+	local float    tempDistance;
+	local float    distance;
+
+	foreach WorldInfo.AllNavigationPoints(class'PathNode', node)
+	{
+		if(skipLastDestNode && node == lastDestinationtNode)
+			node = PathNode( obj );
+		if(node != ignoreNode && node != obj && LineOfSightTo(node) )
+		{
+			tempDistance = getDistance( node, obj );
+
+			if(targetNode == None){
+				distance = tempDistance;
+				targetNode = node;
+			}else
+			{
+				if(tempDistance < distance)
+				{
+					distance = tempDistance;
+					targetNode = node;
+				}
+			}
+		}
+	}
+
+	return targetNode;
+}
+
+function float getDistance(Actor from, Actor to)
+{
+	if(from == None || to == none)
+		return 0;
+
+	return VSizeSq(from.Location - to.Location);
 }
 
 //-----------------------------
 // States
+
+State Patrol
+{
+Begin:
+	`log( Sqrt( getDistance( pawn, destinationNode ) ) );
+	//`log(destinationNode);
+	if( Sqrt( getDistance( pawn, destinationNode ) ) < 150)
+	{
+		`log("Moving to target");
+		UpdateMovePosition();
+		MoveToward(destinationNode, viewNode,,, true);
+		//MoveTo(destinationNode.Location, viewNode,, true);
+	}
+};
+
+State Investigate
+{
+Begin:
+`log("Investigate");
+	MoveToDirectNonPathPos( SavedPositions[ SavedPositions.Length - 1 ].Position, myEnemy );
+}
 
 State Idle
 {
@@ -171,6 +329,7 @@ function bool FireWeaponAt(Actor A)
 		else
 			return Pawn.BotFire(true); // TRUE DONT DO SHIT
 
+		Pawn.StopFiring();
 	}
 
 	return false;
@@ -178,7 +337,6 @@ function bool FireWeaponAt(Actor A)
 
 event burstFire()
 {
-	`log("asjdkaljsdkljaklsdjlk");
 	bCanFire = true;
 }
 

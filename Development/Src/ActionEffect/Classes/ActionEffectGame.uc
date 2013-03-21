@@ -3,9 +3,28 @@ class ActionEffectGame extends UTTeamGame;
 
 var bool initialized;
 
+var bool bInitMission;
+var int missionToStart;
+
+
 function PostBeginPlay()
 {
 	super.PostBeginPlay();
+}
+
+event InitGame(string Options, out string ErrorMessage)
+{
+	local string InOpt;
+
+	super.InitGame(Options, ErrorMessage);
+
+	InOpt = ParseOption(Options, "MissionID");
+	if( InOpt != "" )
+	{
+		bInitMission = true;
+		missionToStart = int(InOpt);
+		`log("START MISSION : " $ InOpt );
+	}
 }
 
 event Tick(float DeltaTime)
@@ -17,6 +36,9 @@ event Tick(float DeltaTime)
 		if(AEPlayerController( GetALocalPlayerController() ).myGame == none){
 			initialized = true;
 			AEPlayerController( GetALocalPlayerController() ).myGame = self;
+
+			if(bInitMission)
+				AEPlayerController( GetALocalPlayerController() ).InitMission(missionToStart);
 		}
 
 		// EMIL BOT SPAWN
@@ -36,7 +58,6 @@ DefaultProperties
 	DefaultPawnClass = class'ActionEffect.AEPawn_Player';
 	
 	bDelayedStart = false;
-	BotClass = class'AEAIController';
 	bCustomBots = true;
 	
 	// EDIT: !!! FOR BOT TESTING REMOVE THIS WHEN DONE !!!
