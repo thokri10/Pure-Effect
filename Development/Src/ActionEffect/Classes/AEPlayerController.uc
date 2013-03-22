@@ -40,7 +40,7 @@ var AEWeaponCreator         myWeaponCreator;
 var AEJetpack               myJetpack;
 
 /** Replication info for multiplayer. Keeps track over the different objectives and time */
-var repnotify AEReplicationInfo myReplicationInfo;
+var AEReplicationInfo       myReplicationInfo;
 
 
 //-----------------------------------------------------------------------------
@@ -52,11 +52,9 @@ var int                     credits;
 var string test;
 
 replication
-{
-	if(bNetDirty)
-		myReplicationInfo;
+{		
 	if(bNetDirty && bNetOwner && Role == ROLE_Authority)
-		myPawn;
+		myPawn, myReplicationInfo;
 }
 
 //-----------------------------------------------------------------------------
@@ -66,6 +64,7 @@ replication
 simulated event PostBeginPlay()
 {
 	local AEInventory_Item item;
+	local AEReplicationInfo GameObj;
 	
 	// Initializations of various variables.
 	super.PostBeginPlay();
@@ -100,6 +99,13 @@ simulated event PostBeginPlay()
 	myPlayerInfo.myTcpClient = myTcpLink;
 	myPlayerInfo.myWeaponCreator = myWeaponCreator;
 	myPlayerInfo.myInventory = myItemInventory;
+
+	foreach WorldInfo.AllActors(class'AEReplicationInfo', GameObj){
+		`log("DER");
+		myReplicationInfo = GameObj;
+	}
+
+	`log(IdentifiedTeam);
 
 
 	/*
@@ -181,7 +187,12 @@ function stopJetpacking()
 /** Temp menu command */
 exec function ppp()
 {
-	myReplicationInfo.ServerChangeBlueEngine(0);
+	AddToScore(int(GetTeamNum()));
+
+	`log(myReplicationInfo.redTeamScore);
+
+	if(Role < ROLE_Authority)
+		return;
 
 	mHUD = AEHUD( myHUD );
 	myMenu.setMainMenu();
@@ -242,6 +253,28 @@ exec function UseItem(int slot)
 reliable server function serverUseItem(int slot)
 {
 	myItemInventory.Use(slot);
+}
+
+//---------------------------------------
+// Objective server code
+
+simulated function AddToScore(int teamID)
+{
+	if(myReplicationInfo != None)
+	{
+		myReplicationInfo.addScore(teamID);
+
+		if(Role < ROLE_Authority)
+			ServerAddToRedScore(teamID);
+	}
+}
+
+reliable server function ServerAddToRedScore(int teamID)
+{
+	if(Role < ROLE_Authority)
+		return;
+
+	myReplicationInfo.addScore(teamID);
 }
 
 DefaultProperties

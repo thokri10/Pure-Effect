@@ -86,21 +86,6 @@ simulated event PostBeginPlay()
 	super.PostBeginPlay();
 	
 	timeToUpdate = 1.0f / fps;
-	
-	if(Controller != none)
-		AEPC = AEPlayerController(Controller);
-	else
-		`log("[AEPawn_Player] Controller not set");
-
-	if (AEPC != None)
-	{
-		AEPC.myPawn = self;
-		`log("[AEPawn_Player] Setting pawn");
-	}
-	else
-	{
-		`log("[AEPawn_Player] No controller to pawn");
-	}
 }
 
 /*

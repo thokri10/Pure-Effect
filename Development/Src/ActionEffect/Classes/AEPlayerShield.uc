@@ -80,8 +80,6 @@ DefaultProperties
 	Begin Object class=StaticMeshComponent Name=Sphere
 		StaticMesh=StaticMesh'Level1pack.Mesh.ShieldSphere'
 		bOnlyOwnerSee=false
-		bForceNetUpdate=true
-		bAlwaysRelevant=true
 		HiddenGame=false
 		Scale=6
 		BlockActors=true

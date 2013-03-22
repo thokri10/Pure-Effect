@@ -359,7 +359,7 @@ state AEFallBack
 {
 	function DefendStruct FindFallingBackPosition(DefendStruct lastSpot)
 	{
-		local AEDefensePoint point;
+		//local AEDefensePoint point;
 
 		defendPosition.defendingSpot = lastSpot.defendingSpot;
 		defendPosition.Distance = lastSpot.Distance;

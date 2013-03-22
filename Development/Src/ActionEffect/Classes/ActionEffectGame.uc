@@ -10,14 +10,14 @@ var int AETeamID;
 
 var AEPlayerController PC;
 
+/*
 /** Replication info for multiplayer. Keeps track over the different objectives and time */
 var AEReplicationInfo myReplicationInfo;
+*/
 
 function PostBeginPlay()
 {
 	super.PostBeginPlay();
-
-	myReplicationInfo = Spawn(class'AEReplicationInfo', self);
 }
 
 event InitGame(string Options, out string ErrorMessage)
@@ -54,7 +54,6 @@ function PlayerController SpawnPlayerController(vector SpawnLocation, rotator Sp
 		if(PC != none)
 		{
 			PC.myGame = self;
-			PC.myReplicationInfo = myReplicationInfo;
 
 			if(bInitMission)
 			{
@@ -74,7 +73,7 @@ event Tick(float DeltaTime)
 		// EMIL BOT SPAWN
 		foreach WorldInfo.AllActors( class'AEVolume_BotSpawn', target )
 		{
-			target.spawnBot(class'AEPawn_BotDefensive', self);
+			//target.spawnBot(class'AEPawn_BotDefensive', self);
 			break;
 		}
 
@@ -100,6 +99,4 @@ DefaultProperties
 	bAutoNumBots = false
 	DesiredPlayerCount = 0
 	bTeamGame=true
-
-	bPlayersBalanceTeams = false;	
 }

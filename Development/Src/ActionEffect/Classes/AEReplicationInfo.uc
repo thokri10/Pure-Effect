@@ -1,4 +1,5 @@
-class AEReplicationInfo extends ReplicationInfo;
+class AEReplicationInfo extends ReplicationInfo
+	placeable;
 
 //---------------------------
 // Game Info
@@ -27,32 +28,56 @@ replication
 		GameTimer, HoldingRedEngine, redTeamScore, HoldingBlueEngine, blueTeamScore;
 }
 
-simulated event ReplicatedEvent(name VarName)
+function addScore(int teamID)
 {
-	`log(VarName);
+	if(teamID == 0)
+		++redTeamScore;
+	else
+		++blueTeamScore;
 }
 
-reliable server function bool ServerRedTeamFlee()
+function bool RedTeamFlee()
 {
 	if(HoldingRedEngine == 0)
 		return true;
 	return false;
 }
 
-reliable server function bool ServerBlueTeamFlee()
+function bool BlueTeamFlee()
 {
 	if(HoldingBlueEngine == 1)
 		return true;
 	return false;
 }
 
-reliable server function ServerChangeBlueEngine(int teamID)
+function changeBlueEngine(int teamID)
 {
 	HoldingBlueEngine = teamID;
+	if(Role < ROLE_Authority)
+		ServerChangeBlueEngine(teamID);
+}
+
+reliable server function ServerChangeBlueEngine(int teamID)
+{
+	if(Role < ROLE_Authority)
+		return;
+
+	HoldingBlueEngine = teamID;
+}
+
+function changeRedEngine(int teamID)
+{
+	HoldingRedEngine = teamID;
+
+	if(Role < ROLE_Authority)
+		ServerChangeRedEngine(teamID);
 }
 
 reliable server function ServerChangeRedEngine(int teamID)
 {
+	if(Role < ROLE_Authority)
+		return;
+
 	HoldingRedEngine = teamID;
 }
 
@@ -66,6 +91,8 @@ DefaultProperties
 	HoldingRedEngine = 0;
 	HoldingBlueEngine = 1;
 
-	redTeamScore = 40;
-	blueTeamScore = 40;
+	redTeamScore = 0;
+	blueTeamScore = 0;
+
+	RemoteRole=ROLE_MAX
 }

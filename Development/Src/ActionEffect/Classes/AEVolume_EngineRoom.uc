@@ -1,6 +1,32 @@
 class AEVolume_EngineRoom extends Actor
 	placeable;
 
+/** Trigger that needs to be activated to change team owners */
+var(Objective) array<AEEngineTrigger> Triggers;
+
+/** 0 : RedTeam || 1 : BlueTeam*/
+var(Objective) int teamIDOwners;
+
+function Tick(float DeltaTime)
+{
+	super.Tick(DeltaTime);
+
+	CheckTriggers();
+}
+
+function CheckTriggers()
+{
+	local AEEngineTrigger trig;
+
+	foreach Triggers(trig)
+	{
+		if(trig.bTriggerActivated)
+			if(trig.teamOwner != -1){
+				teamIDOwners = trig.teamOwner;
+			}
+	}
+}
+
 DefaultProperties
 {
 	Begin Object Class=SpriteComponent Name=Sprite
