@@ -6,10 +6,18 @@ var bool initialized;
 var bool bInitMission;
 var int missionToStart;
 
+var int AETeamID;
+
+var AEPlayerController PC;
+
+/** Replication info for multiplayer. Keeps track over the different objectives and time */
+var AEReplicationInfo myReplicationInfo;
 
 function PostBeginPlay()
 {
 	super.PostBeginPlay();
+
+	myReplicationInfo = Spawn(class'AEReplicationInfo', self);
 }
 
 event InitGame(string Options, out string ErrorMessage)
@@ -25,6 +33,37 @@ event InitGame(string Options, out string ErrorMessage)
 		missionToStart = int(InOpt);
 		`log("START MISSION : " $ InOpt );
 	}
+	InOpt = ParseOption(Options, "TeamID");
+	if( InOpt != "" )
+	{
+		AETeamID = Int( InOpt );
+		`log("SET TEAM : " $ AETeamID);
+	}
+}
+
+function PlayerController SpawnPlayerController(vector SpawnLocation, rotator SpawnRotation)
+{
+	local PlayerController retPC;
+
+	retPC = super.SpawnPlayerController(SpawnLocation, SpawnRotation);
+
+	if(PC == None)
+	{
+		PC = AEPlayerController( retPC );
+
+		if(PC != none)
+		{
+			PC.myGame = self;
+			PC.myReplicationInfo = myReplicationInfo;
+
+			if(bInitMission)
+			{
+				PC.InitMission(missionToStart);
+			}
+		}
+	}
+
+	return retPC;
 }
 
 event Tick(float DeltaTime)
@@ -32,22 +71,14 @@ event Tick(float DeltaTime)
 	local AEVolume_BotSpawn target;
 	if(!initialized)
 	{
-		// TODO: Fix so that it works for multiplayer.
-		if(AEPlayerController( GetALocalPlayerController() ).myGame == none){
-			initialized = true;
-			AEPlayerController( GetALocalPlayerController() ).myGame = self;
-
-			if(bInitMission)
-				AEPlayerController( GetALocalPlayerController() ).InitMission(missionToStart);
-		}
-
 		// EMIL BOT SPAWN
 		foreach WorldInfo.AllActors( class'AEVolume_BotSpawn', target )
 		{
 			target.spawnBot(class'AEPawn_BotDefensive', self);
 			break;
 		}
-		
+
+		initialized = true;
 	}
 }
 
@@ -61,7 +92,7 @@ DefaultProperties
 	bCustomBots = true;
 	
 	// EDIT: !!! FOR BOT TESTING REMOVE THIS WHEN DONE !!!
-	bForceAllRed=true
+	bForceAllRed=false
 
 	HUDType = class'AEHUD';
 	bUseClassicHUD = true;
@@ -69,5 +100,6 @@ DefaultProperties
 	bAutoNumBots = false
 	DesiredPlayerCount = 0
 	bTeamGame=true
-	
+
+	bPlayersBalanceTeams = false;	
 }

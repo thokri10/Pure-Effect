@@ -7,37 +7,40 @@ class AEPlayerController extends UTPlayerController
 
 var ActionEffectGame        myGame;
 
-// Character that the player controls.
+/** Character that the player controls. */
 var AEPawn_Player           myPawn;
 
-// Holds our playerinfo to the server. This also changes playerpawn behavior when we get items.
+/** Holds our playerinfo to the server. This also changes playerpawn behavior when we get items. */
 var class<AEPlayerInfo>     PlayerInfo;
 var AEPlayerInfo            myPlayerInfo;
 
-// Network module used to gain weapon info from server.
+/** Network module used to gain weapon info from server. */
 var AETcpLinkClient         myTcpLink;
 
-// All parsing goes trough this class
+/** All parsing goes trough this class */
 var class<AEJSONParser>     pars;
 var AEJSONParser            parser;
 
-// HudMenu
+/** HudMenu */
 var AEHUDMenu               myMenu;
 
-// Print out our textmenu on the screen
+/** Print out our textmenu on the screen */
 var AEHUD                   mHUD;
 
-// Mission module that initialize mission and spawns it's objectives.
+/** Mission module that initialize mission and spawns it's objectives. */
 var AEMissionObjective      myMissionObjective;
 
-// Inventory for different items we are using
+/** Inventory for different items we are using */
 var AEInventory             myItemInventory;
 
-// Responsible for generating weapons.
+/** Responsible for generating weapons. */
 var AEWeaponCreator         myWeaponCreator;
 
 /** Jetpack */
 var AEJetpack               myJetpack;
+
+/** Replication info for multiplayer. Keeps track over the different objectives and time */
+var repnotify AEReplicationInfo myReplicationInfo;
 
 
 //-----------------------------------------------------------------------------
@@ -50,6 +53,8 @@ var string test;
 
 replication
 {
+	if(bNetDirty)
+		myReplicationInfo;
 	if(bNetDirty && bNetOwner && Role == ROLE_Authority)
 		myPawn;
 }
@@ -61,7 +66,7 @@ replication
 simulated event PostBeginPlay()
 {
 	local AEInventory_Item item;
-
+	
 	// Initializations of various variables.
 	super.PostBeginPlay();
 
@@ -96,9 +101,12 @@ simulated event PostBeginPlay()
 	myPlayerInfo.myWeaponCreator = myWeaponCreator;
 	myPlayerInfo.myInventory = myItemInventory;
 
+
+	/*
 	myJetpack = Spawn(class'AEJetpack');
 	myJetpack.PC = self;
 	myJetpack.jetpackEnabled = true;
+	*/
 
 	`log("SETTING UP A NEW PLAYERCONTROLLER!!!!! : " $ self $ " : " $ WorldInfo.NetMode);
 
@@ -140,6 +148,7 @@ function Tick(float DeltaTime)
 			mHUD = AEHUD( myHUD );
 		}
 	}
+
 }
 
 //-----------------------------------------------------------------------------
@@ -172,6 +181,8 @@ function stopJetpacking()
 /** Temp menu command */
 exec function ppp()
 {
+	myReplicationInfo.ServerChangeBlueEngine(0);
+
 	mHUD = AEHUD( myHUD );
 	myMenu.setMainMenu();
 
