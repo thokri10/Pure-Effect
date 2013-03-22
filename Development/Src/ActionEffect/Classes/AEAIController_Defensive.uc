@@ -157,16 +157,20 @@ function DefendStruct getDefensePointAtObjective(AEGameObjective_Defend objectiv
 			{
 				if( getDistance( objective, spot ) > def.distance )
 				{
-					def.defendingSpot = spot;
-					def.distance = getDistance( objective, spot );
+					if(def.defendingSpot.CurrentUser == None)
+					{
+						def.defendingSpot = spot;
+						def.distance = getDistance( objective, spot );
+					}
 				}
 			}
 		}
 	}
 
-	if(def.defendingSpot != None)
+	if(def.defendingSpot != None){
+		def.defendingSpot.CurrentUser = self;
 		return def;
-	else
+	}else
 		return def;
 }
 
@@ -262,6 +266,7 @@ state Defending
 	}
 	
 	/** Finds the closest defensive position to this point. 
+	 *  User is set and reset at last point
 	 *  @param lastSpot The defensive spot we want to move from. */
 	function DefendStruct changeDefensivePosition(DefendStruct lastSpot)
 	{
@@ -280,10 +285,13 @@ state Defending
 
 				if( distance < 2000**2 ) 
 				{
-					`log("ADDED DEFENSE POS: " $ point);
-					defend.defendingSpot = point;
-					defend.Distance = distance;
-					possiblePositions.AddItem(defend);
+					if( point.CurrentUser == None )
+					{
+						`log("ADDED DEFENSE POS: " $ point);
+						defend.defendingSpot = point;
+						defend.Distance = distance;
+						possiblePositions.AddItem(defend);
+					}
 				}
 			}
 		}
@@ -310,8 +318,20 @@ state Defending
 			`log("Moving to: " $ defend.defendingSpot);
 		}
 
+		if(defend.defendingSpot != None)
+		{
+			lastSpot.defendingSpot.CurrentUser = None;
+			defend.defendingSpot.CurrentUser = self;
+			return defend;
+		}
 		return defend;
 	}
+
+	function EndState(name NextStateName)
+	{
+		defendPosition.defendingSpot.CurrentUser = None;
+	}
+
 
 Begin:
 	//`log("DEFENDING: " $ defendingSpot);
@@ -331,6 +351,8 @@ Begin:
 	WaitToSeeEnemy();
 
 	//GotoState('FallBack');
+
+
 };
 
 state AEFallBack

@@ -319,7 +319,7 @@ function Select()
 function SetUpForMapChange(int missionID, int LevelID)
 {
 	//`log("open AE-level" $ LevelID $ "?MissionID=" $ missionID);
-	ConsoleCommand("open AE-level" $ LevelID $ "?MissionID=" $ missionID);
+	ConsoleCommand("open AE-level" $ LevelID $ "?MissionID=" $ missionID $ "?TeamID=0"); // TODO: CHANGE SO IT JOINS CORRECT TEAM
 }
 
 //-----------------------------------------------------------------------------
