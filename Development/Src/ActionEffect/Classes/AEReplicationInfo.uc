@@ -9,22 +9,22 @@ var float GameTimer;
 //---------------------------
 // RED TEAM : TEAM ID 0
 /** Team that controlls the red Engine room */
-var int HoldingRedEngine;
+var private int HoldingRedEngine;
 
 /** Score keeps track of how many sicadas has been destroyed */
-var int redTeamScore;
+var private int redTeamScore;
 
 //---------------------------
 // BLUE TEAM : TEAM ID 1
 /** Team that controlls the red Engine room */
-var int HoldingBlueEngine;
+var private int HoldingBlueEngine;
 
 /** Score keeps track of how many sicadas has been destroyed */
-var int blueTeamScore;
+var private int blueTeamScore;
 
 replication
 {
-	if(bNetDirty)
+	if(bNetDirty && Role == ROLE_Authority)
 		GameTimer, HoldingRedEngine, redTeamScore, HoldingBlueEngine, blueTeamScore;
 }
 
@@ -50,40 +50,30 @@ function bool BlueTeamFlee()
 	return false;
 }
 
-function changeBlueEngine(int teamID)
+function ChangeOwnerToEngine(const int TeamEngineOwner, int ChangeToOwner)
 {
-	HoldingBlueEngine = teamID;
-	if(Role < ROLE_Authority)
-		ServerChangeBlueEngine(teamID);
-}
+	if(TeamEngineOwner == 0)
+		HoldingRedEngine = ChangeToOwner;
+	else
+		HoldingBlueEngine = ChangeToOwner;
 
-reliable server function ServerChangeBlueEngine(int teamID)
-{
-	if(Role < ROLE_Authority)
-		return;
-
-	HoldingBlueEngine = teamID;
-}
-
-function changeRedEngine(int teamID)
-{
-	HoldingRedEngine = teamID;
-
-	if(Role < ROLE_Authority)
-		ServerChangeRedEngine(teamID);
-}
-
-reliable server function ServerChangeRedEngine(int teamID)
-{
-	if(Role < ROLE_Authority)
-		return;
-
-	HoldingRedEngine = teamID;
+	UpdateClients();
 }
 
 function Tick(float DeltaTime)
 {
 	GameTimer += DeltaTime;
+}
+
+simulated function UpdateClients()
+{
+	local AEPlayerController C;
+
+	foreach WorldInfo.AllControllers(class'AEPlayerController', C)
+	{
+		`log("Updated client: " $ C);
+		C.bObjectivesUpdated = true;
+	}
 }
 
 DefaultProperties

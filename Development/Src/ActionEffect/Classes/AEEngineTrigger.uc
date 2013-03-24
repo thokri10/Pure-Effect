@@ -1,9 +1,10 @@
 class AEEngineTrigger extends Trigger_PawnsOnly;
 
-var bool bTriggerActivated;
-
 /** TeamID that triggered it */
 var int teamOwner;
+
+/** Objective for our trigger */
+var AEVolume_EngineRoom objective;
 
 event Touch(Actor Other, PrimitiveComponent OtherComp, vector HitLocation, vector HitNormal)
 {
@@ -18,12 +19,13 @@ event Touch(Actor Other, PrimitiveComponent OtherComp, vector HitLocation, vecto
 
 	if( collider != None )
 	{
-		`log(AEPlayerController( collider.Controller ).IdentifiedTeam);
-
-		teamOwner = int( AEPlayerController( collider.Controller ).IdentifiedTeam );	
-
-		bTriggerActivated = true;
+		objective.eventTriggered(self, collider);
 	}
+}
+
+event UnTouch(Actor Other)
+{
+	super.UnTouch(Other);
 }
 
 DefaultProperties

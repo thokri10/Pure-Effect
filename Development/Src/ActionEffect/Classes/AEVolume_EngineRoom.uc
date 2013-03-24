@@ -1,30 +1,66 @@
 class AEVolume_EngineRoom extends Actor
 	placeable;
 
+var(Objective) const int TeamEngineOwner;
+
+/** Objective on the map to update when the objective changes owners */
+var AEReplicationInfo ObjectiveInfo; 
+
 /** Trigger that needs to be activated to change team owners */
 var(Objective) array<AEEngineTrigger> Triggers;
 
 /** 0 : RedTeam || 1 : BlueTeam*/
-var(Objective) int teamIDOwners;
+var int teamIDOwners;
 
-function Tick(float DeltaTime)
-{
-	super.Tick(DeltaTime);
-
-	CheckTriggers();
-}
-
-function CheckTriggers()
+/** Sets objective in the triggers and gets the replicationInfo class for updating to all connected players */
+function PostBeginPlay()
 {
 	local AEEngineTrigger trig;
+	local AEReplicationInfo repinf;
+
+	super.PostBeginPlay();
 
 	foreach Triggers(trig)
 	{
-		if(trig.bTriggerActivated)
-			if(trig.teamOwner != -1){
-				teamIDOwners = trig.teamOwner;
-			}
+		trig.objective = self;
 	}
+
+	foreach WorldInfo.AllActors(class'AEReplicationInfo', repinf)
+		ObjectiveInfo = repinf;
+}
+
+/** When a triggers gets touched or activeted it runs this function to check if the objective 
+ *  changes team. */
+function eventTriggered(AEEngineTrigger trigger, AEPawn_Player player)
+{
+	local AEEngineTrigger trig;
+	local bool bChangeTeamOwners;
+
+	foreach Triggers(trig)
+	{
+		if(trig == trigger)
+		{
+			trigger.teamOwner = AEPlayerController( player.Controller ).IdentifiedTeam;
+		}
+	}
+
+	foreach Triggers(trig)
+	{   
+		if( teamIDOwners != trig.teamOwner )
+		{
+			bChangeTeamOwners = true;
+		}else{
+			bChangeTeamOwners = false;
+			break;
+		}
+	}
+
+	if(bChangeTeamOwners == true){
+		teamIDOwners = triggers[0].teamOwner;
+		ObjectiveInfo.ChangeOwnerToEngine( TeamEngineOwner, teamIDOwners );
+	}
+
+	`log("TRIGGERED : " $ teamIDOwners);
 }
 
 DefaultProperties

@@ -5,6 +5,10 @@ class AEPlayerController extends UTPlayerController
 //-----------------------------------------------------------------------------
 // Classes
 
+/** If a multiplayer objective are updated. So we gets the new info from the server.
+ *  So when then can update everything else for the player */
+var bool bObjectivesUpdated;
+
 var ActionEffectGame        myGame;
 
 /** Character that the player controls. */
@@ -52,7 +56,9 @@ var int                     credits;
 var string test;
 
 replication
-{		
+{	
+	if(bNetDirty)
+		bObjectivesUpdated;
 	if(bNetDirty && bNetOwner && Role == ROLE_Authority)
 		myPawn, myReplicationInfo;
 }
@@ -145,8 +151,10 @@ event Possess(Pawn inPawn, bool bVehicleTrasition)
 	super.Possess(inPawn, bVehicleTrasition);
 }
 
-function Tick(float DeltaTime)
+event PlayerTick(float DeltaTime)
 {
+	super.PlayerTick(DeltaTime);
+
 	if (myHUD != none)
 	{
 		if (mHUD == none)
@@ -155,6 +163,10 @@ function Tick(float DeltaTime)
 		}
 	}
 
+	if(bObjectivesUpdated)
+	{
+		UpdateObjectives();
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -187,10 +199,6 @@ function stopJetpacking()
 /** Temp menu command */
 exec function ppp()
 {
-	AddToScore(int(GetTeamNum()));
-
-	`log(myReplicationInfo.redTeamScore);
-
 	if(Role < ROLE_Authority)
 		return;
 
@@ -257,6 +265,20 @@ reliable server function serverUseItem(int slot)
 
 //---------------------------------------
 // Objective server code
+
+simulated function UpdateObjectives()
+{
+	bObjectivesUpdated = false;
+
+	ServerResetObjectiveUpdate();
+
+	mHUD.postError("OBJECTIVES UPDATED!!!!!");
+}
+
+reliable server function ServerResetObjectiveUpdate()
+{
+	bObjectivesUpdated = false;
+}
 
 simulated function AddToScore(int teamID)
 {
