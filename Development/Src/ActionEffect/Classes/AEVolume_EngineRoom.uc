@@ -36,6 +36,9 @@ function eventTriggered(AEEngineTrigger trigger, AEPawn_Player player)
 	local AEEngineTrigger trig;
 	local bool bChangeTeamOwners;
 
+	
+	`log("BEFORE TRIGGERED : " $ teamIDOwners);
+
 	foreach Triggers(trig)
 	{
 		if(trig == trigger)

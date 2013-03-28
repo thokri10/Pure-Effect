@@ -1,6 +1,10 @@
 /** Custom HUD for Action Effect. */
 class AEHUD extends UTHUD;
 
+/** Multipalyer info */
+var HudLocalizedMessage         RedOwner;
+var HudLocalizedMessage         BlueOwner;
+
 /** Message that contains why an error occured. */
 var HudLocalizedMessage         ErrorMessage;
 
@@ -81,8 +85,11 @@ event PostRender()
 		DrawMessageText(ErrorMessage, 350, 350);
 		++ErrorCounter;
 	}
-}
 
+	// Draws the multiplayer info to screen
+	DrawMessageText(RedOwner, 100, 0);
+	DrawMessageText(BlueOwner, 400, 0);
+}
 
 /** Posts errors. */
 function postError(string msg)
@@ -169,6 +176,15 @@ function resetMissionInfo()
 
 	MissionInfo = tmp;
 }
+
+function setObjectiveInfo(string RedEngineOwner, int RedScore, string BlueEngineOwner, int BlueScore)
+{
+	RedOwner.StringMessage = "Red Engine: " $ RedEngineOwner;// $ "\n" $ "Red Score: " $ RedScore;
+	BlueOwner.StringMessage = "Blue Engine: " $ BlueEngineOwner;// $ "\n" $ "Blue Score: " $ BlueScore;
+}
+
+//-------------------------------
+// HUD PAWN INFO
 
 /** Draws a bar for HUD */
 function DrawBar(String barTitle, float barValue, float barMaxValue,

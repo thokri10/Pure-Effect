@@ -5,10 +5,6 @@ class AEPlayerController extends UTPlayerController
 //-----------------------------------------------------------------------------
 // Classes
 
-/** If a multiplayer objective are updated. So we gets the new info from the server.
- *  So when then can update everything else for the player */
-var bool bObjectivesUpdated;
-
 var ActionEffectGame        myGame;
 
 /** Character that the player controls. */
@@ -52,6 +48,9 @@ var AEReplicationInfo       myReplicationInfo;
 
 var HudLocalizedMessage     message;
 var int                     credits;
+
+/** Changes to true if any objectives changes, so the client can get updates from the server. */
+var bool                    bObjectivesUpdated;
 
 var string test;
 
@@ -112,7 +111,6 @@ simulated event PostBeginPlay()
 	}
 
 	`log(IdentifiedTeam);
-
 
 	/*
 	myJetpack = Spawn(class'AEJetpack');
@@ -272,7 +270,7 @@ simulated function UpdateObjectives()
 
 	ServerResetObjectiveUpdate();
 
-	mHUD.postError("OBJECTIVES UPDATED!!!!!");
+	UpdateMultiplayerHud();
 }
 
 reliable server function ServerResetObjectiveUpdate()
@@ -299,9 +297,26 @@ reliable server function ServerAddToRedScore(int teamID)
 	myReplicationInfo.addScore(teamID);
 }
 
+/** Updates the objective info to the HUD */
+function UpdateMultiplayerHud()
+{
+	local int redOwner;
+	local int blueOwner;
+	local int redScore;
+	local int blueScore;
+
+	myReplicationInfo.GetInfo(redOwner, blueOwner, redScore, blueScore);
+	`log(redOwner $ " : " $ redScore);
+	`log(blueOwner $ " : " $ blueScore);
+
+	mHUD.setObjectiveInfo( redOwner == 0 ? "Red" : "Bue", redScore, 
+							blueOwner >= 1 ? "Blue" : "Red", blueScore );
+}
+
 DefaultProperties
 {
 	PlayerInfo = class'AEPlayerInfo'
 	InputClass = class'AEPlayerInput'
 	pars = class'AEJSONParser'
+	bObjectivesUpdated = true;
 }

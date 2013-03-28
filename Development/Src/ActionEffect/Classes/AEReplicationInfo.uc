@@ -36,6 +36,14 @@ function addScore(int teamID)
 		++blueTeamScore;
 }
 
+function GetInfo(out int RedOwner, out int BlueOwner, out int redScore, out int blueScore)
+{
+	RedOwner = HoldingRedEngine;
+	BlueOwner = HoldingBlueEngine;
+	redScore = redTeamScore;
+	blueScore = blueTeamScore;
+}
+
 function bool RedTeamFlee()
 {
 	if(HoldingRedEngine == 0)
@@ -52,6 +60,9 @@ function bool BlueTeamFlee()
 
 function ChangeOwnerToEngine(const int TeamEngineOwner, int ChangeToOwner)
 {
+	if(ChangeToOwner > 1)
+		ChangeToOwner = 1;
+
 	if(TeamEngineOwner == 0)
 		HoldingRedEngine = ChangeToOwner;
 	else
