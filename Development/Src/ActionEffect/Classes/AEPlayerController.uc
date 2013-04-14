@@ -108,15 +108,16 @@ simulated event PostBeginPlay()
 	foreach WorldInfo.AllActors(class'AEReplicationInfo', GameObj){
 		`log("DER");
 		myReplicationInfo = GameObj;
+		SetTimer(1, true, 'UpdateObjectives');
 	}
 
 	`log(IdentifiedTeam);
 
-	/*
+	
 	myJetpack = Spawn(class'AEJetpack');
 	myJetpack.PC = self;
 	myJetpack.jetpackEnabled = true;
-	*/
+	
 
 	`log("SETTING UP A NEW PLAYERCONTROLLER!!!!! : " $ self $ " : " $ WorldInfo.NetMode);
 
@@ -160,11 +161,12 @@ event PlayerTick(float DeltaTime)
 			mHUD = AEHUD( myHUD );
 		}
 	}
-
+	/*
 	if(bObjectivesUpdated)
 	{
 		UpdateObjectives();
 	}
+	*/
 }
 
 //-----------------------------------------------------------------------------
