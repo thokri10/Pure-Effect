@@ -161,10 +161,10 @@ event PlayerTick(float DeltaTime)
 			mHUD = AEHUD( myHUD );
 		}
 	}
-	/*
+	
 	if(mHUD != None)
 		mHUD.SetGameTimer(myReplicationInfo.getGameTime());
-
+	/*
 	if(bObjectivesUpdated)
 	{
 		UpdateObjectives();
@@ -269,6 +269,28 @@ reliable server function serverUseItem(int slot)
 //---------------------------------------
 // Objective server code
 
+exec function Flee()
+{
+	if(Role < ROLE_Authority)
+	{
+		ServerFlee(IdentifiedTeam);
+	}else{
+		if(myReplicationInfo.Flee(IdentifiedTeam)){
+			`log("FLLLEEEEEE FOR YOUR LIFES!");
+			//ConsoleCommand("quit");
+		}
+	}
+}
+
+reliable server function ServerFlee(int team)
+{
+	if(AEPlayerController(GetALocalPlayerController()).myReplicationInfo.Flee(team))
+	{
+		`log("FLLLEEEEEE FOR YOUR LIFES!");
+		//ConsoleCommand("quit");
+	}
+}
+
 simulated function UpdateObjectives()
 {
 	bObjectivesUpdated = false;
@@ -311,8 +333,8 @@ function UpdateMultiplayerHud()
 	local int blueScore;
 
 	myReplicationInfo.GetInfo(redOwner, blueOwner, redScore, blueScore);
-	`log("Red Owner/Score: " $ redOwner);// $ " : " $ redScore);
-	`log("Blue Owner/Score: " $ blueOwner);// $ " : " $ blueScore);
+	//`log("Red Owner/Score: " $ redOwner $ " : " $ redScore);
+	//`log("Blue Owner/Score: " $ blueOwner $ " : " $ blueScore);
 
 	if(mHUD != None)
 		mHUD.setObjectiveInfo( redOwner == 0 ? "Red" : "Blue", redScore, 

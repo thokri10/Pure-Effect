@@ -31,9 +31,24 @@ replication
 function addScore(int teamID)
 {
 	if(teamID == 0)
-		++redTeamScore;
+		--redTeamScore;
 	else
-		++blueTeamScore;
+		--blueTeamScore;
+
+	if(redTeamScore <= 0)
+	{
+		if(Flee(0)){
+			`log("RED TEAM FLEE");
+			//ConsoleCommand("quit");
+		}
+	}
+	if(blueTeamScore <= 0)
+	{
+		if(Flee(1)){
+			`log("BLUE TEAM FLEE");
+			//ConsoleCommand("quit");
+		}
+	}
 }
 
 function GetInfo(out int RedOwner, out int BlueOwner, out int redScore, out int blueScore)
@@ -44,17 +59,22 @@ function GetInfo(out int RedOwner, out int BlueOwner, out int redScore, out int 
 	blueScore = blueTeamScore;
 }
 
-function bool RedTeamFlee()
+function bool Flee(int team)
 {
-	if(HoldingRedEngine == 0)
-		return true;
-	return false;
-}
-
-function bool BlueTeamFlee()
-{
-	if(HoldingBlueEngine == 1)
-		return true;
+	if(team == 0){
+		`log("RED TEAM");
+		if(HoldingRedEngine == 0){
+			`log("RED FLEE");
+			return true;
+		}
+	}
+	else{
+		`log("BLUE TEAM");
+		if(HoldingBlueEngine == 1){
+		`log("BLUE FLEE");
+			return true;
+		}
+	}
 	return false;
 }
 
@@ -73,7 +93,12 @@ function ChangeOwnerToEngine(const int TeamEngineOwner, int ChangeToOwner)
 
 function Tick(float DeltaTime)
 {
-	GameTimer += DeltaTime;
+	if(GameTimer > 0)
+		GameTimer -= DeltaTime;
+	else{
+		GameTimer = 0;
+		`log("TIMER IS OVER");
+	}
 }
 
 function float getGameTime()
@@ -97,8 +122,10 @@ DefaultProperties
 	HoldingRedEngine = 0;
 	HoldingBlueEngine = 1;
 
-	redTeamScore = 0;
-	blueTeamScore = 0;
+	GameTimer = 300;
+
+	redTeamScore = 10;
+	blueTeamScore = 10;
 
 	RemoteRole=ROLE_MAX
 }
