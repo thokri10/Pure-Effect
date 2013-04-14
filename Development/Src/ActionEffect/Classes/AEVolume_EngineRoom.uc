@@ -23,6 +23,7 @@ function PostBeginPlay()
 	foreach Triggers(trig)
 	{
 		trig.objective = self;
+		trig.teamOwner = TeamEngineOwner;
 	}
 
 	foreach WorldInfo.AllActors(class'AEReplicationInfo', repinf)
@@ -35,7 +36,6 @@ function eventTriggered(AEEngineTrigger trigger, AEPawn_Player player)
 {
 	local AEEngineTrigger trig;
 	local bool bChangeTeamOwners;
-
 	
 	`log("BEFORE TRIGGERED : " $ teamIDOwners);
 

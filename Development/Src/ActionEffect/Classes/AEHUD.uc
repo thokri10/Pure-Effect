@@ -5,6 +5,8 @@ class AEHUD extends UTHUD;
 var HudLocalizedMessage         RedOwner;
 var HudLocalizedMessage         BlueOwner;
 
+var HudLocalizedMessage         GameTimer;
+
 /** Message that contains why an error occured. */
 var HudLocalizedMessage         ErrorMessage;
 
@@ -88,7 +90,8 @@ event PostRender()
 
 	// Draws the multiplayer info to screen
 	DrawMessageText(RedOwner, 100, 0);
-	DrawMessageText(BlueOwner, 400, 0);
+	DrawMessageText(BlueOwner, 600, 0);
+	DrawMessageText(GameTimer, 400, 0);
 }
 
 /** Posts errors. */
@@ -181,6 +184,11 @@ function setObjectiveInfo(string RedEngineOwner, int RedScore, string BlueEngine
 {
 	RedOwner.StringMessage = "Red Engine: " $ RedEngineOwner;// $ "\n" $ "Red Score: " $ RedScore;
 	BlueOwner.StringMessage = "Blue Engine: " $ BlueEngineOwner;// $ "\n" $ "Blue Score: " $ BlueScore;
+}
+
+function SetGameTimer(float timer)
+{
+	GameTimer.StringMessage = "" $ int(timer);
 }
 
 //-------------------------------

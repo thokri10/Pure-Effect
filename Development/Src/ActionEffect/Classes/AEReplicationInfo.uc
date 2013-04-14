@@ -76,6 +76,11 @@ function Tick(float DeltaTime)
 	GameTimer += DeltaTime;
 }
 
+function float getGameTime()
+{
+	return GameTimer;
+}
+
 simulated function UpdateClients()
 {
 	local AEPlayerController C;
