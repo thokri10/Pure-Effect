@@ -112,11 +112,9 @@ simulated event PostBeginPlay()
 
 	`log(IdentifiedTeam);
 
-	/*
 	myJetpack = Spawn(class'AEJetpack');
 	myJetpack.PC = self;
 	myJetpack.jetpackEnabled = true;
-	*/
 
 	`log("SETTING UP A NEW PLAYERCONTROLLER!!!!! : " $ self $ " : " $ WorldInfo.NetMode);
 
