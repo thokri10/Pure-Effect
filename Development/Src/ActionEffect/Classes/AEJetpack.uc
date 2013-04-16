@@ -32,7 +32,8 @@ event Tick(float DeltaTime)
 	super.Tick(DeltaTime);
 	
 	if(PC.myPawn != None)
-		StartUsingTheJetpack(DeltaTime);
+		PC.myPawn.StartUsingTheJetpack(DeltaTime);
+		//StartUsingTheJetpack(DeltaTime);
 }
 
 /** Player starts jetpacking. */
@@ -40,7 +41,7 @@ function StartJetpacking()
 {
 	if ( WorldInfo.NetMode == NM_Client )
 	{
-		ServerJetpacking();
+		PC.myPawn.ServerJetpacking();
 	}
 	else
 	{
@@ -53,7 +54,7 @@ function StopJetpacking()
 {
 	if ( WorldInfo.NetMode == NM_Client )
 	{
-		ServerStopJetpacking();
+		PC.myPawn.ServerStopJetpacking();
 	}
 	else
 	{
@@ -61,39 +62,39 @@ function StopJetpacking()
 	}
 }
 
-/** Jetpack-use for the host (server). */
-reliable server function ServerJetpacking()
-{
-	PC.myPawn.isUsingJetPack = true;
-}
+///** Jetpack-use for the host (server). */
+//reliable server function ServerJetpacking()
+//{
+//	PC.myPawn.isUsingJetPack = true;
+//}
 
-/** Jetpack-disuse for the host (server). */
-reliable server function ServerStopJetpacking()
-{
-	PC.myPawn.isUsingJetPack = false;
-}
+///** Jetpack-disuse for the host (server). */
+//reliable server function ServerStopJetpacking()
+//{
+//	PC.myPawn.isUsingJetPack = false;
+//}
 
-function StartUsingTheJetpack(float DeltaTime)
-{
-	if (PC.myPawn.isUsingJetPack)
-	{
-		if (fuelEnergy > 0.0f)
-		{
-			PC.myPawn.CustomGravityScaling = -1.0f;
-			// Commented out temporarily for debugging reasons.
-			//fuelEnergy -= (fuelEnergyLossPerSecond * DeltaTime);
-		}
+//function StartUsingTheJetpack(float DeltaTime)
+//{
+//	if (PC.myPawn.isUsingJetPack)
+//	{
+//		if (fuelEnergy > 0.0f)
+//		{
+//			PC.myPawn.CustomGravityScaling = -1.0f;
+//			// Commented out temporarily for debugging reasons.
+//			//fuelEnergy -= (fuelEnergyLossPerSecond * DeltaTime);
+//		}
 		
-		if (fuelEnergy < 0.0f)
-		{
-			fuelEnergy = 0.0f;
-		}
-	}
-	else
-	{
-		PC.myPawn.CustomGravityScaling = 1.0f;
-	}
-}
+//		if (fuelEnergy < 0.0f)
+//		{
+//			fuelEnergy = 0.0f;
+//		}
+//	}
+//	else
+//	{
+//		PC.myPawn.CustomGravityScaling = 1.0f;
+//	}
+//}
 
 DefaultProperties
 {
