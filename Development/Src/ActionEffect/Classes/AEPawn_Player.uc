@@ -179,7 +179,7 @@ DefaultProperties
 	InventoryManagerClass = class'ActionEffect.AEInventoryManager';
 
 	bCanDoubleJump = true;
-	MaxMultiJump = 1000;
+	MaxMultiJump = 0;
 	
 	GroundSpeed = 600.0f;
 

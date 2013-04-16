@@ -19,22 +19,13 @@ struct Array2D
 	var array<ValueStruct>  variables;
 };
 
-
-//-----------------------------------------------------------------------------
-// Variables
-
-// Used to set where the bracket start to split brackets inside a string.
-var array<int>      bracketPositions;
-// Controlls where the next section start in the string.
-var int             nextBracket;
-
 //-----------------------------------------------------------------------------
 // Parsing
 
 /** Parses the string to a 2D array variable list splitted with ":" */
 function array<Array2D> fullParse(string in)
 {
-	return parseToMainChategories( parse( in ) );
+	return parseToMainCategories( parse( in ) );
 }
 
 /** Parse the string from server into a 2D array containing the main brackets. */
@@ -48,8 +39,6 @@ function array<Array2D> parse(string in)
 
 	if( Chr( Asc( in ) ) == "[" )
 		in = mid( in, 1, len(in) - 1 );
-
-	nextBracket = 0;
 
 	mainBrackets = SplitFirstToEndBracket( in );
 
@@ -87,7 +76,7 @@ function Array2D parseToValues(array<string> in)
 }
 
 /** Creates an array that contains an array with valuestruct * Type and Value */
-function array<Array2D> parseToMainChategories(array<Array2D> in)
+function array<Array2D> parseToMainCategories(array<Array2D> in)
 {
 	local array<Array2D> parsed;
 	local ValueStruct    value;
@@ -130,8 +119,6 @@ function array<string> SplitFirstToEndBracket(string in)
 	local int	        end;
 	local int	        endBracket;
 	local int           bracketCounter;
-
-	bracketPositions.Length = 0;
 
 	firstBracket = InStr( in, "{",,, firstBracket );
 	endBracket = InStr( in, "}",,, firstBracket );

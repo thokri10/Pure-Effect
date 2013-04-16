@@ -10,16 +10,19 @@ event Touch(Actor Other, PrimitiveComponent OtherComp, vector HitLocation, vecto
 {
 	local AEPawn_Player collider;
 
-	if (FindEventsOfClass(class'SeqEvent_Touch'))
+	if(Role >= ROLE_Authority)
 	{
-		NotifyTriggered();
-	}
+		if (FindEventsOfClass(class'SeqEvent_Touch'))
+		{
+			NotifyTriggered();
+		}
 
-	collider = AEPawn_Player( Other );
+		collider = AEPawn_Player( Other );
 
-	if( collider != None )
-	{
-		objective.eventTriggered(self, collider);
+		if( collider != None )
+		{
+			objective.eventTriggered(self, collider);
+		}
 	}
 }
 

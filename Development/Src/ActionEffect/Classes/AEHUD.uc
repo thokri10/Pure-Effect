@@ -3,7 +3,11 @@ class AEHUD extends UTHUD;
 
 /** Multipalyer info */
 var HudLocalizedMessage         RedOwner;
+var HudLocalizedMessage         RedScores;
 var HudLocalizedMessage         BlueOwner;
+var HudLocalizedMessage         BlueScores;
+
+var HudLocalizedMessage         GameTimer;
 
 /** Message that contains why an error occured. */
 var HudLocalizedMessage         ErrorMessage;
@@ -88,7 +92,10 @@ event PostRender()
 
 	// Draws the multiplayer info to screen
 	DrawMessageText(RedOwner, 100, 0);
-	DrawMessageText(BlueOwner, 400, 0);
+	DrawMessageText(RedScores, 100, 20);
+	DrawMessageText(BlueOwner, 350, 0);
+	DrawMessageText(BlueScores, 350, 20);
+	DrawMessageText(GameTimer, 250, 0);
 }
 
 /** Posts errors. */
@@ -179,8 +186,15 @@ function resetMissionInfo()
 
 function setObjectiveInfo(string RedEngineOwner, int RedScore, string BlueEngineOwner, int BlueScore)
 {
-	RedOwner.StringMessage = "Red Engine: " $ RedEngineOwner;// $ "\n" $ "Red Score: " $ RedScore;
-	BlueOwner.StringMessage = "Blue Engine: " $ BlueEngineOwner;// $ "\n" $ "Blue Score: " $ BlueScore;
+	RedOwner.StringMessage = "Red Engine: " $ RedEngineOwner;
+	RedScores.StringMessage = "Red Score: " $ RedScore;
+	BlueOwner.StringMessage = "Blue Engine: " $ BlueEngineOwner;
+	BlueScores.StringMessage = "Blue Score: " $ BlueScore;
+}
+
+function SetGameTimer(float timer)
+{
+	GameTimer.StringMessage = "" $ int(timer);
 }
 
 //-------------------------------
@@ -232,17 +246,20 @@ function DrawStaminaBar(float barValueR, float barValueG, float barValueB)
 	local AEPlayerController playerPC;
 	playerPC = AEPlayerController(GetALocalPlayerController());
 
-	if ( !PlayerOwner.IsDead() && !UTPlayerOwner.IsInState('Spectating'))
-    {
-		Canvas.SetPos(Canvas.SizeX - (Canvas.SizeX * 0.990f), Canvas.SizeY - (Canvas.SizeY * 0.100f));
-		Canvas.SetDrawColor(barValueR, barValueG + 20, barValueB, 100);
-		Canvas.DrawRect(barWidth, barHeight);
+	if(playerPC.myPawn != None)
+	{
+		if ( !PlayerOwner.IsDead() && !UTPlayerOwner.IsInState('Spectating'))
+		{
+			Canvas.SetPos(Canvas.SizeX - (Canvas.SizeX * 0.990f), Canvas.SizeY - (Canvas.SizeY * 0.100f));
+			Canvas.SetDrawColor(barValueR, barValueG + 20, barValueB, 100);
+			Canvas.DrawRect(barWidth, barHeight);
 
-		DrawBar("Stamina", playerPC.myPawn.sprintEnergy, playerPC.myPawn.maxSprintEnergy,
-			Canvas.SizeX - (Canvas.SizeX * 0.990f),
-			Canvas.SizeY - (Canvas.SizeY * 0.100f),
-			barValueR, barValueG, barValueB);
-    }
+			DrawBar("Stamina", playerPC.myPawn.sprintEnergy, playerPC.myPawn.maxSprintEnergy,
+				Canvas.SizeX - (Canvas.SizeX * 0.990f),
+				Canvas.SizeY - (Canvas.SizeY * 0.100f),
+				barValueR, barValueG, barValueB);
+		}
+	}
 }
 
 /** Draws the fuel bar on the screen. */

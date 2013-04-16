@@ -31,7 +31,8 @@ event Tick(float DeltaTime)
 {
 	super.Tick(DeltaTime);
 	
-	StartUsingTheJetpack(DeltaTime);
+	if(PC.myPawn != None)
+		StartUsingTheJetpack(DeltaTime);
 }
 
 /** Player starts jetpacking. */

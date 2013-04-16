@@ -106,15 +106,18 @@ simulated event PostBeginPlay()
 	myPlayerInfo.myInventory = myItemInventory;
 
 	foreach WorldInfo.AllActors(class'AEReplicationInfo', GameObj){
-		`log("DER");
+		`log("ReplicationInfo in map");
 		myReplicationInfo = GameObj;
+		SetTimer(1, true, 'UpdateObjectives');
 	}
+	SetTimer(1, true, 'UpdateObjectives');
 
-	`log(IdentifiedTeam);
-
+	
 	myJetpack = Spawn(class'AEJetpack');
 	myJetpack.PC = self;
 	myJetpack.jetpackEnabled = true;
+	
+
 
 	`log("SETTING UP A NEW PLAYERCONTROLLER!!!!! : " $ self $ " : " $ WorldInfo.NetMode);
 
@@ -158,11 +161,15 @@ event PlayerTick(float DeltaTime)
 			mHUD = AEHUD( myHUD );
 		}
 	}
-
+	
+	if(mHUD != None)
+		mHUD.SetGameTimer(myReplicationInfo.getGameTime());
+	/*
 	if(bObjectivesUpdated)
 	{
 		UpdateObjectives();
 	}
+	*/
 }
 
 //-----------------------------------------------------------------------------
@@ -262,6 +269,28 @@ reliable server function serverUseItem(int slot)
 //---------------------------------------
 // Objective server code
 
+exec function Flee()
+{
+	if(Role < ROLE_Authority)
+	{
+		ServerFlee(IdentifiedTeam);
+	}else{
+		if(myReplicationInfo.Flee(IdentifiedTeam)){
+			`log("FLLLEEEEEE FOR YOUR LIFES!");
+			//ConsoleCommand("quit");
+		}
+	}
+}
+
+reliable server function ServerFlee(int team)
+{
+	if(AEPlayerController(GetALocalPlayerController()).myReplicationInfo.Flee(team))
+	{
+		`log("FLLLEEEEEE FOR YOUR LIFES!");
+		//ConsoleCommand("quit");
+	}
+}
+
 simulated function UpdateObjectives()
 {
 	bObjectivesUpdated = false;
@@ -304,11 +333,12 @@ function UpdateMultiplayerHud()
 	local int blueScore;
 
 	myReplicationInfo.GetInfo(redOwner, blueOwner, redScore, blueScore);
-	`log(redOwner $ " : " $ redScore);
-	`log(blueOwner $ " : " $ blueScore);
+	//`log("Red Owner/Score: " $ redOwner $ " : " $ redScore);
+	//`log("Blue Owner/Score: " $ blueOwner $ " : " $ blueScore);
 
-	mHUD.setObjectiveInfo( redOwner == 0 ? "Red" : "Bue", redScore, 
-							blueOwner >= 1 ? "Blue" : "Red", blueScore );
+	if(mHUD != None)
+		mHUD.setObjectiveInfo( redOwner == 0 ? "Red" : "Blue", redScore, 
+								blueOwner >= 1 ? "Blue" : "Red", blueScore );
 }
 
 DefaultProperties
