@@ -110,14 +110,11 @@ simulated event PostBeginPlay()
 		myReplicationInfo = GameObj;
 		SetTimer(1, true, 'UpdateObjectives');
 	}
-	SetTimer(1, true, 'UpdateObjectives');
+	//SetTimer(1, true, 'UpdateObjectives');
 
-	
 	myJetpack = Spawn(class'AEJetpack');
 	myJetpack.PC = self;
 	myJetpack.jetpackEnabled = true;
-	
-
 
 	`log("SETTING UP A NEW PLAYERCONTROLLER!!!!! : " $ self $ " : " $ WorldInfo.NetMode);
 
@@ -147,6 +144,7 @@ function InitializeMission(string serverText)
 event Possess(Pawn inPawn, bool bVehicleTrasition)
 {
 	myPawn = AEPawn_Player( inPawn );
+	myPawn.AEPC = self;
 	super.Possess(inPawn, bVehicleTrasition);
 }
 
@@ -162,8 +160,8 @@ event PlayerTick(float DeltaTime)
 		}
 	}
 	
-	if(mHUD != None)
-		mHUD.SetGameTimer(myReplicationInfo.getGameTime());
+	//if(mHUD != None)
+		//mHUD.SetGameTimer(myReplicationInfo.getGameTime());
 	/*
 	if(bObjectivesUpdated)
 	{

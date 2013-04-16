@@ -174,6 +174,40 @@ function StartSprinting(float DeltaTime)
 	}
 }
 
+function StartUsingTheJetpack(float DeltaTime)
+{
+	if (isUsingJetPack)
+	{
+		if (AEPlayerController(Controller).myJetpack.fuelEnergy > 0.0f)
+		{
+			CustomGravityScaling = -1.0f;
+			// Commented out temporarily for debugging reasons.
+			//fuelEnergy -= (fuelEnergyLossPerSecond * DeltaTime);
+		}
+		
+		if (AEPlayerController(Controller).myJetpack.fuelEnergy < 0.0f)
+		{
+			AEPlayerController(Controller).myJetpack.fuelEnergy = 0.0f;
+		}
+	}
+	else
+	{
+		CustomGravityScaling = 1.0f;
+	}
+}
+
+/** Jetpack-use for the host (server). */
+reliable server function ServerJetpacking()
+{
+	isUsingJetPack = true;
+}
+
+/** Jetpack-disuse for the host (server). */
+reliable server function ServerStopJetpacking()
+{
+	isUsingJetPack = false;
+}
+
 DefaultProperties
 {
 	InventoryManagerClass = class'ActionEffect.AEInventoryManager';
