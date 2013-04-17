@@ -42,6 +42,7 @@ function AEInventory_Item createItem(array<ValueStruct> itemValues)
 		else if( value.type == "damage")    item.damage         = int(value.value);
 		else if( value.type == "cooldown")  item.Cooldown       = float(value.value);
 		else if( value.type == "quantity")  item.StackCounter   = int(value.value);
+		else if( value.type == "id")        item.id             = int(value.value);
 	}
 
 	return item;

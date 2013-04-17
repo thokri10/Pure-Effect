@@ -2,11 +2,11 @@ class AEPawn extends UTPawn;
 
 simulated function AddDefaultInventory()
 {
-	local UTWeap_ShockRifle shock;
+	//local UTWeap_ShockRifle shock;
 
-	shock = Spawn(class'UTWeap_ShockRifle');
+	//shock = Spawn(class'UTWeap_ShockRifle');
 
-	InvManager.AddInventory(shock);
+	//InvManager.AddInventory(shock);
 }
 
 DefaultProperties

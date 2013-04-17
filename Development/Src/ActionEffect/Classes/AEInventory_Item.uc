@@ -21,6 +21,7 @@ var int UseCounter;
 var float Cooldown;
 var bool  bCanUse;
 
+var int id;
 var string ItemInfo;
 var string itemName;
 var int damage;

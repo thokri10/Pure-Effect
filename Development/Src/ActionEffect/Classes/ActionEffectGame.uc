@@ -5,6 +5,7 @@ var bool initialized;
 
 var bool bInitMission;
 var int missionToStart;
+var string loadOut;
 
 var int AETeamID;
 
@@ -40,6 +41,11 @@ event InitGame(string Options, out string ErrorMessage)
 		AETeamID = Int( InOpt );
 		`log("SET TEAM : " $ AETeamID);
 	}
+	InOpt = ParseOption(Options, "Loadout");
+	if( InOpt != "" )
+	{
+		loadOut = InOpt;
+	}
 }
 
 function PlayerController SpawnPlayerController(vector SpawnLocation, rotator SpawnRotation)
@@ -55,6 +61,15 @@ function PlayerController SpawnPlayerController(vector SpawnLocation, rotator Sp
 		if(PC != none)
 		{
 			PC.myGame = self;
+
+			if(loadOut != "")
+				PC.loadout = loadOut;
+
+			`log(WorldInfo.GetMapName());
+			if(WorldInfo.GetMapName() == "Main")
+				PC.bInMenu = true;
+			else
+				PC.bInMenu = false;
 
 			if(bInitMission)
 			{

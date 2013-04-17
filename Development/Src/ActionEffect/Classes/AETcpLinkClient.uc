@@ -187,8 +187,14 @@ event ReceivedText(string Text)
 	{
 		ReadText( Text );
 
+		// To removed double sendings and pick up seperated packages
 		if(len(Text) != 0)
-			Text = tempString $ Text;
+		{
+			if(Text != tempString)
+				Text = tempString $ Text;
+			else
+				Text = tempString;
+		}
 		else
 			Text = tempString;
 
@@ -201,7 +207,7 @@ event ReceivedText(string Text)
 		}
 		else if (bWaitingForWeapon)
 		{
-			`log("[TCP] NEED CODE OR REMOVE");
+			PC.EquipLoadout(Text);
 			bWaitingForWeapon = false;
 		}
 		else if (bWaitingForReward)
@@ -254,9 +260,9 @@ function getMission(int id)
 }
 
 /** Get weapon from server with set ID */
-function getWeapon(int id)
+function getWeapon()
 {
-	databasePath = "items/McDonald/Terminator/" $ id;
+	databasePath = "soldiers/1/items";
 	bWaitingForWeapon = true;
 
 	ResolveMe();

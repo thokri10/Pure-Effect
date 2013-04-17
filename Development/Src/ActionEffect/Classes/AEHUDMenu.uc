@@ -40,6 +40,8 @@ var AEPlayerInfo        playerInfo;
 var array<string>               menuPath;
 var array<MENUPATHSTRUCT>       pathList;
 
+var string                      itemLoadout;
+
 /** Saves all the available missions in an array for us. */
 var array<MissionObjectives>    menuMissions;
 var array<SimpleMissionStruct>  missions;
@@ -63,6 +65,8 @@ var int     BACK;
 var bool    bMenuSelection;
 var bool    bMenuInfo;
 var bool    bWatingForServer;
+// Used for item binding
+var bool    bWaitForNumberInput;
 
 
 //-----------------------------------------------------------------------------
@@ -172,7 +176,7 @@ function setBack(int i)
 /** Jumps down in the menu. */
 function nextMenuSlot()
 {
-	if( !bWatingForServer )
+	if( !bWatingForServer && !bWaitForNumberInput)
 	{
 		if(selectedMenuSlot >= menuSelections.Length)
 			return;
@@ -188,7 +192,7 @@ function nextMenuSlot()
 /** Jumps up in the menu. */
 function preMenuSlot()
 {
-	if( !bWatingForServer )
+	if( !bWatingForServer && !bWaitForNumberInput )
 	{
 		if( selectedMenuSlot < 1 )
 			return;
@@ -302,6 +306,14 @@ function Select()
 					SetUpForMapChange(activeMission.id, activeMission.levelID);
 					//resetMenuSelection();
 				} 
+				else if( Path == MENUPATH_PROFILEINFO )
+				{
+					Pc.mHUD.postError("Choose slot from 1 - 6");
+					if(!bWaitForNumberInput)
+						bWaitForNumberInput = true;
+					else
+						bWaitForNumberInput = false;
+				}
 			}
 		}
 
@@ -315,11 +327,39 @@ function Select()
 	}
 }
 
+function NumberInput(int slot)
+{
+	if(bWaitForNumberInput)
+	{
+		setItemLoad(slot);
+	}
+	bWaitForNumberInput = false;
+}
+
+function setItemLoad(int slot)
+{
+	local int index;
+	if( selectedMenuSlot < playerInfo.weapons.Length )
+	{
+		`log("Adding item: " $ slot $ " : " $ playerInfo.weapons[ selectedMenuSlot ].id);
+		PC.myPlayerInfo.addItemToLoadout(slot, playerInfo.weapons[ selectedMenuSlot ].id);
+	}else
+	{
+		index = selectedMenuSlot + playerInfo.weapons.Length - 2;
+		`log("Adding item: " $ slot $ " : " $ playerInfo.items[index].id);
+		PC.myPlayerInfo.addItemToLoadout(slot, playerInfo.items[index].id);
+	}
+}
 
 function SetUpForMapChange(int missionID, int LevelID)
 {
 	//`log("open AE-level" $ LevelID $ "?MissionID=" $ missionID);
-	ConsoleCommand("open AE-level" $ LevelID $ "?MissionID=" $ missionID $ "?TeamID=0"); // TODO: CHANGE SO IT JOINS CORRECT TEAM
+	`log(PC.myPlayerInfo.getItemLoadout());
+	`log(playerInfo.getItemLoadout());
+	ConsoleCommand("open AE-level" $ LevelID $ 
+					"?MissionID=" $ missionID $ 
+					"?TeamID=0" $ 
+					"?Loadout=" $ PC.myPlayerInfo.getItemLoadout()); // EMIL TODO: CHANGE SO IT JOINS CORRECT TEAM
 }
 
 //-----------------------------------------------------------------------------
@@ -497,6 +537,7 @@ function showAutomaticItemInfo(int index)
 		PC.mHUD.addMissionInfo("Spread     : " $ playerInfo.weapons[ index ].spread);
 		PC.mHUD.addMissionInfo("Damage     : " $ playerInfo.weapons[ index ].damage);
 		PC.mHUD.addMissionInfo("Slot       : " $ playerInfo.weapons[ index ].slot);
+		PC.mHUD.addMissionInfo("ID         : " $ playerInfo.weapons[ index ].id);
 	}
 	else
 	{
@@ -505,6 +546,7 @@ function showAutomaticItemInfo(int index)
 		PC.mHUD.addMissionInfo("Delay    : " $ playerInfo.items[ index ].delay);
 		PC.mHUD.addMissionInfo("Cooldown : " $ playerInfo.items[ index ].Cooldown);
 		PC.mHUD.addMissionInfo("Damage   : " $ playerInfo.items[ index ].damage);
+		PC.mHUD.addMissionInfo("ID       : " $ playerInfo.items[ index ].id);
 	}
 }
 

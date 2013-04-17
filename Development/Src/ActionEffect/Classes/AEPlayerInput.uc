@@ -4,7 +4,11 @@ var input bool Fly;
 
 exec function UseInventoryItem(int slot)
 {
-	UseItem(slot);
+	if(!bInMenu)
+		UseItem(slot);
+	else{
+		myMenu.NumberInput(slot);
+	}
 }
 
 exec function SpeedIncrease()
