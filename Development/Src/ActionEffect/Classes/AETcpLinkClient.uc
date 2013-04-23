@@ -57,6 +57,7 @@ var bool            bHavePlayerInfo;
 var string          token;
 
 /** Booleans needed to not spam the server for requests. */
+var bool            bWaitingForMissions;
 var bool            bWaitingForMission;
 var bool            bWaitingForWeapon;
 var bool            bWaitingForReward;
@@ -221,6 +222,12 @@ event ReceivedText(string Text)
 			PC.myMenu.stringFromServer( Text );
 			bWaitingForPath = false;
 		}
+		else if (bWaitingForMissions)
+		{
+			PC.myDataStorage.setMissions(PC.parser.fullParse(Text));
+			PC.myMainMenu.UpdateMissionMenu();
+			bWaitingForMissions = false;
+		}
 	}
 }
 
@@ -255,6 +262,15 @@ function getMission(int id)
 {
 	databasePath = "missions/" $ id;
 	bWaitingForMission = true;
+
+	ResolveMe();
+}
+
+/** Get Missons to graphical menu */
+function getMissions(string path)
+{
+	databasePath = path;
+	bWaitingForMissions = true;
 
 	ResolveMe();
 }

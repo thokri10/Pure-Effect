@@ -145,6 +145,11 @@ function Initialize(array<ValueStruct> missionArray)
 //-----------------------------------------------------------------------------
 // Parsing
 
+function MissionObjectives parseArrayToMission(array<ValueStruct> missionArray)
+{
+	return MissionFromSimpleStruct( parseArrayToSimpleStruct( missionArray ) );
+}
+
 /** Parses the a mission array to a simple mission struct. 
 	It sets the info and rewards for the mission. */
 function SimpleMissionStruct parseArrayToSimpleStruct(array<ValueStruct> missionArray)

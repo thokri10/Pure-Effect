@@ -1,5 +1,6 @@
+class AEMainMenu extends GFxMoviePlayer
+	dependson(AEMissionObjective);
 /** Class is responsible for the main menu in the game. **/
-class AEMainMenu extends GFxMoviePlayer;
 
 var AEPlayerController  AEPC;
 var UIInputKeyData      key;
@@ -40,12 +41,16 @@ var GFxClikWidget       us_dynamicText_shop_spread;
 var GFxClikWidget       us_dynamicText_itemList_weapons;
 var GFxClikWidget       us_dynamicText_itemList_items;
 
+var private int mySelectionID;
+var private int mySelectionIDMax;
+
 function bool Start( optional bool StartPaused = false )
 {
 	super.Start();
 	Advance( 0 );
 
 	AEPC = AEPlayerController(GetPC());
+	AEPC.myMainMenu = self;
 	AddCaptureKey( 'Escape' );
 
 	return true;
@@ -146,7 +151,8 @@ function login_onCreateUserButtonPress( GFxClikWidget.EventData ev )
 
 function mainMenu_onMissionsButtonPress( GFxClikWidget.EventData ev)
 {
-	// TO-DO.
+	mySelectionID = 0;
+	AEPC.myTcpLink.getMissions("missions/");
 }
 
 function mainMenu_onShopButtonPress( GFxClikWidget.EventData ev)
@@ -161,16 +167,19 @@ function mainMenu_onExitGameButtonPress( GFxClikWidget.EventData ev )
 
 function missions_onPreviousMissionButtonPress( GFxClikWidget.EventData ev )
 {
-	// TO-DO.
+	decSelectionID(1);
+	UpdateMissionMenu();
 }
 
 function missions_onNextMissionButtonPress( GFxClikWidget.EventData ev )
 {
-	// TO-DO.
+	addSelectionID(1);
+	UpdateMissionMenu();
 }
 
 function missions_onAcceptMissionButtonPress( GFxClikWidget.EventData ev )
 {
+	
 	// TO-DO.
 }
 
@@ -187,6 +196,32 @@ function shop_onNextItemButtonPress( GFxClikWidget.EventData ev)
 function shop_onBuyButtonPress( GFxClikWidget.EventData ev )
 {
 	// TO-DO.
+}
+
+/** Runs automaticly with TCPclient or in this class */
+function UpdateMissionMenu()
+{
+	local MissionObjectives mission;
+
+	mission = AEPC.myDataStorage.getMission(mySelectionID);
+
+	// TO-DO
+}
+
+private function addSelectionID(int add)
+{
+	if(mySelectionID <= mySelectionIDMax)
+		mySelectionID += add;
+	else
+		mySelectionID = 0;
+}
+
+private function decSelectionID(int dec)
+{
+	if(mySelectionID > 0)
+		mySelectionID -= dec;
+	else
+		mySelectionID = mySelectionIDMax;
 }
 
 DefaultProperties

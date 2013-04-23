@@ -24,6 +24,9 @@ var AEJSONParser            parser;
 /** HudMenu */
 var AEHUDMenu               myMenu;
 
+/** Graphical menu */
+var AEMainMenu              myMainMenu;
+
 /** Print out our textmenu on the screen */
 var AEHUD                   mHUD;
 
@@ -41,6 +44,10 @@ var AEJetpack               myJetpack;
 
 /** Replication info for multiplayer. Keeps track over the different objectives and time */
 var AEReplicationInfo       myReplicationInfo;
+
+/** Contains all the information for missions, items and shop that the menu needs */
+var class<AEDataStorage>    DataStorage;
+var AEDataStorage           myDataStorage;
 
 
 //-----------------------------------------------------------------------------
@@ -112,6 +119,10 @@ simulated event PostBeginPlay()
 	myPlayerInfo.myInventory = myItemInventory;
 	myPlayerInfo.inits();
 
+	`log("jhaskdjhajksdhkjashdjkahjskdhjakkajshdkjahsdjkad");
+	myDataStorage = new DataStorage;
+	myDataStorage.myMissionObjective = myMissionObjective;
+
 	foreach WorldInfo.AllActors(class'AEReplicationInfo', GameObj){
 		`log("ReplicationInfo in map");
 		myReplicationInfo = GameObj;
@@ -124,6 +135,8 @@ simulated event PostBeginPlay()
 	myJetpack.jetpackEnabled = true;
 
 	`log("SETTING UP A NEW PLAYERCONTROLLER!!!!! : " $ self $ " : " $ WorldInfo.NetMode);
+
+	myTcpLink.getMissions("missions/");
 
 	// Connect to server.
 	//myTcpLink.ResolveMe();
@@ -381,6 +394,7 @@ DefaultProperties
 {
 	PlayerInfo = class'AEPlayerInfo'
 	InputClass = class'AEPlayerInput'
+	DataStorage = class'AEDataStorage'
 	pars = class'AEJSONParser'
 	bObjectivesUpdated = true;
 }
