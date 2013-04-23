@@ -59,6 +59,7 @@ var string          token;
 /** Booleans needed to not spam the server for requests. */
 var bool            bWaitingForMissions;
 var bool            bWaitingForMission;
+var bool            bWaitingForWeapons;
 var bool            bWaitingForWeapon;
 var bool            bWaitingForReward;
 var bool            bWaitingForPath;
@@ -211,6 +212,11 @@ event ReceivedText(string Text)
 			PC.EquipLoadout(Text);
 			bWaitingForWeapon = false;
 		}
+		else if (bWaitingForWeapons)
+		{
+			PC.myDataStorage.setItems( PC.myParser.fullParse( Text ) );
+			bWaitingForWeapons = false;
+		}
 		else if (bWaitingForReward)
 		{
 			`log("[TCP] NEED CODE OR REMOVE");
@@ -224,7 +230,7 @@ event ReceivedText(string Text)
 		}
 		else if (bWaitingForMissions)
 		{
-			PC.myDataStorage.setMissions(PC.parser.fullParse(Text));
+			PC.myDataStorage.setMissions(PC.myParser.fullParse(Text));
 			PC.myMainMenu.UpdateMissionMenu();
 			bWaitingForMissions = false;
 		}
@@ -271,6 +277,14 @@ function getMissions(string path)
 {
 	databasePath = path;
 	bWaitingForMissions = true;
+
+	ResolveMe();
+}
+
+function getItems()
+{
+	databasePath = "soldiers/1/items";
+	bWaitingForWeapons = true;
 
 	ResolveMe();
 }

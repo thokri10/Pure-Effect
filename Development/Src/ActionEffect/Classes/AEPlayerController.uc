@@ -18,8 +18,8 @@ var AEPlayerInfo            myPlayerInfo;
 var AETcpLinkClient         myTcpLink;
 
 /** All parsing goes trough this class */
-var class<AEJSONParser>     pars;
-var AEJSONParser            parser;
+var class<AEJSONParser>     Parser;
+var AEJSONParser            myParser;
 
 /** HudMenu */
 var AEHUDMenu               myMenu;
@@ -110,7 +110,7 @@ simulated event PostBeginPlay()
 	myMenu = Spawn(class'AEHUDMenu');
 	myMenu.PC = self;
 
-	parser = new pars;
+	myParser = new Parser;
 
 	myPlayerInfo = new PlayerInfo;
 	myPlayerInfo.PC = self;
@@ -122,6 +122,7 @@ simulated event PostBeginPlay()
 	`log("jhaskdjhajksdhkjashdjkahjskdhjakkajshdkjahsdjkad");
 	myDataStorage = new DataStorage;
 	myDataStorage.myMissionObjective = myMissionObjective;
+	myDataStorage.myPlayerInfo = myPlayerInfo;
 
 	foreach WorldInfo.AllActors(class'AEReplicationInfo', GameObj){
 		`log("ReplicationInfo in map");
@@ -154,7 +155,7 @@ function InitializeMission(string serverText)
 {
 	local array<array2D> arr;
 
-	arr = parser.fullParse(serverText);
+	arr = myParser.fullParse(serverText);
 
 	mHUD = AEHUD( myHUD );
 
@@ -218,7 +219,7 @@ function EquipLoadout(String in)
 	local int i;
 
 	myPlayerInfo.setItemLoadout(loadout);
-	items = parser.fullParse(in);
+	items = myParser.fullParse(in);
 	foreach items(item)
 	{
 		myPlayerInfo.addItems(item.variables);
@@ -395,6 +396,6 @@ DefaultProperties
 	PlayerInfo = class'AEPlayerInfo'
 	InputClass = class'AEPlayerInput'
 	DataStorage = class'AEDataStorage'
-	pars = class'AEJSONParser'
+	Parser = class'AEJSONParser'
 	bObjectivesUpdated = true;
 }
