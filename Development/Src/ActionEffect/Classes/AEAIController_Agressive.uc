@@ -18,7 +18,7 @@ simulated function SetAttractionState()
         else
         { //want to change this to whatever your default state is you   
                //want for your bot.
-            GotoState('Hunting');
+            GotoState('Patrol');
  
         }//close if
 }

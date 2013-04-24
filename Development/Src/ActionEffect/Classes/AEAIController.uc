@@ -255,11 +255,8 @@ function float getDistance(Actor from, Actor to)
 State Patrol
 {
 Begin:
-	`log( Sqrt( getDistance( pawn, destinationNode ) ) );
-	//`log(destinationNode);
 	if( Sqrt( getDistance( pawn, destinationNode ) ) < 150)
 	{
-		`log("Moving to target");
 		UpdateMovePosition();
 		MoveToward(destinationNode, viewNode,,, true);
 		//MoveTo(destinationNode.Location, viewNode,, true);
@@ -269,14 +266,12 @@ Begin:
 State Investigate
 {
 Begin:
-`log("Investigate");
 	MoveToDirectNonPathPos( SavedPositions[ SavedPositions.Length - 1 ].Position, myEnemy );
 }
 
 State Idle
 {
 Begin:
-	`log("IDLE STATE");
 	WaitToSeeEnemy();
 
 	GotoState('Combat');

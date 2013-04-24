@@ -10,9 +10,6 @@ simulated function SetAttractionState()
     else
     { //want to change this to whatever your default state is you   
             //want for your bot.
-
-		if(GetStateName() != 'Defending')
-			GotoState('Defending');
  
     }//close if
 }
