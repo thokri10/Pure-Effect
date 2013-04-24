@@ -53,6 +53,7 @@ function bool Start( optional bool StartPaused = false )
 
 event bool WidgetInitialized( name WidgetName, name WidgetPath, GFxObject Widget )
 {
+	`log("NEGEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEER!");
 	switch ( WidgetName )
 	{
 		case ( 'button_login_login' ):
@@ -142,6 +143,9 @@ function login_onCreateUserButtonPress( GFxClikWidget.EventData ev )
 	 * create an user account.
 	 
 	 */
+
+	class'Engine'.static.LaunchURL("http://www.db.no");
+	`log("LOOOOOOOOOOOOOOOOOL");
 }
 
 function mainMenu_onMissionsButtonPress( GFxClikWidget.EventData ev)
