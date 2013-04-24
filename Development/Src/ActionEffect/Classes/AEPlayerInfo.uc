@@ -133,6 +133,16 @@ function getItem(int slot, int itemID)
 	}
 }
 
+function WeaponStruct getWeapon(const int weaponID)
+{
+	return weapons[weaponID];
+}
+
+function AEInventory_Item getItems(const int itemID)
+{
+	return items[itemID];
+}
+
 DefaultProperties
 {
 	loadoutLength = 6;

@@ -28,6 +28,8 @@ simulated function bool AddInventory( Inventory NewItem, optional bool bDoNotAct
 		weapon2 = Weapon(NewItem);
 
 	super.AddInventory(NewItem, bDoNotActivate);
+
+	return true;
 }
 
 function bool addWeaponToInventory(Inventory NewItem, int slot)

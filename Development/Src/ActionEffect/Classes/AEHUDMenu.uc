@@ -379,7 +379,7 @@ function stringFromServer(string menuString)
 	missions.Length = 0;
 	bWatingForServer = false;
 
-	parsedArray = PC.parser.fullParse( menuString );
+	parsedArray = PC.myParser.fullParse( menuString );
 
 	switch( Path )
 	{

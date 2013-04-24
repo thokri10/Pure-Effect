@@ -18,11 +18,14 @@ var AEPlayerInfo            myPlayerInfo;
 var AETcpLinkClient         myTcpLink;
 
 /** All parsing goes trough this class */
-var class<AEJSONParser>     pars;
-var AEJSONParser            parser;
+var class<AEJSONParser>     Parser;
+var AEJSONParser            myParser;
 
 /** HudMenu */
 var AEHUDMenu               myMenu;
+
+/** Graphical menu */
+var AEMainMenu              myMainMenu;
 
 /** Print out our textmenu on the screen */
 var AEHUD                   mHUD;
@@ -41,6 +44,10 @@ var AEJetpack               myJetpack;
 
 /** Replication info for multiplayer. Keeps track over the different objectives and time */
 var AEReplicationInfo       myReplicationInfo;
+
+/** Contains all the information for missions, items and shop that the menu needs */
+var class<AEDataStorage>    DataStorage;
+var AEDataStorage           myDataStorage;
 
 
 //-----------------------------------------------------------------------------
@@ -103,7 +110,7 @@ simulated event PostBeginPlay()
 	myMenu = Spawn(class'AEHUDMenu');
 	myMenu.PC = self;
 
-	parser = new pars;
+	myParser = new Parser;
 
 	myPlayerInfo = new PlayerInfo;
 	myPlayerInfo.PC = self;
@@ -111,6 +118,11 @@ simulated event PostBeginPlay()
 	myPlayerInfo.myWeaponCreator = myWeaponCreator;
 	myPlayerInfo.myInventory = myItemInventory;
 	myPlayerInfo.inits();
+
+	`log("jhaskdjhajksdhkjashdjkahjskdhjakkajshdkjahsdjkad");
+	myDataStorage = new DataStorage;
+	myDataStorage.myMissionObjective = myMissionObjective;
+	myDataStorage.myPlayerInfo = myPlayerInfo;
 
 	foreach WorldInfo.AllActors(class'AEReplicationInfo', GameObj){
 		`log("ReplicationInfo in map");
@@ -124,6 +136,8 @@ simulated event PostBeginPlay()
 	myJetpack.jetpackEnabled = true;
 
 	`log("SETTING UP A NEW PLAYERCONTROLLER!!!!! : " $ self $ " : " $ WorldInfo.NetMode);
+
+	myTcpLink.getMissions("missions/");
 
 	// Connect to server.
 	//myTcpLink.ResolveMe();
@@ -141,7 +155,7 @@ function InitializeMission(string serverText)
 {
 	local array<array2D> arr;
 
-	arr = parser.fullParse(serverText);
+	arr = myParser.fullParse(serverText);
 
 	mHUD = AEHUD( myHUD );
 
@@ -205,7 +219,7 @@ function EquipLoadout(String in)
 	local int i;
 
 	myPlayerInfo.setItemLoadout(loadout);
-	items = parser.fullParse(in);
+	items = myParser.fullParse(in);
 	foreach items(item)
 	{
 		myPlayerInfo.addItems(item.variables);
@@ -381,6 +395,7 @@ DefaultProperties
 {
 	PlayerInfo = class'AEPlayerInfo'
 	InputClass = class'AEPlayerInput'
-	pars = class'AEJSONParser'
+	DataStorage = class'AEDataStorage'
+	Parser = class'AEJSONParser'
 	bObjectivesUpdated = true;
 }
