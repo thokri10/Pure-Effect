@@ -137,7 +137,7 @@ simulated event PostBeginPlay()
 
 	`log("SETTING UP A NEW PLAYERCONTROLLER!!!!! : " $ self $ " : " $ WorldInfo.NetMode);
 
-	myTcpLink.getMissions("missions/");
+	//myTcpLink.getMissions("missions/");
 
 	// Connect to server.
 	//myTcpLink.ResolveMe();
