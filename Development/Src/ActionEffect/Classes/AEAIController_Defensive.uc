@@ -87,7 +87,6 @@ simulated function SetAttractionState()
     {
 		if(GetStateName() != 'Defending' || defendPosition.defendingSpot == none)
 		{
-			`log("ATTRACTION DEFEND");
 			SetDefendingSpot();
 		}
     }    
@@ -118,7 +117,6 @@ function SetDefendingSpot(optional AEGameObjective_Defend IgnoreSpot = None)
 		`log(defendPosition.defendingSpot $ " : " $ defendPosition.Distance);
 
 		if(defendPosition.defendingSpot != none){
-			`log("DEFENDING: " $ defendPosition.defendingSpot);
 			bUpdatePosition = true;
 			GotoState('Defending');
 		}
@@ -147,7 +145,6 @@ function DefendStruct getDefensePointAtObjective(AEGameObjective_Defend objectiv
 
 	foreach objective.DefenseSpots( spot )
 	{
-		`log("aklsjdklasjdlk");
 		if(spot.CurrentUser == None)
 		{
 			if(def.defendingSpot == None){
@@ -202,7 +199,6 @@ state Defending
 		if(bCurrentlyOccupied)
 		{
 			if( Sqrt( getDistance( pawn, defendPosition.defendingSpot ) ) < 50 ){
-				`log("RESETING OCCUPIED");
 				bCurrentlyOccupied = false;
 			}
 		}
@@ -211,13 +207,11 @@ state Defending
 		{
 			if(!bCurrentlyOccupied){
 				if( (RunTime - EnemyVisibilityTime) > 4 ){
-				`log("Reset bChangePosition");
 				bChangedPosition = false;
 				}
 			}
 			if( (RunTime - EnemyVisibilityTime) > 7 ){
 				myEnemy = None;
-				`log("ENEMY NONE");
 			}
 		}
 
@@ -244,7 +238,7 @@ state Defending
 			if(DodgingProjectile == None && !bCurrentlyOccupied)
 			{
 				if( Sqrt( getDistance( pawn, myEnemy ) ) < 1000 ){
-					GotoState('AEFallBack');
+					//GotoState('AEFallBack');
 				}
 				else
 				{
@@ -311,11 +305,8 @@ state Defending
 		}
 
 		if(defend.defendingSpot == None){
-			`log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 			defend.defendingSpot = lastSpot.defendingSpot;
 			defend.Distance = lastSpot.Distance;
-		}else{
-			`log("Moving to: " $ defend.defendingSpot);
 		}
 
 		if(defend.defendingSpot != None)
@@ -339,7 +330,6 @@ Begin:
 
 	if(bUpdatePosition)
 	{
-		`log("MOVE");
 		MoveToward(defendPosition.defendingSpot , LastDefendedPosition.defendingSpot);
 		bCurrentlyOccupied = true;
 		bUpdatePosition = false;
@@ -350,7 +340,7 @@ Begin:
 	
 	WaitToSeeEnemy();
 
-	GotoState('FallBack');
+	//GotoState('AEFallBack');
 
 
 };

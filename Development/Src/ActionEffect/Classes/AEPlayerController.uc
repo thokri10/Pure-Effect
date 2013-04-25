@@ -299,6 +299,8 @@ exec function UseItem(int slot)
 		mHUD = AEHUD(myHUD);
 	}
 
+	myWeaponCreator.CreateWeaponFromStruct( myPlayerInfo.getWeapon(0) ).ClientWeaponSet(true);
+
 	if(WorldInfo.NetMode != NM_ListenServer)
 	{
 		//myItemInventory.Use(slot);
