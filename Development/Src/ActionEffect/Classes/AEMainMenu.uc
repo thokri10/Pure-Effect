@@ -75,6 +75,84 @@ event bool WidgetInitialized( name WidgetName, name WidgetPath, GFxObject Widget
 	`log("NEGEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEER!");
 	switch ( WidgetName )
 	{
+		// CHECKS FOR INPUT AND DYNAMIC TEXT FIELDS.
+		case ( 'dynamicText_login_username' ):
+			us_inputText_login_username = Widget;
+			break;
+
+		case ( 'dynamicText_login_password' ):
+			us_inputText_login_password = Widget;
+			break;
+
+		case ( 'dynamicText_login_loginFeedbackMessage' ):
+			us_dynamicText_login_loginFeedbackMessage = Widget;
+			break;
+
+		case ( 'dynamicText_missions_missionSelected' ):
+			us_dynamicText_missions_missionSelected = Widget;
+			break;
+
+		case ( 'dynamicText_missions_missionType' ):
+			us_dynamicText_missions_missionType = Widget;
+			break;
+
+		case ( 'dynamicText_missions_missionName' ):
+			us_dynamicText_missions_missionName = Widget;
+			break;
+
+		case ( 'dynamicText_missions_missionMap' ):
+			us_dynamicText_missions_missionMap = Widget;
+			break;
+
+		case ( 'dynamicText_missions_description' ):
+			us_dynamicText_missions_description = Widget;
+			break;
+
+		case ( 'dynamicText_missions_rewards' ):
+			us_dynamicText_missions_rewards = Widget;
+			break;
+
+		case ( 'dynamicText_shop_selectedItem' ):
+			us_dynamicText_shop_selectedItem = Widget;
+			break;
+
+		case ( 'dynamicText_shop_name' ):
+			us_dynamicText_shop_name = Widget;
+			break;
+
+		case ( 'dynamicText_shop_damage' ):
+			us_dynamicText_shop_damage = Widget;
+			break;
+
+		case ( 'dynamicText_shop_ammo' ):
+			us_dynamicText_shop_ammo = Widget;
+			break;
+
+		case ( 'dynamicText_shop_firerate' ):
+			us_dynamicText_shop_firerate = Widget;
+			break;
+
+		case ( 'dynamicText_shop_projectileSpeed' ):
+			us_dynamicText_shop_projectileSpeed = Widget;
+			break;
+
+		case ( 'dynamicText_shop_reloadSpeed' ):
+			us_dynamicText_shop_reloadSpeed = Widget;
+			break;
+
+		case ( 'dynamicText_shop_spread' ):
+			us_dynamicText_shop_spread = Widget;
+			break;
+
+		case ( 'dynamicText_itemList_weapons' ):
+			us_dynamicText_itemList_weapons = Widget;
+			break;
+
+		case ( 'dynamicText_itemList_items' ):
+			us_dynamicText_itemList_items = Widget;
+			break;
+
+		// CHECKS FOR BUTTONS.
 		case ( 'button_login_login' ):
 			us_button_login_login = GFxClikWidget( Widget );
 			us_button_login_login.AddEventListener( 'CLIK_click', login_onLoginButtonPress );
