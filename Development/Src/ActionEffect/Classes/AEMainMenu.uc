@@ -66,7 +66,7 @@ function bool Start( optional bool StartPaused = false )
 
 event bool WidgetInitialized( name WidgetName, name WidgetPath, GFxObject Widget )
 {
-	// ADD FOR INPUT AND DYNAMIC TEXT.
+	// Remember to add for input and dynamic texts as well.
 	`log("NEGEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEER!");
 	switch ( WidgetName )
 	{
