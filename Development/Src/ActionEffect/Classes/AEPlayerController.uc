@@ -139,7 +139,7 @@ simulated event PostBeginPlay()
 
 	`log("SETTING UP A NEW PLAYERCONTROLLER!!!!! : " $ self $ " : " $ WorldInfo.NetMode);
 
-	myTcpLink.getMissions("missions/");
+	//myTcpLink.getMissions("missions/");
 
 	myJSONComposer = new Composer;
 
