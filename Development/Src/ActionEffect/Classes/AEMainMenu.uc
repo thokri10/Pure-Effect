@@ -19,8 +19,8 @@ var GFxClikWidget       us_button_shop_nextItem;
 var GFxClikWidget       us_button_shop_buy;
 
 // All the input texts in Flash that you need to check their string contents.
-var GFxClikWidget       us_inputText_login_username;
-var GFxClikWidget       us_inputText_login_password;
+var GFxObject           us_inputText_login_username;
+var GFxObject           us_inputText_login_password;
 
 // All the dynamic texts in Flash that you need to change accordingly.
 var GFxObject           us_dynamicText_login_loginFeedbackMessage;
@@ -251,8 +251,8 @@ DefaultProperties
 	WidgetBindings.Add( ( WidgetName="button_shop_buy", WidgetClass=class'GFxClikWidget' ) )
 
 	// Input texts in Flash.
-	WidgetBindings.Add( ( WidgetName="inputText_login_username", WidgetClass=class'GFxClikWidget' ) )
-	WidgetBindings.Add( ( WidgetName="inputText_login_password", WidgetClass=class'GFxClikWidget' ) )
+	WidgetBindings.Add( ( WidgetName="inputText_login_username", WidgetClass=class'GFxObject' ) )
+	WidgetBindings.Add( ( WidgetName="inputText_login_password", WidgetClass=class'GFxObject' ) )
 
 	// Dynamic texts in Flash.
 	WidgetBindings.Add( ( WidgetName="dynamicText_login_loginFeedbackMessage", WidgetClass=class'GFxObject' ) )
