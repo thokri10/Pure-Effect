@@ -5,31 +5,40 @@ class AEMainMenu extends GFxMoviePlayer
 var AEPlayerController  AEPC;
 var UIInputKeyData      key;
 
-// All the buttons in Flash that you need to use.
+// LOGIN MENU COMPONENTS
 var GFxClikWidget       us_button_login_login;
 var GFxClikWidget       us_button_login_createUser;
+var GFxObject           us_inputText_login_username;
+var GFxObject           us_inputText_login_password;
+var GFxObject           us_dynamicText_login_loginFeedbackMessage;
+
+// MAIN MENU COMPONENTS
 var GFxClikWidget       us_button_mainMenu_missions;
+var GFxClikWidget       us_button_mainMenu_profile;
 var GFxClikWidget       us_button_mainMenu_shop;
 var GFxClikWidget       us_button_mainMenu_exitGame;
+
+// MISSION MENU COMPONENTS
 var GFxClikWidget       us_button_missions_previousMission;
 var GFxClikWidget       us_button_missions_nextMission;
 var GFxClikWidget       us_button_missions_acceptMission;
-var GFxClikWidget       us_button_shop_previousItem;
-var GFxClikWidget       us_button_shop_nextItem;
-var GFxClikWidget       us_button_shop_buy;
-
-// All the input texts in Flash that you need to check their string contents.
-var GFxObject           us_inputText_login_username;
-var GFxObject           us_inputText_login_password;
-
-// All the dynamic texts in Flash that you need to change accordingly.
-var GFxObject           us_dynamicText_login_loginFeedbackMessage;
+var GFxClikWidget       us_button_missions_back;
 var GFxObject           us_dynamicText_missions_missionSelected;
 var GFxObject           us_dynamicText_missions_missionType;
 var GFxObject           us_dynamicText_missions_missionName;
 var GFxObject           us_dynamicText_missions_missionMap;
 var GFxObject           us_dynamicText_missions_description;
 var GFxObject           us_dynamicText_missions_rewards;
+
+// PROFILE MENU COMPONENTS
+var GFxClikWidget       us_button_profile_itemList;
+var GFxClikWidget       us_button_profile_back;
+
+// SHOP MENU COMPONENTS
+var GFxClikWidget       us_button_shop_previousItem;
+var GFxClikWidget       us_button_shop_nextItem;
+var GFxClikWidget       us_button_shop_buy;
+var GFxClikWidget       us_button_shop_back;
 var GFxObject           us_dynamicText_shop_selectedItem;
 var GFxObject           us_dynamicText_shop_name;
 var GFxObject           us_dynamicText_shop_damage;
@@ -38,6 +47,9 @@ var GFxObject           us_dynamicText_shop_firerate;
 var GFxObject           us_dynamicText_shop_projectileSpeed;
 var GFxObject           us_dynamicText_shop_reloadSpeed;
 var GFxObject           us_dynamicText_shop_spread;
+
+// ITEM LIST COMPONENTS
+var GFxClikWidget       us_button_itemList_back;
 var GFxObject           us_dynamicText_itemList_weapons;
 var GFxObject           us_dynamicText_itemList_items;
 
@@ -53,13 +65,6 @@ function bool Start( optional bool StartPaused = false )
 	AEPC.myMainMenu = self;
 	AddCaptureKey( 'Escape' );
 	bCaptureInput = true;
-
-	`Log("bWidgetsInitializedThisFrame: " $ bWidgetsInitializedThisFrame);
-	`Log("bLogUnhandedWidgetInitializations: " $ bLogUnhandedWidgetInitializations);
-	`Log("bAllowInput: " $ bAllowInput);
-	`Log("bCaptureInput: " $ bCaptureInput);
-
-
 
 	return true;
 }
@@ -83,6 +88,11 @@ event bool WidgetInitialized( name WidgetName, name WidgetPath, GFxObject Widget
 		case ( 'button_mainMenu_missions' ):
 			us_button_mainMenu_missions = GFxClikWidget( Widget );
 			us_button_mainMenu_missions.AddEventListener( 'CLIK_click', mainMenu_onMissionsButtonPress );
+			break;
+
+		case ( 'button_mainMenu_profile' ):
+			us_button_mainMenu_profile = GFxClikWidget( Widget );
+			us_button_mainMenu_profile.AddEventListener( 'CLIK_click', mainMenu_onProfileButtonPress );
 			break;
 
 		case ( 'button_mainMenu_shop' ):
@@ -110,6 +120,21 @@ event bool WidgetInitialized( name WidgetName, name WidgetPath, GFxObject Widget
 			us_button_missions_acceptMission.AddEventListener( 'CLIK_click', missions_onAcceptMissionButtonPress );
 			break;
 
+		case ( 'button_missions_back' ):
+			us_button_missions_back = GFxClikWidget( Widget );
+			us_button_missions_back.AddEventListener( 'CLIK_click', mission_onBackButtonpress );
+			break;
+
+		case ( 'button_profile_itemList' ):
+			us_button_profile_itemList = GFxClikWidget( Widget );
+			us_button_profile_itemList.AddEventListener( 'CLIK_click', profile_onItemListButtonPress);
+			break;
+
+		case ( 'button_profile_back' ):
+			us_button_profile_back = GFxClikWidget( Widget );
+			us_button_profile_back.AddEventListener( 'CLIK_click', profile_onBackButtonPress);
+			break;
+
 		case ( 'button_shop_previousItem' ):
 			us_button_shop_previousItem = GFxClikWidget( Widget );
 			us_button_shop_previousItem.AddEventListener( 'CLIK_click', shop_onPreviousItemButtonPress );
@@ -123,6 +148,16 @@ event bool WidgetInitialized( name WidgetName, name WidgetPath, GFxObject Widget
 		case ( 'button_shop_buy' ):
 			us_button_shop_buy = GFxClikWidget( Widget );
 			us_button_shop_buy.AddEventListener( 'CLIK_click', shop_onBuyButtonPress );
+			break;
+
+		case ( 'button_shop_back' ):
+			us_button_shop_back = GFxClikWidget( Widget );
+			us_button_shop_back.AddEventListener( 'CLIK_click', shop_onBackButtonPress );
+			break;
+
+		case ( 'button_itemList_back' ):
+			us_button_itemList_back = GFxClikWidget( Widget );
+			us_button_itemList_back.AddEventListener( 'CLIK_click', itemList_onBackButtonPress );
 			break;
 
 		default:
@@ -147,30 +182,33 @@ function login_onLoginButtonPress( GFxClikWidget.EventData ev )
 	 * "us_dynamicText_login_loginFeedbackMessage" to a fail message.
 	 
 	 */
+
+	// This runs if the login was successful.
+	ActionScriptVoid( "openMainMenu" );
 }
 
 function login_onCreateUserButtonPress( GFxClikWidget.EventData ev )
 {
-	// TO-DO.
-
-	/* 1. Open the browser and direct user to a page where you can
-	 * create an user account.
-	 
-	 */
-
-	class'Engine'.static.LaunchURL("http://www.db.no");
-	`log("LOOOOOOOOOOOOOOOOOL");
+	// TO-DO: Change to a page where one can create a user.
+	class'Engine'.static.LaunchURL("http://www.google.com");
 }
 
 function mainMenu_onMissionsButtonPress( GFxClikWidget.EventData ev)
 {
 	mySelectionID = 0;
 	AEPC.myTcpLink.getMissions("missions/");
+
+	ActionScriptVoid( "openMissionMenu" );
+}
+
+function mainMenu_onProfileButtonPress( GFxClikWidget.EventData ev)
+{
+	ActionScriptVoid ( "openProfileMenu" );
 }
 
 function mainMenu_onShopButtonPress( GFxClikWidget.EventData ev)
 {
-	// TO-DO.
+	ActionScriptVoid( "openShopMenu" );
 }
 
 function mainMenu_onExitGameButtonPress( GFxClikWidget.EventData ev )
@@ -192,8 +230,22 @@ function missions_onNextMissionButtonPress( GFxClikWidget.EventData ev )
 
 function missions_onAcceptMissionButtonPress( GFxClikWidget.EventData ev )
 {
-	
 	// TO-DO.
+}
+
+function mission_onBackButtonpress( GFxClikWidget.EventData ev )
+{
+	ActionScriptVoid( "openMainMenu" );
+}
+
+function profile_onItemListButtonPress( GFxClikWidget.EventData ev )
+{
+	ActionScriptVoid( "openItemMenu" );
+}
+
+function profile_onBackButtonPress( GFxClikWidget.EventData ev )
+{
+	ActionScriptVoid( "openMainMenu" );
 }
 
 function shop_onPreviousItemButtonPress( GFxClikWidget.EventData ev )
@@ -209,6 +261,16 @@ function shop_onNextItemButtonPress( GFxClikWidget.EventData ev)
 function shop_onBuyButtonPress( GFxClikWidget.EventData ev )
 {
 	// TO-DO.
+}
+
+function shop_onBackButtonPress( GFxClikWidget.EventData ev )
+{
+	ActionScriptVoid( "openMainMenu" );
+}
+
+function itemList_onBackButtonPress( GFxClikWidget.EventData ev )
+{
+	ActionScriptVoid( "openProfileMenu" );
 }
 
 /** Runs automaticly with TCPclient or in this class */
@@ -239,29 +301,40 @@ private function decSelectionID(int dec)
 
 DefaultProperties
 {
-	// Buttons in Flash.
+	// LOGIN MENU COMPONENTS - INITIALIZATION
 	WidgetBindings.Add( ( WidgetName="button_login_login", WidgetClass=class'GFxClikWidget' ) )
 	WidgetBindings.Add( ( WidgetName="button_login_createUser", WidgetClass=class'GFxClikWidget' ) )
+	WidgetBindings.Add( ( WidgetName="inputText_login_username", WidgetClass=class'GFxObject' ) )
+	WidgetBindings.Add( ( WidgetName="inputText_login_password", WidgetClass=class'GFxObject' ) )
+	WidgetBindings.Add( ( WidgetName="dynamicText_login_loginFeedbackMessage", WidgetClass=class'GFxObject' ) )
+
+	// MAIN MENU COMPONENTS - INITIALIZATION
+	WidgetBindings.Add( ( WidgetName="button_mainMenu_missions", WidgetClass=class'GFxClikWidget' ) )
+	WidgetBindings.Add( ( WidgetName="button_mainMenu_profile", WidgetClass=class'GFxClikWidget' ) )
+	WidgetBindings.Add( ( WidgetName="button_mainMenu_shop", WidgetClass=class'GFxClikWidget' ) )
 	WidgetBindings.Add( ( WidgetName="button_mainMenu_exitGame", WidgetClass=class'GFxClikWidget' ) )
+
+	// MISSION MENU COMPONENTS - INITIALIZATION
 	WidgetBindings.Add( ( WidgetName="button_missions_previousMission", WidgetClass=class'GFxClikWidget' ) )
 	WidgetBindings.Add( ( WidgetName="button_missions_nextMission", WidgetClass=class'GFxClikWidget' ) )
 	WidgetBindings.Add( ( WidgetName="button_missions_acceptMission", WidgetClass=class'GFxClikWidget' ) )
-	WidgetBindings.Add( ( WidgetName="button_shop_previousItem", WidgetClass=class'GFxClikWidget') )
-	WidgetBindings.Add( ( WidgetName="button_shop_nextItem", WidgetClass=class'GFxClikWidget' ) )
-	WidgetBindings.Add( ( WidgetName="button_shop_buy", WidgetClass=class'GFxClikWidget' ) )
-
-	// Input texts in Flash.
-	WidgetBindings.Add( ( WidgetName="inputText_login_username", WidgetClass=class'GFxObject' ) )
-	WidgetBindings.Add( ( WidgetName="inputText_login_password", WidgetClass=class'GFxObject' ) )
-
-	// Dynamic texts in Flash.
-	WidgetBindings.Add( ( WidgetName="dynamicText_login_loginFeedbackMessage", WidgetClass=class'GFxObject' ) )
+	WidgetBindings.Add( ( WidgetName="button_missions_back", WidgetClass=class'GFxClikWidget' ) )
 	WidgetBindings.Add( ( WidgetName="dynamicText_missions_missionSelected", WidgetClass=class'GFxObject' ) )
 	WidgetBindings.Add( ( WidgetName="dynamicText_missions_missionType", WidgetClass=class'GFxObject' ) )
 	WidgetBindings.Add( ( WidgetName="dynamicText_missions_missionName", WidgetClass=class'GFxObject' ) )
 	WidgetBindings.Add( ( WidgetName="dynamicText_missions_missionMap", WidgetClass=class'GFxObject' ) )
 	WidgetBindings.Add( ( WidgetName="dynamicText_missions_description", WidgetClass=class'GFxObject' ) )
-	WidgetBindings.Add( ( WidgetName="dynamicText_missions_rewards", WidgetClass=class'GFxObject') )
+	WidgetBindings.Add( ( WidgetName="dynamicText_missions_rewards", WidgetClass=class'GFxObject' ) )
+
+	// PROFILE MENU COMPONENTS - INITIALIZATION
+	WidgetBindings.Add( ( WidgetName="button_profile_itemList", WidgetClass=class'GFxClikWidget' ) )
+	WidgetBindings.Add( ( WidgetName="button_profile_back", WidgetClass=class'GFxClikWidget' ) )
+
+	// SHOP MENU COMPONENTS - INITIALIZATION
+	WidgetBindings.Add( ( WidgetName="button_shop_previousItem", WidgetClass=class'GFxClikWidget' ) )
+	WidgetBindings.Add( ( WidgetName="button_shop_nextItem", WidgetClass=class'GFxClikWidget' ) )
+	WidgetBindings.Add( ( WidgetName="button_shop_buy", WidgetClass=class'GFxClikWidget' ) )
+	WidgetBindings.Add( ( WidgetName="button_shop_back", WidgetClass=class'GFxClikWidget' ) )
 	WidgetBindings.Add( ( WidgetName="dynamicText_shop_selectedItem", WidgetClass=class'GFxObject' ) )
 	WidgetBindings.Add( ( WidgetName="dynamicText_shop_name", WidgetClass=class'GFxObject' ) )
 	WidgetBindings.Add( ( WidgetName="dynamicText_shop_damage", WidgetClass=class'GFxObject' ) )
@@ -270,6 +343,9 @@ DefaultProperties
 	WidgetBindings.Add( ( WidgetName="dynamicText_shop_projectileSpeed", WidgetClass=class'GFxObject' ) )
 	WidgetBindings.Add( ( WidgetName="dynamicText_shop_reloadSpeed", WidgetClass=class'GFxObject' ) )
 	WidgetBindings.Add( ( WidgetName="dynamicText_shop_spread", WidgetClass=class'GFxObject' ) )
-	WidgetBindings.Add( ( WidgetName="dynamicText_itemList_weapons", WidgetClass=class'GFxObject') )
+
+	// ITEM LIST COMPONENTS - INITIAZALITON
+	WidgetBindings.Add( ( WidgetName="button_itemList_back", WidgetClass=class'GFxClikWidget' ) )
+	WidgetBindings.Add( ( WidgetName="dynamicText_itemList_weapons", WidgetClass=class'GFxObject' ) )
 	WidgetBindings.Add( ( WidgetName="dynamicText_itemList_items", WidgetClass=class'GFxObject' ) )
 }
