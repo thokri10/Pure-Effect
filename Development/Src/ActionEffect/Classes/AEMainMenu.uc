@@ -53,6 +53,7 @@ var GFxClikWidget       us_button_itemList_back;
 var GFxObject           us_dynamicText_itemList_weapons;
 var GFxObject           us_dynamicText_itemList_items;
 
+var private MissionObjectives myActiveMission;
 var private int mySelectionID;
 var private int mySelectionIDMax;
 
@@ -60,6 +61,9 @@ function bool Start( optional bool StartPaused = false )
 {
 	super.Start();
 	Advance( 0 );
+
+	mySelectionID = 0;
+	mySelectionIDMax = 0;
 
 	AEPC = AEPlayerController(GetPC());
 	AEPC.myMainMenu = self;
@@ -296,19 +300,26 @@ function mainMenu_onExitGameButtonPress( GFxClikWidget.EventData ev )
 
 function missions_onPreviousMissionButtonPress( GFxClikWidget.EventData ev )
 {
-	decSelectionID(1);
+	`log("-derp");
+	decSelectionID();
 	UpdateMissionMenu();
 }
 
 function missions_onNextMissionButtonPress( GFxClikWidget.EventData ev )
 {
-	addSelectionID(1);
+	`log("+derp");
+	addSelectionID();
 	UpdateMissionMenu();
 }
 
 function missions_onAcceptMissionButtonPress( GFxClikWidget.EventData ev )
 {
 	// TO-DO.
+	`log("aølksjdlkajsdkljasd");
+	ConsoleCommand("open AE-level" $ myActiveMission.levelID $ 
+					"?MissionID=" $ myActiveMission.id $ 
+					"?TeamID=0" $ 
+					"?Loadout=" $ AEPC.myPlayerInfo.getItemLoadout());
 }
 
 function mission_onBackButtonpress( GFxClikWidget.EventData ev )
@@ -355,26 +366,50 @@ function itemList_onBackButtonPress( GFxClikWidget.EventData ev )
 function UpdateMissionMenu()
 {
 	local MissionObjectives mission;
+	local string rewards;
+	local int i;
+
+	mySelectionIDMax = AEPC.myDataStorage.MissionLength();
+
+	rewards = "";
 
 	mission = AEPC.myDataStorage.getMission(mySelectionID);
+	myActiveMission = mission;
+
+	us_dynamicText_missions_missionName.SetText(mission.title);
+	us_dynamicText_missions_missionSelected.SetText("" $ mySelectionID);
+	us_dynamicText_missions_missionMap.SetText( mission.mapName );
+	us_dynamicText_missions_missionType.SetText(mission.category);
+	us_dynamicText_missions_description.SetText(mission.description);
+
+	for( i = 0; i < mission.rewards.Length; ++i)
+	{
+		rewards $= mission.rewards[i].type $ " : ";
+	}
+	for( i = 0; i < mission.rewardItems.Length; ++i)
+	{
+		rewards $= mission.rewardItems[i].itemName $ " : ";
+	}
+
+	us_dynamicText_missions_rewards.SetText( rewards );
 
 	// TO-DO
 }
 
-private function addSelectionID(int add)
+private function addSelectionID()
 {
-	if(mySelectionID <= mySelectionIDMax)
-		mySelectionID += add;
-	else
+	++mySelectionID;
+
+	if(mySelectionID >= mySelectionIDMax)
 		mySelectionID = 0;
 }
 
-private function decSelectionID(int dec)
+private function decSelectionID()
 {
-	if(mySelectionID > 0)
-		mySelectionID -= dec;
-	else
-		mySelectionID = mySelectionIDMax;
+	--mySelectionID;
+
+	if(mySelectionID <= 0)
+		mySelectionID = mySelectionIDMax - 1;
 }
 
 DefaultProperties
