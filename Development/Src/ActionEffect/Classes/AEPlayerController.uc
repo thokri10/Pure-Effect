@@ -67,6 +67,9 @@ var string                  loadout;
 
 var string test;
 
+var class<AEJSONComposer>   Composer;
+var AEJSONComposer          myJSONComposer;
+
 replication
 {	
 	if(bNetDirty)
@@ -119,7 +122,6 @@ simulated event PostBeginPlay()
 	myPlayerInfo.myInventory = myItemInventory;
 	myPlayerInfo.inits();
 
-	`log("jhaskdjhajksdhkjashdjkahjskdhjakkajshdkjahsdjkad");
 	myDataStorage = new DataStorage;
 	myDataStorage.myMissionObjective = myMissionObjective;
 	myDataStorage.myPlayerInfo = myPlayerInfo;
@@ -138,6 +140,13 @@ simulated event PostBeginPlay()
 	`log("SETTING UP A NEW PLAYERCONTROLLER!!!!! : " $ self $ " : " $ WorldInfo.NetMode);
 
 	//myTcpLink.getMissions("missions/");
+
+	myJSONComposer = new Composer;
+
+	myJSONComposer.addVauleI("Player-ID", 1);
+	myJSONComposer.addVauleI("Item-ID", 2);
+
+	//myTcpLink.sendString( myComposer.ComposeString() );
 
 	// Connect to server.
 	//myTcpLink.ResolveMe();
@@ -399,5 +408,6 @@ DefaultProperties
 	InputClass = class'AEPlayerInput'
 	DataStorage = class'AEDataStorage'
 	Parser = class'AEJSONParser'
+	Composer = class'AEJSONComposer'
 	bObjectivesUpdated = true;
 }

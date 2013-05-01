@@ -35,6 +35,7 @@ var int     TargetPort;
 
 /** Database path to the info needed to generate a weapon. */
 var string  get;
+var string  post;
 var string  databasePath;
 
 /** Message that the player sends to the server. */
@@ -130,13 +131,21 @@ event Opened()
 	{
 		SendText(get $ databasePath $ "?username=" $ UserName $ "&password=" $ Password );
 		CarriageReturn(); 
+		//SendText( token );
+		//SendText("Authorization: Basic McDonald:secret");
+		//CarriageReturn(); 
 
 		SendText( "Connection: close" );
 		CarriageReturn(); CarriageReturn();
 		
 	}
-	else if ( send && score > 0)
+	else if ( send )
 	{
+		SendText(post $ requestText);
+		SendText("Content-Length: "$len(requestText)); CarriageReturn();
+		SendText("Content-Type: application/json"); CarriageReturn();
+		SendText( "Connection: close" );
+		CarriageReturn(); CarriageReturn();
 		/*
 		requestText = "value="$score$"&submit=10987";
 		
@@ -150,6 +159,8 @@ event Opened()
 		SendText(requestText);
 		CarriageReturn();
 		*/
+
+		send = false;
 	}
 
 	`Log("[TcpLinkClient] end HTTP query");
@@ -315,6 +326,14 @@ function getMenuSelections()
 	ResolveMe();
 }
 
+function sendString(string str)
+{
+	requestText = str;
+
+	send = true;
+
+	ResolveMe();
+}
 
 //-----------------------------------------------------------------------------
 // Parsing
@@ -388,6 +407,7 @@ DefaultProperties
 
 	databasePath = "[{\"category\":\"Search and destroy\",\"city_id\":1,\"created_at\":\"2013-01-25T13:30:34Z\",\"description\":\"Regain loot\",\"id\":1,\"title\":\"Marauders\",\"updated_at\":\"2013-01-25T13:30:34Z\",\"items\":[{\"created_at\":\"2013-01-25T13:30:34Z\",\"id\":1,\"name\":\"Rocket launcher\",\"owner_id\":1,\"owner_type\":\"Mission\",\"properties\":{\"damage\":150,\"speed\":400,\"range\":1000,\"spread\":1.5,\"fire_rate\":3,\"clip_size\":1,\"reload_speed\":3,\"ammo_pool\":8},\"slot\":\"weapon\",\"updated_at\":\"2013-01-25T13:30:34Z\"}]},"
 	get = "GET /api/"
+	post = "POST "
 
 	returnedMessage = "";
 
