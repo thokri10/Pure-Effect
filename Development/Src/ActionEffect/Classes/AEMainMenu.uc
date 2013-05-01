@@ -18,31 +18,28 @@ var GFxClikWidget       us_button_shop_previousItem;
 var GFxClikWidget       us_button_shop_nextItem;
 var GFxClikWidget       us_button_shop_buy;
 
-// Test buttons
-var GFxClikWidget       us_mc_login_createUser;
-
 // All the input texts in Flash that you need to check their string contents.
 var GFxClikWidget       us_inputText_login_username;
 var GFxClikWidget       us_inputText_login_password;
 
 // All the dynamic texts in Flash that you need to change accordingly.
-var GFxClikWidget       us_dynamicText_login_loginFeedbackMessage;
-var GFxClikWidget       us_dynamicText_missions_missionSelected;
-var GFxClikWidget       us_dynamicText_missions_missionType;
-var GFxClikWidget       us_dynamicText_missions_missionName;
-var GFxClikWidget       us_dynamicText_missions_missionMap;
-var GFxClikWidget       us_dynamicText_missions_description;
-var GFxClikWidget       us_dynamicText_missions_rewards;
-var GFxClikWidget       us_dynamicText_shop_selectedItem;
-var GFxClikWidget       us_dynamicText_shop_name;
-var GFxClikWidget       us_dynamicText_shop_damage;
-var GFxClikWidget       us_dynamicText_shop_ammo;
-var GFxClikWidget       us_dynamicText_shop_firerate;
-var GFxClikWidget       us_dynamicText_shop_projectileSpeed;
-var GFxClikWidget       us_dynamicText_shop_reloadSpeed;
-var GFxClikWidget       us_dynamicText_shop_spread;
-var GFxClikWidget       us_dynamicText_itemList_weapons;
-var GFxClikWidget       us_dynamicText_itemList_items;
+var GFxObject           us_dynamicText_login_loginFeedbackMessage;
+var GFxObject           us_dynamicText_missions_missionSelected;
+var GFxObject           us_dynamicText_missions_missionType;
+var GFxObject           us_dynamicText_missions_missionName;
+var GFxObject           us_dynamicText_missions_missionMap;
+var GFxObject           us_dynamicText_missions_description;
+var GFxObject           us_dynamicText_missions_rewards;
+var GFxObject           us_dynamicText_shop_selectedItem;
+var GFxObject           us_dynamicText_shop_name;
+var GFxObject           us_dynamicText_shop_damage;
+var GFxObject           us_dynamicText_shop_ammo;
+var GFxObject           us_dynamicText_shop_firerate;
+var GFxObject           us_dynamicText_shop_projectileSpeed;
+var GFxObject           us_dynamicText_shop_reloadSpeed;
+var GFxObject           us_dynamicText_shop_spread;
+var GFxObject           us_dynamicText_itemList_weapons;
+var GFxObject           us_dynamicText_itemList_items;
 
 var private int mySelectionID;
 var private int mySelectionIDMax;
@@ -69,18 +66,13 @@ function bool Start( optional bool StartPaused = false )
 
 event bool WidgetInitialized( name WidgetName, name WidgetPath, GFxObject Widget )
 {
+	// Remember to add for input and dynamic texts as well.
 	`log("NEGEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEER!");
 	switch ( WidgetName )
 	{
 		case ( 'button_login_login' ):
 			us_button_login_login = GFxClikWidget( Widget );
 			us_button_login_login.AddEventListener( 'CLIK_click', login_onLoginButtonPress );
-			break;
-
-		// TEST
-		case ( 'mc_login_createUser'):
-			us_mc_login_createUser = GFxClikWidget( Widget );
-			us_mc_login_createUser.AddEventListener( 'CLIK_click', login_onCreateUserButtonPress );
 			break;
 
 		case ( 'button_login_createUser' ):
@@ -258,29 +250,26 @@ DefaultProperties
 	WidgetBindings.Add( ( WidgetName="button_shop_nextItem", WidgetClass=class'GFxClikWidget' ) )
 	WidgetBindings.Add( ( WidgetName="button_shop_buy", WidgetClass=class'GFxClikWidget' ) )
 
-	// Test buttons in Flash.
-	WidgetBindings.Add( ( WidgetName="mc_login_createUser", WidgetClass=class'GFxClikWidget' ) )
-
 	// Input texts in Flash.
 	WidgetBindings.Add( ( WidgetName="inputText_login_username", WidgetClass=class'GFxClikWidget' ) )
 	WidgetBindings.Add( ( WidgetName="inputText_login_password", WidgetClass=class'GFxClikWidget' ) )
 
 	// Dynamic texts in Flash.
-	WidgetBindings.Add( ( WidgetName="dynamicText_login_loginFeedbackMessage", WidgetClass=class'GFxClikWidget' ) )
-	WidgetBindings.Add( ( WidgetName="dynamicText_missions_missionSelected", WidgetClass=class'GFxClikWidget' ) )
-	WidgetBindings.Add( ( WidgetName="dynamicText_missions_missionType", WidgetClass=class'GFxClikWidget' ) )
-	WidgetBindings.Add( ( WidgetName="dynamicText_missions_missionName", WidgetClass=class'GFxClikWidget' ) )
-	WidgetBindings.Add( ( WidgetName="dynamicText_missions_missionMap", WidgetClass=class'GFxClikWidget' ) )
-	WidgetBindings.Add( ( WidgetName="dynamicText_missions_description", WidgetClass=class'GFxClikWidget' ) )
-	WidgetBindings.Add( ( WidgetName="dynamicText_missions_rewards", WidgetClass=class'GFxClikWidget') )
-	WidgetBindings.Add( ( WidgetName="dynamicText_shop_selectedItem", WidgetClass=class'GFxClikWidget' ) )
-	WidgetBindings.Add( ( WidgetName="dynamicText_shop_name", WidgetClass=class'GFxClikWidget' ) )
-	WidgetBindings.Add( ( WidgetName="dynamicText_shop_damage", WidgetClass=class'GFxClikWidget' ) )
-	WidgetBindings.Add( ( WidgetName="dynamicText_shop_ammo", WidgetClass=class'GFxClikWidget' ) )
-	WidgetBindings.Add( ( WidgetName="dynamicText_shop_firerate", WidgetClass=class'GFxClikWidget' ) )
-	WidgetBindings.Add( ( WidgetName="dynamicText_shop_projectileSpeed", WidgetClass=class'GFxClikWidget' ) )
-	WidgetBindings.Add( ( WidgetName="dynamicText_shop_reloadSpeed", WidgetClass=class'GFxClikWidget' ) )
-	WidgetBindings.Add( ( WidgetName="dynamicText_shop_spread", WidgetClass=class'GFxClikWidget' ) )
-	WidgetBindings.Add( ( WidgetName="dynamicText_itemList_weapons", WidgetClass=class'GFxClikWidget') )
-	WidgetBindings.Add( ( WidgetName="dynamicText_itemList_items", WidgetClass=class'GFxClikWidget' ) )
+	WidgetBindings.Add( ( WidgetName="dynamicText_login_loginFeedbackMessage", WidgetClass=class'GFxObject' ) )
+	WidgetBindings.Add( ( WidgetName="dynamicText_missions_missionSelected", WidgetClass=class'GFxObject' ) )
+	WidgetBindings.Add( ( WidgetName="dynamicText_missions_missionType", WidgetClass=class'GFxObject' ) )
+	WidgetBindings.Add( ( WidgetName="dynamicText_missions_missionName", WidgetClass=class'GFxObject' ) )
+	WidgetBindings.Add( ( WidgetName="dynamicText_missions_missionMap", WidgetClass=class'GFxObject' ) )
+	WidgetBindings.Add( ( WidgetName="dynamicText_missions_description", WidgetClass=class'GFxObject' ) )
+	WidgetBindings.Add( ( WidgetName="dynamicText_missions_rewards", WidgetClass=class'GFxObject') )
+	WidgetBindings.Add( ( WidgetName="dynamicText_shop_selectedItem", WidgetClass=class'GFxObject' ) )
+	WidgetBindings.Add( ( WidgetName="dynamicText_shop_name", WidgetClass=class'GFxObject' ) )
+	WidgetBindings.Add( ( WidgetName="dynamicText_shop_damage", WidgetClass=class'GFxObject' ) )
+	WidgetBindings.Add( ( WidgetName="dynamicText_shop_ammo", WidgetClass=class'GFxObject' ) )
+	WidgetBindings.Add( ( WidgetName="dynamicText_shop_firerate", WidgetClass=class'GFxObject' ) )
+	WidgetBindings.Add( ( WidgetName="dynamicText_shop_projectileSpeed", WidgetClass=class'GFxObject' ) )
+	WidgetBindings.Add( ( WidgetName="dynamicText_shop_reloadSpeed", WidgetClass=class'GFxObject' ) )
+	WidgetBindings.Add( ( WidgetName="dynamicText_shop_spread", WidgetClass=class'GFxObject' ) )
+	WidgetBindings.Add( ( WidgetName="dynamicText_itemList_weapons", WidgetClass=class'GFxObject') )
+	WidgetBindings.Add( ( WidgetName="dynamicText_itemList_items", WidgetClass=class'GFxObject' ) )
 }
