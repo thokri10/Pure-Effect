@@ -18,10 +18,10 @@ function addItems(const array<Array2D> items)
 
 function AEMenuShop_Item getItem(const int itemID)
 {
-	return m_shopItems[itemID];
+	return m_Items[itemID];
 }
 
-private function addEquipment(const array<ValueStruct> item)
+private simulated function addEquipment(const array<ValueStruct> item)
 {
 	local ValueStruct value;
 
@@ -38,7 +38,7 @@ private function addEquipment(const array<ValueStruct> item)
 	}
 }
 
-private function addWeapon(const array<ValueStruct> item)
+private simulated function addWeapon(const array<ValueStruct> item)
 {
 	//local WeaponStruct weap;
 	local AEMenuShop_Item weap;
@@ -49,7 +49,7 @@ private function addWeapon(const array<ValueStruct> item)
 	m_Items.AddItem(weap);
 }
 
-private function addItem(const array<ValueStruct> item)
+private simulated function addItem(const array<ValueStruct> item)
 {
 	local AEMenuShop_Item item_;
 	item_ = new m_Item;

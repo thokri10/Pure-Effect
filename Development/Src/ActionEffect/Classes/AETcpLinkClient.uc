@@ -225,7 +225,7 @@ event ReceivedText(string Text)
 		}
 		else if (bWaitingForWeapons)
 		{
-			PC.myDataStorage.setItems( PC.myParser.fullParse( Text ) );
+			PC.myMainMenu.UpdateItems( PC.myParser.fullParse( Text ) );
 			bWaitingForWeapons = false;
 		}
 		else if (bWaitingForReward)

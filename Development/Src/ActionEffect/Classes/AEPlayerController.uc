@@ -21,6 +21,9 @@ var AETcpLinkClient         myTcpLink;
 var class<AEJSONParser>     Parser;
 var AEJSONParser            myParser;
 
+var class<AEJSONComposer>   Composer;
+var AEJSONComposer          myJSONComposer;
+
 /** HudMenu */
 var AEHUDMenu               myMenu;
 
@@ -67,8 +70,6 @@ var string                  loadout;
 
 var string test;
 
-var class<AEJSONComposer>   Composer;
-var AEJSONComposer          myJSONComposer;
 
 replication
 {	

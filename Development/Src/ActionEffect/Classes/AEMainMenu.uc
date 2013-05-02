@@ -1,5 +1,7 @@
 class AEMainMenu extends GFxMoviePlayer
-	dependson(AEMissionObjective);
+	dependson(AEMissionObjective)
+	dependson(AEWeaponCreator)
+	dependson(AEInventory_Item);
 /** Class is responsible for the main menu in the game. **/
 
 var AEPlayerController  AEPC;
@@ -71,7 +73,17 @@ var GFxClikWidget       us_button_itemList_equippedItem2;
 var GFxClikWidget       us_button_itemList_equippedItem3;
 var GFxClikWidget       us_button_itemList_equippedItem4;
 
-var private MissionObjectives myActiveMission;
+var private MissionObjectives   myActiveMission;
+
+var private class<AEMenuList>   ItemList_;
+var private AEMenuList          myItemList;
+var private WeaponStruct        weapons_[5];
+var private AEInventory_Item    items_[5];
+var private int weaponPage_;
+var private int weaponPageMax_;
+var private int itemPage_;
+var private int itemPageMax_;
+
 var private int mySelectionID;
 var private int mySelectionIDMax;
 
@@ -85,6 +97,10 @@ function bool Start( optional bool StartPaused = false )
 
 	AEPC = AEPlayerController(GetPC());
 	AEPC.myMainMenu = self;
+
+	myItemList = new ItemList_;
+	myItemList.PC = AEPC;
+
 	AddCaptureKey( 'Escape' );
 	bCaptureInput = true;
 
@@ -461,6 +477,8 @@ function profile_onItemListButtonPress( GFxClikWidget.EventData ev )
 {
 	ActionScriptVoid( "openItemMenu" );
 
+	AEPC.myTcpLink.getItems();
+
 	`Log("The button \"item list\" was pushed.");
 }
 
@@ -576,6 +594,66 @@ function itemList_onEquippedItemButtonPress( GFxClikWidget.EventData ev )
 	`Log("The button representing an item under the Equipped items menu was pushed.");
 }
 
+function UpdateItems( const array<Array2D> items )
+{
+	myItemList.addItems( items );
+
+	`log("lkassjdlkjajsdlkjalsd");
+
+	UpdateItemList();
+}
+
+private function UpdateItemList()
+{
+	local array<WeaponStruct> weaps;
+	local array<AEInventory_Item> items;
+	local int counter;
+	local int i;
+
+	counter = 0;
+
+	weaps = myItemList.getWeapons();
+	items = myItemList.getItems();
+
+	weaponPageMax_ = weaps.Length / 5;
+	if( weaps.Length % 5 != 0 )
+		++weaponPageMax_;
+
+	itemPageMax_ = items.Length / 5;
+	if( items.Length % 5 != 0 )
+		++itemPageMax_;
+
+
+	for( i = weaponPage_ * 5; i < weaponPage_ * 5 + 5; ++i )
+	{
+		switch( counter )
+		{
+		case 0:
+			us_button_itemList_weaponSlot1.SetText( weaps[i].type );
+			break;
+		case 1:
+			us_button_itemList_weaponSlot2.SetText( weaps[i].type );
+			break;
+		}
+
+		++counter;
+	}
+
+	counter = 0;
+	for( i = itemPage_ * 5; i < items.Length; ++i )
+	{
+		switch( counter )
+		{
+		case 0: 
+			us_button_itemList_itemSlot1.SetText( items[i].itemName );
+			break;
+		case 1:
+			us_button_itemList_itemSlot2.SetText( items[i].itemName );
+			break;
+		}
+	}
+}
+
 /** Runs automaticly with TCPclient or in this class */
 function UpdateMissionMenu()
 {
@@ -628,6 +706,8 @@ private function decSelectionID()
 
 DefaultProperties
 {
+	ItemList_ = class'AEMenuList'
+
 	// LOGIN MENU COMPONENTS - INITIALIZATION
 	WidgetBindings.Add( ( WidgetName="button_login_login", WidgetClass=class'GFxClikWidget' ) )
 	WidgetBindings.Add( ( WidgetName="button_login_createUser", WidgetClass=class'GFxClikWidget' ) )
