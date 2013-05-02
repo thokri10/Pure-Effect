@@ -3,10 +3,10 @@ class AEMenuShop extends Object
 
 var AEPlayerController PC;
 
-var private class<AEMenuShop_Item> ShopItem;
-var private array<AEMenuShop_Item> m_shopItems;
+var private class<AEMenuShop_Item> m_Item;
+var private array<AEMenuShop_Item> m_Items;
 
-function setItems(const array<Array2D> items)
+function addItems(const array<Array2D> items)
 {
 	local Array2D item;
 
@@ -42,21 +42,21 @@ private function addWeapon(const array<ValueStruct> item)
 {
 	//local WeaponStruct weap;
 	local AEMenuShop_Item weap;
-	weap = new ShopItem;
+	weap = new m_Item;
 
 	weap.setWeapon( PC.myWeaponCreator.parseToStruct(item) );
 	weap.setType("weapon");
-	m_shopItems.AddItem(weap);
+	m_Items.AddItem(weap);
 }
 
 private function addItem(const array<ValueStruct> item)
 {
-	local AEMenuShop_Item shpItem;
-	shpItem = new ShopItem;
+	local AEMenuShop_Item item_;
+	item_ = new m_Item;
 
-	shpItem.setItem( PC.myItemInventory.createItem( item ) );
-	shpItem.setType("item");
-	m_shopItems.AddItem(shpItem);
+	item_.setItem( PC.myItemInventory.createItem( item ) );
+	item_.setType("item");
+	m_Items.AddItem(item_);
 }
 
 DefaultProperties
