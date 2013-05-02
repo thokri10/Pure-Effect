@@ -12,6 +12,7 @@ class AEMainMenu extends GFxMoviePlayer
 - previewMissionPicture_level1          // ONLY WORKS IF YOU CALL IT WHEN YOU ARE IN THE MISSIONS MENU. NOT BEFORE.
 - previewMissionPicture_level3_day      // ONLY WORKS IF YOU CALL IT WHEN YOU ARE IN THE MISSIONS MENU. NOT BEFORE.
 - previewMissionPicture_level3_night    // ONLY WORKS IF YOU CALL IT WHEN YOU ARE IN THE MISSIONS MENU. NOT BEFORE.
+- previewMissionPicture_ship            // ONLY WORKS IF YOU CALL IT WHEN YOU ARE IN THE MISSIONS MENU. NOT BEFORE.
 */
 
 var AEPlayerController  AEPC;
