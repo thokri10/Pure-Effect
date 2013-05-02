@@ -19,6 +19,9 @@ function addItems(const array<Array2D> items)
 function AEMenuShop_Item getItem(const int itemID)
 {
 	return m_shopItems[itemID];
+
+	// Temp. fix.
+	//return none;
 }
 
 private function addEquipment(const array<ValueStruct> item)
