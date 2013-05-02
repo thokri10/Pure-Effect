@@ -4,6 +4,19 @@ class AEMainMenu extends GFxMoviePlayer
 	dependson(AEInventory_Item);
 /** Class is responsible for the main menu in the game. **/
 
+/* ACTIONSCRIPT FUNCTIONS YOU CAN CALL BY USING "ActionScriptVoid( "functionName" );"
+- openLoginMenu
+- openMainMenu
+- openMissionMenu
+- openProfileMenu
+- openShopMenu
+- openItemMenu
+- previewMissionPicture_level1          // ONLY WORKS IF YOU CALL IT WHEN YOU ARE IN THE MISSIONS MENU. NOT BEFORE.
+- previewMissionPicture_level3_day      // ONLY WORKS IF YOU CALL IT WHEN YOU ARE IN THE MISSIONS MENU. NOT BEFORE.
+- previewMissionPicture_level3_night    // ONLY WORKS IF YOU CALL IT WHEN YOU ARE IN THE MISSIONS MENU. NOT BEFORE.
+- previewMissionPicture_ship            // ONLY WORKS IF YOU CALL IT WHEN YOU ARE IN THE MISSIONS MENU. NOT BEFORE.
+*/
+
 var AEPlayerController  AEPC;
 var UIInputKeyData      key;
 
