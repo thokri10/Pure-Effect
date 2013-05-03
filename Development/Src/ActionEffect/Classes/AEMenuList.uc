@@ -26,11 +26,15 @@ function array<WeaponStruct> getWeapons()
 	return weapons_;
 }
 
+function Clear()
+{
+	items_.Length = 0;
+	weapons_.Length = 0;
+}
+
 private function addEquipment(const array<ValueStruct> item)
 {
 	local ValueStruct value;
-
-	`log("ajskhdkjahsdkjhaskjdhkajshdkjhaskjdhkajshdkjashd");
 
 	foreach item( value )
 	{
@@ -47,13 +51,11 @@ private function addEquipment(const array<ValueStruct> item)
 
 private function addWeapon(const array<ValueStruct> item)
 {
-	`log("asd");
 	weapons_.AddItem( PC.myWeaponCreator.parseToStruct( item ) );
 }
 
 private function addItem(const array<ValueStruct> item)
 {
-	`log("dsa");
 	items_.AddItem( PC.myItemInventory.createItem( item ) );
 }
 

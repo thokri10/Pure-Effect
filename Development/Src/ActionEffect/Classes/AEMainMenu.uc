@@ -4,6 +4,13 @@ class AEMainMenu extends GFxMoviePlayer
 	dependson(AEInventory_Item);
 /** Class is responsible for the main menu in the game. **/
 
+struct ITEMLIST
+{
+	var WeaponStruct primary_;
+	var WeaponStruct secondary_;
+	var AEInventory_Item items_[4];
+};
+
 /* ACTIONSCRIPT FUNCTIONS YOU CAN CALL BY USING "ActionScriptVoid( "functionName" );"
 - openLoginMenu
 - openMainMenu
@@ -92,6 +99,10 @@ var private class<AEMenuList>   ItemList_;
 var private AEMenuList          myItemList;
 var private WeaponStruct        weapons_[5];
 var private AEInventory_Item    items_[5];
+var private WeaponStruct        activeWeapon_;
+var private AEInventory_Item    activeItem_;
+var private ITEMLIST            Equipments_;
+var private int buttonPressed_;
 var private int weaponPage_;
 var private int weaponPageMax_;
 var private int itemPage_;
@@ -105,8 +116,6 @@ function bool Start( optional bool StartPaused = false )
 	super.Start();
 	Advance( 0 );
 
-	mySelectionID = 0;
-	mySelectionIDMax = 0;
 
 	AEPC = AEPlayerController(GetPC());
 	AEPC.myMainMenu = self;
@@ -123,7 +132,7 @@ function bool Start( optional bool StartPaused = false )
 event bool WidgetInitialized( name WidgetName, name WidgetPath, GFxObject Widget )
 {
 	// Remember to add for input and dynamic texts as well.
-	`log("NEGEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEER!");
+	//`log("NEGEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEER!");
 	switch ( WidgetName )
 	{
 		// CHECKS FOR INPUT AND DYNAMIC TEXT FIELDS.
@@ -293,27 +302,27 @@ event bool WidgetInitialized( name WidgetName, name WidgetPath, GFxObject Widget
 
 		case ( 'button_itemList_weaponSlot1' ):
 			us_button_itemList_weaponSlot1 = GFxClikWidget( Widget );
-			us_button_itemList_weaponSlot1.AddEventListener( 'CLIK_click', itemList_onWeaponSlotSelectedButtonPress );
+			us_button_itemList_weaponSlot1.AddEventListener( 'CLIK_click', itemList_onWeaponSlotSelectedButtonPress1 );
 			break;
 
 		case ( 'button_itemList_weaponSlot2' ):
 			us_button_itemList_weaponSlot2 = GFxClikWidget( Widget );
-			us_button_itemList_weaponSlot2.AddEventListener( 'CLIK_click', itemList_onWeaponSlotSelectedButtonPress );
+			us_button_itemList_weaponSlot2.AddEventListener( 'CLIK_click', itemList_onWeaponSlotSelectedButtonPress2 );
 			break;
 
 		case ( 'button_itemList_weaponSlot3' ):
 			us_button_itemList_weaponSlot3 = GFxClikWidget( Widget );
-			us_button_itemList_weaponSlot3.AddEventListener( 'CLIK_click', itemList_onWeaponSlotSelectedButtonPress );
+			us_button_itemList_weaponSlot3.AddEventListener( 'CLIK_click', itemList_onWeaponSlotSelectedButtonPress3 );
 			break;
 
 		case ( 'button_itemList_weaponSlot4' ):
 			us_button_itemList_weaponSlot4 = GFxClikWidget( Widget );
-			us_button_itemList_weaponSlot4.AddEventListener( 'CLIK_click', itemList_onWeaponSlotSelectedButtonPress );
+			us_button_itemList_weaponSlot4.AddEventListener( 'CLIK_click', itemList_onWeaponSlotSelectedButtonPress4 );
 			break;
 
 		case ( 'button_itemList_weaponSlot5' ):
 			us_button_itemList_weaponSlot5 = GFxClikWidget( Widget );
-			us_button_itemList_weaponSlot5.AddEventListener( 'CLIK_click', itemList_onWeaponSlotSelectedButtonPress );
+			us_button_itemList_weaponSlot5.AddEventListener( 'CLIK_click', itemList_onWeaponSlotSelectedButtonPress5 );
 			break;
 
 		case ( 'button_itemList_scrollUpItem' ):
@@ -328,27 +337,27 @@ event bool WidgetInitialized( name WidgetName, name WidgetPath, GFxObject Widget
 
 		case ( 'button_itemList_itemSlot1' ):
 			us_button_itemList_itemSlot1 = GFxClikWidget( Widget );
-			us_button_itemList_itemSlot1.AddEventListener( 'CLIK_click', itemList_onItemSlotSelectedButtonPress );
+			us_button_itemList_itemSlot1.AddEventListener( 'CLIK_click', itemList_onItemSlotSelectedButtonPress1 );
 			break;
 
 		case ( 'button_itemList_itemSlot2' ):
 			us_button_itemList_itemSlot2 = GFxClikWidget( Widget );
-			us_button_itemList_itemSlot2.AddEventListener( 'CLIK_click', itemList_onItemSlotSelectedButtonPress );
+			us_button_itemList_itemSlot2.AddEventListener( 'CLIK_click', itemList_onItemSlotSelectedButtonPress2 );
 			break;
 
 		case ( 'button_itemList_itemSlot3' ):
 			us_button_itemList_itemSlot3 = GFxClikWidget( Widget );
-			us_button_itemList_itemSlot3.AddEventListener( 'CLIK_click', itemList_onItemSlotSelectedButtonPress );
+			us_button_itemList_itemSlot3.AddEventListener( 'CLIK_click', itemList_onItemSlotSelectedButtonPress3 );
 			break;
 
 		case ( 'button_itemList_itemSlot4' ):
 			us_button_itemList_itemSlot4 = GFxClikWidget( Widget );
-			us_button_itemList_itemSlot4.AddEventListener( 'CLIK_click', itemList_onItemSlotSelectedButtonPress );
+			us_button_itemList_itemSlot4.AddEventListener( 'CLIK_click', itemList_onItemSlotSelectedButtonPress4 );
 			break;
 
 		case ( 'button_itemList_itemSlot5' ):
 			us_button_itemList_itemSlot5 = GFxClikWidget( Widget );
-			us_button_itemList_itemSlot5.AddEventListener( 'CLIK_click', itemList_onItemSlotSelectedButtonPress );
+			us_button_itemList_itemSlot5.AddEventListener( 'CLIK_click', itemList_onItemSlotSelectedButtonPress5 );
 			break;
 
 		case ( 'button_itemList_equippedWeaponPrimary' ):
@@ -363,22 +372,22 @@ event bool WidgetInitialized( name WidgetName, name WidgetPath, GFxObject Widget
 
 		case ( 'button_itemList_equippedItem1' ):
 			us_button_itemList_equippedItem1 = GFxClikWidget( Widget );
-			us_button_itemList_equippedItem1.AddEventListener( 'CLIK_click', itemList_onEquippedItemButtonPress );
+			us_button_itemList_equippedItem1.AddEventListener( 'CLIK_click', itemList_onEquippedItemButtonPress1 );
 			break;
 
 		case ( 'button_itemList_equippedItem2' ):
 			us_button_itemList_equippedItem2 = GFxClikWidget( Widget );
-			us_button_itemList_equippedItem2.AddEventListener( 'CLIK_click', itemList_onEquippedItemButtonPress );
+			us_button_itemList_equippedItem2.AddEventListener( 'CLIK_click', itemList_onEquippedItemButtonPress2 );
 			break;
 
 		case ( 'button_itemList_equippedItem3' ):
 			us_button_itemList_equippedItem3 = GFxClikWidget( Widget );
-			us_button_itemList_equippedItem3.AddEventListener( 'CLIK_click', itemList_onEquippedItemButtonPress );
+			us_button_itemList_equippedItem3.AddEventListener( 'CLIK_click', itemList_onEquippedItemButtonPress3 );
 			break;
 
 		case ( 'button_itemList_equippedItem4' ):
 			us_button_itemList_equippedItem4 = GFxClikWidget( Widget );
-			us_button_itemList_equippedItem4.AddEventListener( 'CLIK_click', itemList_onEquippedItemButtonPress );
+			us_button_itemList_equippedItem4.AddEventListener( 'CLIK_click', itemList_onEquippedItemButtonPress4 );
 			break;
 
 		default:
@@ -488,9 +497,19 @@ function mission_onBackButtonpress( GFxClikWidget.EventData ev )
 
 function profile_onItemListButtonPress( GFxClikWidget.EventData ev )
 {
+	local int i;
 	ActionScriptVoid( "openItemMenu" );
 
+	myItemList.Clear();
 	AEPC.myTcpLink.getItems();
+	activeWeapon_.type = "";
+	activeItem_ = None;
+	
+	for(i = 0; i < 5; ++i)
+	{
+		items_[i] = None;
+		weapons_[i].type = "";
+	}
 
 	`Log("The button \"item list\" was pushed.");
 }
@@ -539,80 +558,106 @@ function itemList_onBackButtonPress( GFxClikWidget.EventData ev )
 
 function itemList_onScrollUpWeaponButtonPress( GFxClikWidget.EventData ev )
 {
-	// TO-DO.
+	--weaponPage_;
 
-	`Log("The button \"^\" was pushed.");
+	if(weaponPage_ < 0)
+		weaponPage_ = weaponPageMax_;
+	
+	UpdateItemList();
 }
 
 function itemList_onScrollDownWeaponButtonPress( GFxClikWidget.EventData ev )
 {
-	// TO-DO.
+	++weaponPage_;
 
-	`Log("The button \"v\" was pushed.");
-}
+	if(weaponPage_ >= weaponPageMax_)
+		weaponPage_ = 0;
 
-function itemList_onWeaponSlotSelectedButtonPress( GFxClikWidget.EventData ev )
-{
-	// TO-DO.
-
-	// This method is used with all the weapon slots under the Weapon menu.
-
-	`Log("The button representing a weapon in the Weapon menu was pushed.");
+	UpdateItemList();
 }
 
 function itemList_onScrollUpItemButtonPress( GFxClikWidget.EventData ev )
 {
-	// TO-DO.
+	--itemPage_;
 
-	`Log("The button \"^\" was pushed.");
+	if(itemPage_ < 0)
+		itemPage_ = itemPageMax_;
+	
+	UpdateItemList();
 }
 
 function itemList_onScrollDownItemButtonPress( GFxClikWidget.EventData ev )
 {
-	// TO-DO.
+	++itemPage_;
 
-	`Log("The button \"v\" was pushed.");
+	if(itemPage_ >= itemPageMax_)
+		itemPage_ = 0;
+
+	UpdateItemList();
 }
 
-function itemList_onItemSlotSelectedButtonPress( GFxClikWidget.EventData ev )
+function itemList_onItemSlotSelectedButtonPress1( GFxClikWidget.EventData ev ){ setActiveItem(0); }
+function itemList_onItemSlotSelectedButtonPress2( GFxClikWidget.EventData ev ){ setActiveItem(1); }
+function itemList_onItemSlotSelectedButtonPress3( GFxClikWidget.EventData ev ){ setActiveItem(2); }
+function itemList_onItemSlotSelectedButtonPress4( GFxClikWidget.EventData ev ){ setActiveItem(3); }
+function itemList_onItemSlotSelectedButtonPress5( GFxClikWidget.EventData ev ){ setActiveItem(4); }
+
+private function setActiveItem(int id)
 {
-	// TO-DO.
+	if( Items_[id] != None )
+		activeItem_ = Items_[id];
+}
 
-	// This method is used with all the weapon slots under the Item menu.
+function itemList_onEquippedItemButtonPress1( GFxClikWidget.EventData ev ){ Equipments_.items_[0] = activeItem_; UpdateList(); }
+function itemList_onEquippedItemButtonPress2( GFxClikWidget.EventData ev ){ Equipments_.items_[1] = activeItem_; UpdateList(); }
+function itemList_onEquippedItemButtonPress3( GFxClikWidget.EventData ev ){ Equipments_.items_[2] = activeItem_; UpdateList(); }
+function itemList_onEquippedItemButtonPress4( GFxClikWidget.EventData ev ){ Equipments_.items_[3] = activeItem_; UpdateList(); }
 
-	`Log("The button representing an item under the Item menu was pushed.");
+function itemList_onWeaponSlotSelectedButtonPress1( GFxClikWidget.EventData ev ){ setActiveWeapon(0); }
+function itemList_onWeaponSlotSelectedButtonPress2( GFxClikWidget.EventData ev ){ setActiveWeapon(1); }
+function itemList_onWeaponSlotSelectedButtonPress3( GFxClikWidget.EventData ev ){ setActiveWeapon(2); }
+function itemList_onWeaponSlotSelectedButtonPress4( GFxClikWidget.EventData ev ){ setActiveWeapon(3); }
+function itemList_onWeaponSlotSelectedButtonPress5( GFxClikWidget.EventData ev ){ setActiveWeapon(4); }
+
+private function setActiveWeapon(int id)
+{
+	if(weapons_[id].type != "")
+		activeWeapon_ = weapons_[id];
 }
 
 function itemList_onEquippedWeaponPrimaryButtonPress( GFxClikWidget.EventData ev )
 {
-	// TO-DO.
-
-	`Log("The button representing the player's current primary weapon was pushed.");
+	if(activeWeapon_.type != ""){
+		Equipments_.primary_ = activeWeapon_;
+		UpdateList();
+	}
 }
 
 function itemList_onEquippedWeaponSecondaryButtonPress( GFxClikWidget.EventData ev )
 {
-	// TO-DO.
-
-	`Log("The button representing the player's current secondary weapon was pushed.");
+	if(activeWeapon_.type != ""){
+		Equipments_.secondary_ = activeWeapon_;
+		UpdateList();
+	}
 }
 
-function itemList_onEquippedItemButtonPress( GFxClikWidget.EventData ev )
+private function UpdateList()
 {
-	// TO-DO.
-
-	// This method is used with all the -equipped- item slots under the
-	// Equipped Items menu.
-
-	`Log("The button representing an item under the Equipped items menu was pushed.");
+	us_button_itemList_equippedWeaponPrimary.SetString("label", Equipments_.primary_.type );
+	us_button_itemList_equippedWeaponSecondary.SetString("label", Equipments_.secondary_.type );
+	if(Equipments_.items_[0] != None)
+		us_button_itemList_equippedItem1.SetString("label", Equipments_.items_[0].itemName );
+	if(Equipments_.items_[1] != None)
+		us_button_itemList_equippedItem2.SetString("label", Equipments_.items_[1].itemName );
+	if(Equipments_.items_[2] != None)
+		us_button_itemList_equippedItem3.SetString("label", Equipments_.items_[2].itemName );
+	if(Equipments_.items_[3] != None)
+		us_button_itemList_equippedItem4.SetString("label", Equipments_.items_[3].itemName );
 }
 
 function UpdateItems( const array<Array2D> items )
 {
 	myItemList.addItems( items );
-
-	`log("lkassjdlkjajsdlkjalsd");
-
 	UpdateItemList();
 }
 
@@ -622,49 +667,93 @@ private function UpdateItemList()
 	local array<AEInventory_Item> items;
 	local int counter;
 	local int i;
+	local int start;
+	local int end;
 
 	counter = 0;
+
+	weaps.Length = 0;
+	items.Length = 0;
 
 	weaps = myItemList.getWeapons();
 	items = myItemList.getItems();
 
 	weaponPageMax_ = weaps.Length / 5;
-	if( weaps.Length % 5 != 0 )
+	if( float(weaps.Length / 5) > weaponPageMax_ )
 		++weaponPageMax_;
 
 	itemPageMax_ = items.Length / 5;
-	if( items.Length % 5 != 0 )
+	if( float(items.Length / 5) > itemPageMax_ )
 		++itemPageMax_;
 
-
-	for( i = weaponPage_ * 5; i < weaponPage_ * 5 + 5; ++i )
+	start = weaponPage_ * 5;
+	end = start + 5;
+	for( i = start; i < end; ++i )
 	{
-		switch( counter )
+		if( i < weaps.Length )
 		{
-		case 0:
-			us_button_itemList_weaponSlot1.SetText( weaps[i].type );
-			break;
-		case 1:
-			us_button_itemList_weaponSlot2.SetText( weaps[i].type );
-			break;
+			switch( counter )
+			{
+			case 0:
+					us_button_itemList_weaponSlot1.SetString("label", weaps[i].type );
+					weapons_[0] = weaps[i];				
+				break;
+			case 1:
+					us_button_itemList_weaponSlot2.SetString("label", weaps[i].type );
+					weapons_[1] = weaps[i];				
+				break;
+			case 2:
+					us_button_itemList_weaponSlot2.SetString("label", weaps[i].type );
+					weapons_[2] = weaps[i];				
+				break;
+			case 3:
+					us_button_itemList_weaponSlot2.SetString("label", weaps[i].type );
+					weapons_[3] = weaps[i];				
+				break;
+			case 4:
+					us_button_itemList_weaponSlot2.SetString("label", weaps[i].type );
+					weapons_[4] = weaps[i];
+				break;
+			}
+			++counter;
 		}
-
-		++counter;
 	}
 
 	counter = 0;
-	for( i = itemPage_ * 5; i < items.Length; ++i )
+	start = itemPage_ * 5;
+	end = start + 5;
+	for( i = itemPage_ * 5; i < (itemPage_ * 5 + 5); ++i )
 	{
-		switch( counter )
+		if( i < items.Length )
 		{
-		case 0: 
-			us_button_itemList_itemSlot1.SetText( items[i].itemName );
-			break;
-		case 1:
-			us_button_itemList_itemSlot2.SetText( items[i].itemName );
-			break;
+			switch( counter )
+			{
+			case 0: 
+					us_button_itemList_itemSlot1.SetString("label", items[i].itemName );
+					items_[0] = items[i];
+				break;
+			case 1:
+					us_button_itemList_itemSlot2.SetString("label", items[i].itemName );
+					items_[1] = items[i];
+				break;
+			case 2:
+					us_button_itemList_itemSlot2.SetString("label", items[i].itemName );
+					items_[2] = items[i];
+				break;
+			case 3:
+					us_button_itemList_itemSlot2.SetString("label", items[i].itemName );
+					items_[3] = items[i];
+				break;
+			case 4:
+					us_button_itemList_itemSlot2.SetString("label", items[i].itemName );
+					items_[4] = items[i];				
+				break;
+			}
+			++counter;
 		}
 	}
+	
+	UpdateList();
 }
 
 /** Runs automaticly with TCPclient or in this class */
@@ -720,6 +809,8 @@ private function decSelectionID()
 DefaultProperties
 {
 	ItemList_ = class'AEMenuList'
+	mySelectionID = 0;
+	mySelectionIDMax = 0;
 
 	// LOGIN MENU COMPONENTS - INITIALIZATION
 	WidgetBindings.Add( ( WidgetName="button_login_login", WidgetClass=class'GFxClikWidget' ) )

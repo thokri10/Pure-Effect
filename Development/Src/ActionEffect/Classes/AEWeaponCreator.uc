@@ -74,7 +74,7 @@ function WeaponStruct parseToStruct(array<ValueStruct> values)
 		else if (value.type == "fire_rate")     returnWeapon.reloadTime = float ( value.value );
 		else if (value.type == "spread")        returnWeapon.spread     = float ( value.value );
 		else if (value.type == "slot")          returnWeapon.slot       = value.value;
-		else `log("[WeaponCreatorParse] No known type: " $ value.type);
+		//else `log("[WeaponCreatorParse] No known type: " $ value.type);
 	}
 
 	return returnWeapon;
