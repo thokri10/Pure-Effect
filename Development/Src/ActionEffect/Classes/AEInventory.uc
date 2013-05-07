@@ -21,6 +21,7 @@ function Use(int itemSlot)
 /** -Assigns- an item to a slot. */
 function AddItemToSlot(int slot, AEInventory_Item item)
 {
+	item.PC = PC;
 	ItemList_[slot] = item;
 }
 
@@ -74,6 +75,7 @@ function AddItem(AEInventory_Item item)
 	{
 		if( ItemList_[i] == None )
 		{
+			item.PC = PC;
 			ItemList_[i] = item;
 			return;
 		}

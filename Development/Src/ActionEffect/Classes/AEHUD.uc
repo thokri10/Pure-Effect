@@ -202,7 +202,8 @@ function SetGameTimer(float timer)
 
 /** Draws a bar for HUD */
 function DrawBar(String barTitle, float barValue, float barMaxValue,
-	int x, int y, int textValueR, int textValueG, int textValueB)
+	int x, int y, int textValueR, int textValueG, int textValueB, 
+	optional float WidthToBar = 0)
 {
     local int posX;
 	local float barLengthFilled;
@@ -211,10 +212,15 @@ function DrawBar(String barTitle, float barValue, float barMaxValue,
     posX = x;
 
 	barLengthFilled = barValue / barMaxValue;
+	
 
 	Canvas.SetPos(posX, y);
 	Canvas.SetDrawColor(textValueR, textValueG, textValueB, 200);
-	Canvas.DrawRect(barWidth * barLengthFilled, barHeight);
+
+	if(WidthToBar == 0)
+		Canvas.DrawRect(barWidth * barLengthFilled, barHeight);
+	else
+		Canvas.DrawRect(WidthToBar * barLengthFilled, barHeight);
 
     /* Displays a title of the bar */
     Canvas.SetPos(posX + 5, y + 5);
@@ -289,6 +295,41 @@ function DrawFuelBar(float barValueR, float barValueG, float barValueB)
     }
 }
 
+function DrawItemInfo(const float R, const float G, const float B)
+{
+	local AEPlayerController playerPC;
+	local AEInventory_Item itemList[4];
+	local float timer;
+	local int i;
+
+	playerPC = AEPlayerController( GetALocalPlayerController() );
+	for( i = 0; i < 4; ++i)
+	{
+		if(playerPC.myItemInventory.ItemList_[i] != None)
+			itemList[i] = playerPC.myItemInventory.ItemList_[i];
+	}
+
+	if( !PlayerOwner.IsDead() && !UTPlayerOwner.IsInState('Spectating') )
+	{
+		// Item 1
+		for( i = 0; i < 4; ++i)
+		{
+			if(itemList[i] != None)
+			{
+				timer = itemList[i].GetTimerCount('resetCooldown');
+				if(timer == -1){
+					Canvas.SetPos( Canvas.SizeX - (Canvas.SizeX * 0.990f), Canvas.SizeY / 2 + (barHeight * i));
+					Canvas.DrawText(itemList[i].itemName $ " Counter: " $ itemList[i].StackCounter);
+				}else{
+					DrawBar("", itemList[i].Cooldown - timer, itemList[i].Cooldown, 
+								Canvas.SizeX - (Canvas.SizeX * 0.990f), Canvas.SizeY / 2 + (barHeight * i), 
+								R, G, B, 100.0f);
+				}
+			}
+		}
+	}
+}
+
 /** Overrode this function to make our custom HUD. */
 function DrawLivingHud()
 {
@@ -296,7 +337,7 @@ function DrawLivingHud()
 
 	DrawHealthBar(200.0f, 80.0f, 80.0f);
 	DrawStaminaBar(80.0f, 200.0f, 80.0f);
-	
+	DrawItemInfo(80.0f, 80.0f, 200.0f);
 	// Uncommented for debugging purposes.
 	//DrawFuelBar(200.0f, 200.0f, 200.0f);
 }

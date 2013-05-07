@@ -86,6 +86,7 @@ replication
 simulated event PostBeginPlay()
 {
 	local AEInventory_Item item;
+	local AEInventory_Item item2;
 	local AEReplicationInfo GameObj;
 	
 	// Initializations of various variables.
@@ -104,12 +105,21 @@ simulated event PostBeginPlay()
 	myItemInventory.PC = self;
 
 	item = spawn(class'AEInventory_Item', self);
+	item.itemName = "Shield";
 	item.delay = 10;
 	item.Effects.AddItem(EFFECT_SHIELD);
 	item.Cooldown = 10;
 	item.StackCounter = 10;
 
-	myItemInventory.AddItem(item);
+	item2 = spawn(class'AEInventory_Item', self);
+	item2.itemName = "Nade";
+	item2.delay = 2;
+	item2.Effects.AddItem(EFFECT_GRANADE);
+	item2.Cooldown = 4;
+	item2.StackCounter = 10;
+
+	myItemInventory.AddItemToSlot(0, item);
+	myItemInventory.AddItemToSlot(1, item2);
 
 	myMenu = Spawn(class'AEHUDMenu');
 	myMenu.PC = self;
