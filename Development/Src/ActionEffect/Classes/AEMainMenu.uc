@@ -806,20 +806,16 @@ function UpdateMissionMenu()
 	us_dynamicText_missions_rewards.SetText( rewards );
 
 	// Previews mission image. Hard-coded.
-	switch (mySelectionID)
+	switch (mission.levelID)
 	{
-		case 0:
 		case 1:
-		case 2:
 			ActionScriptVoid( "previewMissionPicture_level1" );
 			break;
-
-		case 3:
-			ActionScriptVoid( "previewMissionPicture_level1" ); // Wrong preview. Placeholder.
-			break;
-
-		case 4:
+		case 2:
 			ActionScriptVoid( "previewMissionPicture_level3_day" );
+			break;
+		case 3:
+			ActionScriptVoid( "previewMissionPicture_level3_night" ); 
 			break;
 	}
 }
