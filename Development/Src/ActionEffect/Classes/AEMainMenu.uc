@@ -18,10 +18,18 @@ struct ITEMLIST
 - openProfileMenu
 - openShopMenu
 - openItemMenu
-- previewMissionPicture_level1          // ONLY WORKS IF YOU CALL IT WHEN YOU ARE IN THE MISSIONS MENU. NOT BEFORE.
-- previewMissionPicture_level3_day      // ONLY WORKS IF YOU CALL IT WHEN YOU ARE IN THE MISSIONS MENU. NOT BEFORE.
-- previewMissionPicture_level3_night    // ONLY WORKS IF YOU CALL IT WHEN YOU ARE IN THE MISSIONS MENU. NOT BEFORE.
-- previewMissionPicture_ship            // ONLY WORKS IF YOU CALL IT WHEN YOU ARE IN THE MISSIONS MENU. NOT BEFORE.
+- previewMissionPicture_level1
+- previewMissionPicture_level3_day
+- previewMissionPicture_level3_night
+- previewMissionPicture_ship
+- previewItemPicture_linkgun
+- previewItemPicture_rocketLauncher
+- previewItemPicture_shockRifle
+- previewItemPicture_jetpack
+- previewItemPicture_shield
+* NB: The functions for previewing images of the weapons and items have to be
+* called while the player is in their respective menus. Otherwise, it will NOT
+* work!
 */
 
 var AEPlayerController  AEPC;
@@ -115,7 +123,6 @@ function bool Start( optional bool StartPaused = false )
 {
 	super.Start();
 	Advance( 0 );
-
 
 	AEPC = AEPlayerController(GetPC());
 	AEPC.myMainMenu = self;
@@ -530,12 +537,16 @@ function shop_onPreviousItemButtonPress( GFxClikWidget.EventData ev )
 {
 	// TO-DO.
 
+	// Change preview picture.
+
 	`Log("The button \"<\" was pushed.");
 }
 
 function shop_onNextItemButtonPress( GFxClikWidget.EventData ev)
 {
 	// TO-DO.
+
+	// Change preview picture.
 
 	`Log("The button \">\" was pushed.");
 }
@@ -634,7 +645,7 @@ function itemList_onEquippedWeaponPrimaryButtonPress( GFxClikWidget.EventData ev
 {
 	if(activeWeapon_.type != ""){
 		Equipments_.primary_ = activeWeapon_;
-		UpdateList();
+		UpdateList();		
 	}
 }
 
@@ -794,7 +805,23 @@ function UpdateMissionMenu()
 
 	us_dynamicText_missions_rewards.SetText( rewards );
 
-	// TO-DO
+	// Previews mission image. Hard-coded.
+	switch (mySelectionID)
+	{
+		case 0:
+		case 1:
+		case 2:
+			ActionScriptVoid( "previewMissionPicture_level1" );
+			break;
+
+		case 3:
+			ActionScriptVoid( "previewMissionPicture_level1" ); // Wrong preview. Placeholder.
+			break;
+
+		case 4:
+			ActionScriptVoid( "previewMissionPicture_level3_day" );
+			break;
+	}
 }
 
 private function addSelectionID()
