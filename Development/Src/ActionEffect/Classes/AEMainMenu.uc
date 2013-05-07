@@ -124,7 +124,6 @@ function bool Start( optional bool StartPaused = false )
 	super.Start();
 	Advance( 0 );
 
-
 	AEPC = AEPlayerController(GetPC());
 	AEPC.myMainMenu = self;
 
@@ -533,12 +532,16 @@ function shop_onPreviousItemButtonPress( GFxClikWidget.EventData ev )
 {
 	// TO-DO.
 
+	// Change preview picture.
+
 	`Log("The button \"<\" was pushed.");
 }
 
 function shop_onNextItemButtonPress( GFxClikWidget.EventData ev)
 {
 	// TO-DO.
+
+	// Change preview picture.
 
 	`Log("The button \">\" was pushed.");
 }
@@ -637,7 +640,7 @@ function itemList_onEquippedWeaponPrimaryButtonPress( GFxClikWidget.EventData ev
 {
 	if(activeWeapon_.type != ""){
 		Equipments_.primary_ = activeWeapon_;
-		UpdateList();
+		UpdateList();		
 	}
 }
 
@@ -795,7 +798,23 @@ function UpdateMissionMenu()
 
 	us_dynamicText_missions_rewards.SetText( rewards );
 
-	// TO-DO
+	// Previews mission image. Hard-coded.
+	switch (mySelectionID)
+	{
+		case 0:
+		case 1:
+		case 2:
+			ActionScriptVoid( "previewMissionPicture_level1" );
+			break;
+
+		case 3:
+			ActionScriptVoid( "previewMissionPicture_level1" ); // Wrong preview. Placeholder.
+			break;
+
+		case 4:
+			ActionScriptVoid( "previewMissionPicture_level3_day" );
+			break;
+	}
 }
 
 private function addSelectionID()
