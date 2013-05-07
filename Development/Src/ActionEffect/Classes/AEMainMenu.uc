@@ -18,10 +18,18 @@ struct ITEMLIST
 - openProfileMenu
 - openShopMenu
 - openItemMenu
-- previewMissionPicture_level1          // ONLY WORKS IF YOU CALL IT WHEN YOU ARE IN THE MISSIONS MENU. NOT BEFORE.
-- previewMissionPicture_level3_day      // ONLY WORKS IF YOU CALL IT WHEN YOU ARE IN THE MISSIONS MENU. NOT BEFORE.
-- previewMissionPicture_level3_night    // ONLY WORKS IF YOU CALL IT WHEN YOU ARE IN THE MISSIONS MENU. NOT BEFORE.
-- previewMissionPicture_ship            // ONLY WORKS IF YOU CALL IT WHEN YOU ARE IN THE MISSIONS MENU. NOT BEFORE.
+- previewMissionPicture_level1
+- previewMissionPicture_level3_day
+- previewMissionPicture_level3_night
+- previewMissionPicture_ship
+- previewItemPicture_linkgun
+- previewItemPicture_rocketLauncher
+- previewItemPicture_shockRifle
+- previewItemPicture_jetpack
+- previewItemPicture_shield
+* NB: The functions for previewing images of the weapons and items have to be
+* called while the player is in their respective menus. Otherwise, it will NOT
+* work!
 */
 
 var AEPlayerController  AEPC;
