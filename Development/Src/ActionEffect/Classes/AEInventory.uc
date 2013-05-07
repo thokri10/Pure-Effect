@@ -3,7 +3,8 @@ class AEInventory extends Actor
 	dependson(AEJSONParser);
  
 /** Inventory that can hold up to three items. */
-var array<AEInventory_Item> ItemListFUCK;
+var private const int  itemListSize_;
+var AEInventory_Item ItemList_[4];
 
 /** Controller for the player. */
 var AEPlayerController PC;
@@ -11,7 +12,7 @@ var AEPlayerController PC;
 /** Use an item. */
 function Use(int itemSlot)
 {
-	if( !ItemListFUCK[itemSlot].use() )
+	if( !ItemList_[itemSlot].use() )
 	{
 		`log("[Item] Failed to use item : Look above for error");
 	}
@@ -20,7 +21,7 @@ function Use(int itemSlot)
 /** -Assigns- an item to a slot. */
 function AddItemToSlot(int slot, AEInventory_Item item)
 {
-	ItemListFUCK[slot] = item;
+	ItemList_[slot] = item;
 }
 
 /** Creates an item from parsed json string */
@@ -37,6 +38,7 @@ function AEInventory_Item createItem(array<ValueStruct> itemValues)
 		{
 			if( value.value == "healthpack" )   item.Effects.AddItem(EFFECT_HEAL);
 			else if( value.value == "granade" ) item.Effects.AddItem(EFFECT_GRANADE);
+			else if( value.value == "shield" ) item.Effects.AddItem(EFFECT_SHIELD);
 		}
 		else if( value.type == "name")      item.itemName       = value.value;
 		else if( value.type == "damage")    item.damage         = int(value.value);
@@ -59,18 +61,26 @@ function AddItem(AEInventory_Item item)
 
 	item.PC = PC;
 
-	for(i = 0; i < ItemListFUCK.Length; i++)
+	for(i = 0; i < itemListSize_; i++)
 	{
-		if( ItemListFUCK[i].itemName == item.itemName )
+		if( ItemList_[i].itemName == item.itemName )
 		{
-			ItemListFUCK[i].add(item.StackCounter);
+			ItemList_[i].add(item.StackCounter);
 			return;
 		}
 	}
 
-	ItemListFUCK.addItem(item);
+	for(i = 0; i < itemListSize_; i++)
+	{
+		if( ItemList_[i] == None )
+		{
+			ItemList_[i] = item;
+			return;
+		}
+	}
 }
 
 DefaultProperties
 {
+	itemListSize_ = 4;
 }

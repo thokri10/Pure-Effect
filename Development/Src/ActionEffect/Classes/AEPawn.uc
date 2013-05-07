@@ -9,6 +9,9 @@ simulated function AddDefaultInventory()
 	//InvManager.AddInventory(shock);
 }
 
+function ThrowWeaponOnDeath(){}
+
 DefaultProperties
 {
+	bCanPickupInventory = false
 }

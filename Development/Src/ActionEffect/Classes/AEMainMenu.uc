@@ -460,7 +460,6 @@ function mainMenu_onExitGameButtonPress( GFxClikWidget.EventData ev )
 
 function missions_onPreviousMissionButtonPress( GFxClikWidget.EventData ev )
 {
-	`log("-derp");
 	decSelectionID();
 	UpdateMissionMenu();
 
@@ -469,7 +468,6 @@ function missions_onPreviousMissionButtonPress( GFxClikWidget.EventData ev )
 
 function missions_onNextMissionButtonPress( GFxClikWidget.EventData ev )
 {
-	`log("+derp");
 	addSelectionID();
 	UpdateMissionMenu();
 
@@ -478,14 +476,21 @@ function missions_onNextMissionButtonPress( GFxClikWidget.EventData ev )
 
 function missions_onAcceptMissionButtonPress( GFxClikWidget.EventData ev )
 {
-	// TO-DO.
-	`log("aølksjdlkajsdkljasd");
+	local int i;
+	local int slotAlteration;
+	local int sizeOfArray;
+	AEPC.myPlayerInfo.addItemToLoadout(0, Equipments_.primary_.id);
+	AEPC.myPlayerInfo.addItemToLoadout(1, Equipments_.secondary_.id);
+	
+	slotAlteration = 2;
+	sizeOfArray = 4;
+	for(i = 0; i < sizeOfArray; ++i)
+		AEPC.myPlayerInfo.addItemToLoadout(i + slotAlteration, Equipments_.items_[i].id);
+
 	ConsoleCommand("open AE-level" $ myActiveMission.levelID $ 
 					"?MissionID=" $ myActiveMission.id $ 
 					"?TeamID=0" $ 
 					"?Loadout=" $ AEPC.myPlayerInfo.getItemLoadout());
-
-	`Log("The button \"accept mission\" was pushed.");
 }
 
 function mission_onBackButtonpress( GFxClikWidget.EventData ev )
@@ -602,7 +607,7 @@ function itemList_onItemSlotSelectedButtonPress3( GFxClikWidget.EventData ev ){ 
 function itemList_onItemSlotSelectedButtonPress4( GFxClikWidget.EventData ev ){ setActiveItem(3); }
 function itemList_onItemSlotSelectedButtonPress5( GFxClikWidget.EventData ev ){ setActiveItem(4); }
 
-private function setActiveItem(int id)
+private function setActiveItem(const int id)
 {
 	if( Items_[id] != None )
 		activeItem_ = Items_[id];
@@ -619,7 +624,7 @@ function itemList_onWeaponSlotSelectedButtonPress3( GFxClikWidget.EventData ev )
 function itemList_onWeaponSlotSelectedButtonPress4( GFxClikWidget.EventData ev ){ setActiveWeapon(3); }
 function itemList_onWeaponSlotSelectedButtonPress5( GFxClikWidget.EventData ev ){ setActiveWeapon(4); }
 
-private function setActiveWeapon(int id)
+private function setActiveWeapon(const int id)
 {
 	if(weapons_[id].type != "")
 		activeWeapon_ = weapons_[id];
@@ -643,8 +648,10 @@ function itemList_onEquippedWeaponSecondaryButtonPress( GFxClikWidget.EventData 
 
 private function UpdateList()
 {
-	us_button_itemList_equippedWeaponPrimary.SetString("label", Equipments_.primary_.type );
-	us_button_itemList_equippedWeaponSecondary.SetString("label", Equipments_.secondary_.type );
+	if(Equipments_.primary_.type != "")
+		us_button_itemList_equippedWeaponPrimary.SetString("label", Equipments_.primary_.type );
+	if(Equipments_.secondary_.type != "")
+		us_button_itemList_equippedWeaponSecondary.SetString("label", Equipments_.secondary_.type );
 	if(Equipments_.items_[0] != None)
 		us_button_itemList_equippedItem1.SetString("label", Equipments_.items_[0].itemName );
 	if(Equipments_.items_[1] != None)
