@@ -419,4 +419,5 @@ DefaultProperties
 	Parser = class'AEJSONParser'
 	Composer = class'AEJSONComposer'
 	bObjectivesUpdated = true;
+	
 }
