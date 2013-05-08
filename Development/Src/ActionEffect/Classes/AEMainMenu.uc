@@ -437,6 +437,7 @@ function login_onCreateUserButtonPress( GFxClikWidget.EventData ev )
 function mainMenu_onMissionsButtonPress( GFxClikWidget.EventData ev)
 {
 	mySelectionID = 0;
+	AEPC.myDataStorage.Clear();
 	AEPC.myTcpLink.getMissions("missions/");
 
 	ActionScriptVoid( "openMissionMenu" );
@@ -513,7 +514,6 @@ function profile_onItemListButtonPress( GFxClikWidget.EventData ev )
 	ActionScriptVoid( "openItemMenu" );
 
 	myItemList.Clear();
-	AEPC.myTcpLink.getItems();
 	activeWeapon_.type = "";
 	activeItem_ = None;
 	
@@ -522,6 +522,8 @@ function profile_onItemListButtonPress( GFxClikWidget.EventData ev )
 		items_[i] = None;
 		weapons_[i].type = "";
 	}
+
+	AEPC.myTcpLink.getItems();
 
 	`Log("The button \"item list\" was pushed.");
 }
@@ -789,7 +791,7 @@ function UpdateMissionMenu()
 	myActiveMission = mission;
 
 	us_dynamicText_missions_missionName.SetText(mission.title);
-	us_dynamicText_missions_missionSelected.SetText("" $ mySelectionID);
+	us_dynamicText_missions_missionSelected.SetText("" $ mySelectionID $ " / " $ AEPC.myDataStorage.MissionLength() - 1);
 	us_dynamicText_missions_missionMap.SetText( mission.mapName );
 	us_dynamicText_missions_missionType.SetText(mission.category);
 	us_dynamicText_missions_description.SetText(mission.description);
