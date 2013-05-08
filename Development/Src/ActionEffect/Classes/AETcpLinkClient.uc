@@ -64,6 +64,7 @@ var bool            bWaitingForWeapons;
 var bool            bWaitingForWeapon;
 var bool            bWaitingForReward;
 var bool            bWaitingForPath;
+var bool            bWaitingForShop;
 
 
 //-----------------------------------------------------------------------------
@@ -129,7 +130,8 @@ event Opened()
 
 	if (!send)
 	{
-		SendText(get $ databasePath $ "?username=" $ UserName $ "&password=" $ Password );
+		`log(get $ databasePath);
+		SendText(get $ databasePath);// $ "?username=" $ UserName $ "&password=" $ Password );
 		CarriageReturn(); 
 		//SendText( token );
 		//SendText("Authorization: Basic McDonald:secret");
@@ -187,7 +189,7 @@ event ReceivedText(string Text)
 {
 	local string tempString;
 	// receiving some text, note that the text includes line breaks
-	//`log("[TcpLinkClient] ReceivedText:: " $Text);
+	`log("[TcpLinkClient] ReceivedText:: " $Text);
 
 	tempString = Text;
 
@@ -244,6 +246,11 @@ event ReceivedText(string Text)
 			PC.myDataStorage.setMissions(PC.myParser.fullParse(Text));
 			PC.myMainMenu.UpdateMissionMenu();
 			bWaitingForMissions = false;
+		}
+		else if(bWaitingForShop)
+		{
+			PC.myMainMenu.UpdateShop( PC.myParser.fullParse(Text) );
+			bWaitingForShop = false;
 		}
 	}
 }
@@ -326,6 +333,14 @@ function getMenuSelections()
 	ResolveMe();
 }
 
+function getShop()
+{
+	databasePath = "shops/";
+	bWaitingForShop = true;
+
+	ResolveMe();
+}
+
 function sendString(string str)
 {
 	requestText = str;
@@ -402,12 +417,13 @@ DefaultProperties
 	
 	//TargetHost = "pure-effect.herokuapp.com" // Other host
 	//TargetPort = 80
-	TargetHost = "www.geirhilmersen.com";
-	TargetPort = 8080;
+	// TargetHost = "www.geirhilmersen.com" REMOVED OLD SERVER
+	TargetHost = "pure.azurewebsites.net";
+	TargetPort = 80;
 
 	databasePath = "[{\"category\":\"Search and destroy\",\"city_id\":1,\"created_at\":\"2013-01-25T13:30:34Z\",\"description\":\"Regain loot\",\"id\":1,\"title\":\"Marauders\",\"updated_at\":\"2013-01-25T13:30:34Z\",\"items\":[{\"created_at\":\"2013-01-25T13:30:34Z\",\"id\":1,\"name\":\"Rocket launcher\",\"owner_id\":1,\"owner_type\":\"Mission\",\"properties\":{\"damage\":150,\"speed\":400,\"range\":1000,\"spread\":1.5,\"fire_rate\":3,\"clip_size\":1,\"reload_speed\":3,\"ammo_pool\":8},\"slot\":\"weapon\",\"updated_at\":\"2013-01-25T13:30:34Z\"}]},"
 	get = "GET /api/"
-	post = "POST "
+	post = "POST /api/"
 
 	returnedMessage = "";
 

@@ -116,6 +116,9 @@ var private int weaponPageMax_;
 var private int itemPage_;
 var private int itemPageMax_;
 
+var private class<AEMenuShop>   MenuShop_;
+var private AEMenuShop          myMenuShop;
+
 var private int mySelectionID;
 var private int mySelectionIDMax;
 
@@ -681,6 +684,11 @@ function UpdateItems( const array<Array2D> items )
 	UpdateItemList();
 }
 
+function UpdateShop( const array<Array2D> items )
+{
+	myMenuShop.addItems( items );
+}
+
 private function UpdateItemList()
 {
 	local array<WeaponStruct> weaps;
@@ -776,6 +784,11 @@ private function UpdateItemList()
 	UpdateList();
 }
 
+function UpdateShopList()
+{
+
+}
+
 /** Runs automaticly with TCPclient or in this class */
 function UpdateMissionMenu()
 {
@@ -841,6 +854,7 @@ private function decSelectionID()
 DefaultProperties
 {
 	ItemList_ = class'AEMenuList'
+	MenuShop_ = class'AEMenuShop'
 	mySelectionID = 0;
 	mySelectionIDMax = 0;
 

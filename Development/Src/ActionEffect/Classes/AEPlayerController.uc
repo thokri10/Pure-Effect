@@ -157,6 +157,8 @@ simulated event PostBeginPlay()
 	myJSONComposer.addVauleI("Player-ID", 1);
 	myJSONComposer.addVauleI("Item-ID", 2);
 
+	myTcpLink.getShop();
+
 	//myTcpLink.sendString( myComposer.ComposeString() );
 
 	// Connect to server.
