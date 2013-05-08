@@ -19,14 +19,19 @@ struct ITEMLIST
 - openShopMenu
 - openItemMenu
 - previewMissionPicture_level1
-- previewMissionPicture_level3_day
-- previewMissionPicture_level3_night
+- previewMissionPicture_level2
+- previewMissionPicture_level3
 - previewMissionPicture_ship
-- previewItemPicture_linkgun
-- previewItemPicture_rocketLauncher
-- previewItemPicture_shockRifle
-- previewItemPicture_jetpack
-- previewItemPicture_shield
+- previewShopItemPicture_linkgun
+- previewShopItemPicture_rocketLauncher
+- previewShopItemPicture_shockRifle
+- previewShopItemPicture_jetpack
+- previewShopItemPicture_shield
+- previewItemListItemPicture_linkgun
+- previewItemListItemPicture_rocketLauncher
+- previewItemListItemPicture_shockRifle
+- previewItemListItemPicture_jetpack
+- previewItemListItemPicture_shield
 * NB: The functions for previewing images of the weapons and items have to be
 * called while the player is in their respective menus. Otherwise, it will NOT
 * work!
@@ -812,10 +817,10 @@ function UpdateMissionMenu()
 			ActionScriptVoid( "previewMissionPicture_level1" );
 			break;
 		case 2:
-			ActionScriptVoid( "previewMissionPicture_level3_day" );
+			ActionScriptVoid( "previewMissionPicture_level2" );
 			break;
 		case 3:
-			ActionScriptVoid( "previewMissionPicture_level3_night" ); 
+			ActionScriptVoid( "previewMissionPicture_level3" ); 
 			break;
 	}
 }
