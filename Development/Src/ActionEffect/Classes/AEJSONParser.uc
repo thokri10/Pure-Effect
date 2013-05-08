@@ -156,6 +156,11 @@ function array<string> SplitFirstToEndBracket(string in)
 				break;
 			}
 		}
+
+		if( inStr(in, "}",,, endBracket + 1) == -1 ){
+			splitted.Length = 0;
+			return splitted;
+		}
 	}
 
 	return splitted;

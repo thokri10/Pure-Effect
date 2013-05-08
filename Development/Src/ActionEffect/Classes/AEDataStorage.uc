@@ -47,6 +47,11 @@ function int MissionLength()
 	return m_missions.Length;
 }
 
+function Clear()
+{
+	m_missions.Length = 0;
+}
+
 DefaultProperties
 {
 }
