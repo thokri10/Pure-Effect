@@ -58,13 +58,13 @@ event PostRender()
 	Canvas.Font = GetFontSizeIndex(1);
 	Canvas.DrawColor = WhiteColor;
 
-	DrawMessageText(Message, 600, 300);
+	DrawMessageText(Message, Canvas.SizeX * 0.8f, 300);
 
 	// Draws the mission info if needed (Length > 0).
 	// Draws at about center top.
 	for (i = 0; i < MissionInfo.Length; i++)
 	{
-		DrawMessageText(MissionInfo[i], 300, 20 * i);
+		DrawMessageText(MissionInfo[i], Canvas.SizeX * 0.35f - 20, 20 * 1 * i);
 	}
 
 	// Draws the user info if needed (Length > 0).
@@ -83,19 +83,19 @@ event PostRender()
 		DrawMessageText(Menu[i], 10, 300 + (i * 20));
 	}
 
-	// Unsure... :p
+	// Printing error message to screen
 	if (ErrorCounter < 100)
 	{
-		DrawMessageText(ErrorMessage, 350, 350);
+		DrawMessageText(ErrorMessage, Canvas.SizeX * 0.4f, Canvas.SizeY * 0.8f);
 		++ErrorCounter;
 	}
 
 	// Draws the multiplayer info to screen
-	DrawMessageText(RedOwner, 100, 0);
-	DrawMessageText(RedScores, 100, 20);
-	DrawMessageText(BlueOwner, 350, 0);
-	DrawMessageText(BlueScores, 350, 20);
-	DrawMessageText(GameTimer, 250, 0);
+	DrawMessageText(RedOwner, Canvas.SizeX * 0.10f, 0);
+	DrawMessageText(RedScores, Canvas.SizeX * 0.10f, 20);
+	DrawMessageText(BlueOwner, Canvas.SizeX * 0.70f, 0);
+	DrawMessageText(BlueScores, Canvas.SizeX * 0.70f, 20);
+	DrawMessageText(GameTimer, Canvas.SizeX * 0.45f, 0);
 }
 
 /** Posts errors. */
