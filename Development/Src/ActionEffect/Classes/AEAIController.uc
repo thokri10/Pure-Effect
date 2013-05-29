@@ -170,6 +170,19 @@ event Possess(Pawn aPawn, bool bVehicleTransition)
 	super.Possess(aPawn, bVehicleTransition);
 }
 
+function NotifyTakeHit(Controller InstigatedBy, vector HitLocation, int Damage, class<DamageType> damageType, vector Momentum)
+{
+	super.NotifyTakeHit(InstigatedBy, HitLocation, Damage, damageType, Momentum);
+	SetFocalPoint( HitLocation );
+}
+
+event TakeDamage(int DamageAmount, Controller EventInstigator, vector HitLocation, vector Momentum, class<DamageType> DamageType, optional TraceHitInfo HitInfo, optional Actor DamageCauser)
+{
+	super.TakeDamage(DamageAmount, EventInstigator, HitLocation, Momentum, DamageType, HitInfo, DamageCauser);
+
+	SetFocalPoint( HitLocation );
+}
+
 //----------------------------
 // Other Functions
 

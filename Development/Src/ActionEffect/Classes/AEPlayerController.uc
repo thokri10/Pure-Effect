@@ -86,6 +86,36 @@ replication
 simulated event PostBeginPlay()
 {
 	local AEReplicationInfo GameObj;
+	local AEInventory_Item i1;
+	local AEInventory_Item i2;
+	local AEInventory_Item i3;
+
+	i1 = spawn(class'AEInventory_Item');
+	i1.StackCounter = 2;
+	i1.itemName = "Shield";
+	i1.damage = 50;
+	i1.delay = 4;
+	i1.Cooldown = 10;
+	i1.radius = 500;
+	i1.Effects.AddItem(EFFECT_SHIELD);
+
+	i2 = spawn(class'AEInventory_Item');
+	i2.StackCounter = 5;
+	i2.itemName = "Granade";
+	i2.damage = 50;
+	i2.delay = 4;
+	i2.Cooldown = 2;
+	i2.radius = 500;
+	i2.Effects.AddItem(EFFECT_GRANADE);
+	
+	i3 = spawn(class'AEInventory_Item');
+	i3.StackCounter = 1;
+	i3.itemName = "Heal";
+	i3.damage = 25;
+	i3.delay = 0;
+	i3.Cooldown = 10;
+	i3.radius = 500;
+	i3.Effects.AddItem(EFFECT_HEAL);
 	
 	// Initializations of various variables.
 	super.PostBeginPlay();
@@ -101,6 +131,10 @@ simulated event PostBeginPlay()
 
 	myItemInventory = Spawn(class'AEInventory');
 	myItemInventory.PC = self;
+
+	myItemInventory.AddItemToSlot(0, i1);
+	myItemInventory.AddItemToSlot(1, i2);
+	myItemInventory.AddItemToSlot(2, i3);
 
 	myMenu = Spawn(class'AEHUDMenu');
 	myMenu.PC = self;
@@ -197,6 +231,16 @@ event PlayerTick(float DeltaTime)
 exec function GoToMenu()
 {
 	ConsoleCommand("open AE-MainMenu");
+}
+
+exec function StartMissionE()
+{
+	myMissionObjective.InitializEscort();
+}
+
+exec function StartMissionKill()
+{
+	myMissionObjective.InitializKill();
 }
 
 //-----------------------------------------------------------------------------

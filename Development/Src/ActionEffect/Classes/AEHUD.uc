@@ -277,7 +277,7 @@ function DrawFuelBar(float barValueR, float barValueG, float barValueB)
 	// // TODO: Fix so that it works for multiplayer.
 	playerPC = AEPlayerController(GetALocalPlayerController());
 	fuelRatio = playerPC.myJetpack.fuelEnergy / playerPC.myJetpack.maxFuelEnergy;
-	//fuelRatio = playerPC.myPawn.fuelEnergy / playerPC.myPawn.maxFuelEnergy;
+	//fuelRatio = playerPC.myJetpack.fuelEnergy / playerPC.myJetpack.maxFuelEnergy;
 
 	
 	if ( !PlayerOwner.IsDead() && !UTPlayerOwner.IsInState('Spectating') && playerPC.myPawn.isUsingJetPack)
@@ -339,7 +339,7 @@ function DrawLivingHud()
 	DrawStaminaBar(80.0f, 200.0f, 80.0f);
 	DrawItemInfo(80.0f, 80.0f, 200.0f);
 	// Uncommented for debugging purposes.
-	//DrawFuelBar(200.0f, 200.0f, 200.0f);
+	DrawFuelBar(200.0f, 200.0f, 200.0f);
 }
 
 DefaultProperties

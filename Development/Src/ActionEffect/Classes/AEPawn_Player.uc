@@ -189,7 +189,7 @@ function StartUsingTheJetpack(float DeltaTime)
 		{
 			CustomGravityScaling = -1.0f;
 			// Commented out temporarily for debugging reasons.
-			//fuelEnergy -= (fuelEnergyLossPerSecond * DeltaTime);
+			AEPC.myJetpack.fuelEnergy = AEPC.myJetpack.fuelEnergy - (AEPC.myJetpack.fuelEnergyLossPerSecond * DeltaTime);
 		}
 		
 		if (AEPlayerController(Controller).myJetpack.fuelEnergy < 0.0f)

@@ -8,6 +8,7 @@ var AEPawn ControllerPawn;
 simulated function PostBeginPlay()
 {
 	super.PostBeginPlay();
+	`log("HEEYYYY!");
 }
 
 event Touch(Actor Other, PrimitiveComponent OtherComp, Vector HitLocation, Vector HitNormal)
@@ -69,7 +70,7 @@ event Bump(Actor Other, PrimitiveComponent OtherComp, Vector HitNormal)
 DefaultProperties
 {
 	Begin Object Class=StaticMeshComponent Name=CollisionSphere
-		StaticMesh=StaticMesh'Level1pack.FalloffSphere.Mesh.CollisionSphere'
+		StaticMesh=StaticMesh'Level1pack.Mesh.CollisionSphere'
 		Scale=1.5
 		HiddenGame=true
 		CollideActors=true

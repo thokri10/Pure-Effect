@@ -20,7 +20,7 @@ simulated function UTProj_Grenade granade(pawn target, float delay)
 	spawnLocation = target.Location;
 	Aim = vector( target.GetViewRotation() );
 
-	spawnLocation.X += 10.0 * Aim.X;
+	spawnLocation.X += 40.0 * Aim.X;
 	spawnLocation.Y += 10.0 * Aim.Y;
 
 	nade = Spawn(class'UTProj_Grenade', self,, spawnLocation);
@@ -42,7 +42,7 @@ simulated function AEPlayerShield shield(AEPawn target)
 {
 	local AEPlayerShield shield;
 
-	shield = spawn(class'AEPlayerShield', target);
+	shield = spawn(class'AEPlayerShield', target,,,,, true);
 	shield.ControllerPawn = target;
 	shield.bOwnedByPlayer = true;
 

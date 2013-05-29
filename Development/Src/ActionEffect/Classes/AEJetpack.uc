@@ -100,7 +100,7 @@ DefaultProperties
 {
 	maxFuelEnergy = 100.0f;
 	fuelEnergy = 100.0f;
-	fuelEnergyLossPerSecond = 30.0f;
+	fuelEnergyLossPerSecond = 50.0f;
 	regenerateFuelEnergy = false;
 
 	jetpackEnabled = true;

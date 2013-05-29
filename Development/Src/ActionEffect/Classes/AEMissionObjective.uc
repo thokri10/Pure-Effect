@@ -135,6 +135,50 @@ simulated event PostBeginPlay()
 	missionGameType = NO_GAMETYPE;
 }
 
+function InitializKill()
+{
+	local MissionObjectives asd;
+	local WeaponStruct weap;
+
+	weap.damage = 50;
+	weap.magSize = 200;
+	weap.reloadTime = 0.3f;
+	weap.speed = 3000;
+	weap.spread = 0.05f;
+	weap.type = "rocket";
+
+	asd.rewards.AddItem(weap);
+
+	asd.title = "Kill them all!";
+	asd.mapName = "Level1";
+	asd.description = "Kill all the enemies on the map";
+	asd.category = "Search and destroy";
+
+	activateObjectives(asd);
+}
+
+function InitializEscort()
+{
+	local MissionObjectives asd;
+	local WeaponStruct weap;
+
+	weap.damage = 70;
+	weap.magSize = 200;
+	weap.reloadTime = 0.1f;
+	weap.speed = 3000;
+	weap.spread = 0.4f;
+	weap.type = "shockrifle";
+
+	asd.rewards.AddItem(weap);
+
+	asd.title = "Escort";
+	asd.mapName = "Level2";
+	asd.description = "Escort the man to safety";
+	asd.category = "Escort";
+
+	activateObjectives(asd);
+}
+
 /** Initializes the missions with the array from JSONParser*/
 function Initialize(array<ValueStruct> missionArray)
 {
@@ -297,8 +341,8 @@ function activateObjectives(MissionObjectives objectives)
 	// long "if section" for all the objectives. 
 
 	// For testing purposes. Sets how many enemies we should spawn
-	objectives.MOEnemies = 5;
-	AEObjectives.MOEnemies = 5;
+	objectives.MOEnemies = 6;
+	AEObjectives.MOEnemies = 6;
 
 	if (missionGameType == SEARCH_AND_DESTROY)
 	{
