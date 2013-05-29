@@ -341,12 +341,10 @@ function setItemLoad(int slot)
 	local int index;
 	if( selectedMenuSlot < playerInfo.weapons.Length )
 	{
-		`log("Adding item: " $ slot $ " : " $ playerInfo.weapons[ selectedMenuSlot ].id);
 		PC.myPlayerInfo.addItemToLoadout(slot, playerInfo.weapons[ selectedMenuSlot ].id);
 	}else
 	{
 		index = selectedMenuSlot + playerInfo.weapons.Length - 2;
-		`log("Adding item: " $ slot $ " : " $ playerInfo.items[index].id);
 		PC.myPlayerInfo.addItemToLoadout(slot, playerInfo.items[index].id);
 	}
 }

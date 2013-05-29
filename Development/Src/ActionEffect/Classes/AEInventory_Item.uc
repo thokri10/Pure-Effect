@@ -69,7 +69,7 @@ simulated function bool Use()
 			if( effect == EFFECT_GRANADE )
 				item = selectEffect.granade(PC.myPawn, delay);
 			else if( effect == EFFECT_HEAL ){
-				//item = self;
+				item = self;
 			}else if( effect == EFFECT_SHIELD ){
 				item = selectEffect.shield(PC.myPawn);
 			}
@@ -99,18 +99,24 @@ function explode()
 	local AEPawn target;
 	local ItemEffects effect;
 
-	if(Item == none) return;
+	if(item == none) return;
+
+	if( effect == EFFECT_HEAL ){
+		selectEffect.heal(PC.Pawn, damage);
+		return;
+	}
+	else if( effect == EFFECT_SHIELD )
+	{
+		item.Destroy();
+		return;
+	}
 
 	foreach WorldInfo.AllPawns(class'AEPawn', target, item.Location, radius)
 	{
 		foreach Effects( effect )
 		{
-			if( effect == EFFECT_HEAL )
-				selectEffect.heal(target, damage);
 			if( effect == EFFECT_GRANADE )
 				selectEffect.dealDamage( target, item, damage );
-			if( effect == EFFECT_SHIELD )
-				item.Destroy();
 		}
 	}	
 }

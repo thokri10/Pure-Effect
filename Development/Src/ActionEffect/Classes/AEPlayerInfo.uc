@@ -76,7 +76,6 @@ function addItems(array<ValueStruct> itemArray)
 
 function addItemToLoadout(int slot, int itemID)
 {
-	`log(slot $ " : " $ itemID);
 	itemLoadout[slot] = itemID;
 	`log(itemLoadout[slot]);
 }
@@ -119,7 +118,6 @@ function getItem(int slot, int itemID)
 
 	for(i = 0; i < weapons.Length; ++i)
 	{
-		`log("WEAPONS!!! : " $ weapons[i].id $ " : " $ itemID);
 		if(weapons[i].id == itemID){
 			`log("ADDING WEAPONS");
 			PC.addWeaponToInventory( PC.myWeaponCreator.CreateWeaponFromStruct( weapons[i] ) );

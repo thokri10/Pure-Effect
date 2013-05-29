@@ -5,7 +5,10 @@ var AEPlayerShield      AEShield;
 function heal(pawn target, int damage)
 {
 	`log("HEALING: " $ target.Name);
-	target.Health += damage;
+	if(target.Health + damage > 100)
+		target.Health = 100;
+	else
+		target.Health += damage;
 }
 
 simulated function UTProj_Grenade granade(pawn target, float delay)

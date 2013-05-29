@@ -114,7 +114,6 @@ function SetDefendingSpot(optional AEGameObjective_Defend IgnoreSpot = None)
 	if(CurrentDefensePosition != None)
 	{
 		defendPosition = getDefensePointAtObjective( CurrentDefensePosition );
-		`log(defendPosition.defendingSpot $ " : " $ defendPosition.Distance);
 
 		if(defendPosition.defendingSpot != none){
 			bUpdatePosition = true;

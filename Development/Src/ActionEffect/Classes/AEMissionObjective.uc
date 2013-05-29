@@ -163,7 +163,6 @@ function SimpleMissionStruct parseArrayToSimpleStruct(array<ValueStruct> mission
 
 	for ( i = 0; i < missionArray.Length; i++ ) 
 	{
-		//`log(missionArray[i].type $ " : " $ missionArray[i].value );
 		if ( missionArray[i].type == "category" )
 		{
 			Type = "info";
@@ -220,15 +219,12 @@ function MissionObjectives MissionFromSimpleStruct(SimpleMissionStruct simpleMis
 		else `log("[SimpleMissionParse] No known name of this type: " $ values.type);
 	}
 
-	`log("sldfhkjsdfkjsdhf: " $ objective.levelID);
-
 	foreach simpleMission.rewards( reward )
 	{
 		foreach reward.variables( values )
 		{
 			if (values.type == "slot")
 			{
-				`log(values.type $ " : " $ values.value );
 				if (values.value == "weapon")
 				{
 					objective.rewards.AddItem( PC.myWeaponCreator.parseToStruct( reward.variables ) );

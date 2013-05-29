@@ -106,6 +106,13 @@ simulated function StopFire(byte FireModeNum)
 }
 */
 
+function bool Died(Controller Killer, class<DamageType> damageType, Vector HitLocation)
+{
+	if(AEPC.myReplicationInfo != None)
+		AEPC.myReplicationInfo.addScore(AEPC.IdentifiedTeam);
+	return super.Died(Killer, damageType, HitLocation);
+}
+
 function AddWeaponToInventory(UTWeapon type)
 {
 	UTInventoryManager(InvManager).AddInventory(type);

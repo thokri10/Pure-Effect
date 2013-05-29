@@ -131,7 +131,7 @@ event Opened()
 	if (!send)
 	{
 		`log(get $ databasePath);
-		SendText(get $ databasePath);// $ "?username=" $ UserName $ "&password=" $ Password );
+		SendText(get $ databasePath $ "?username=" $ UserName $ "&password=" $ Password );
 		CarriageReturn(); 
 		//SendText( token );
 		//SendText("Authorization: Basic McDonald:secret");

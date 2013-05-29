@@ -852,7 +852,7 @@ private function decSelectionID()
 {
 	--mySelectionID;
 
-	if(mySelectionID <= 0)
+	if(mySelectionID < 0)
 		mySelectionID = mySelectionIDMax - 1;
 }
 

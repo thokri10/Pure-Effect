@@ -26,15 +26,7 @@ function AEMenuShop_Item getItem(const int itemID)
 
 private simulated function addEquipment(const array<ValueStruct> item)
 {
-	local AEMenuShop_Item   item_;
-	local ValueStruct       value;
-
-	item_ = new m_Item;
-
-	foreach item( value )
-	{
-		`log(value.type $ " : " $ value.value);
-	}
+	
 }
 
 private simulated function addWeapon(const array<ValueStruct> item)

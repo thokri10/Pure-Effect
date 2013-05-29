@@ -37,16 +37,20 @@ function addScore(int teamID)
 
 	if(redTeamScore <= 0)
 	{
+		///ConsoleCommand("open MenuMap");
+		//ConsoleCommand("open AE-MenuMap");
 		if(Flee(0)){
 			`log("RED TEAM FLEE");
-			//ConsoleCommand("quit");
+			//ConsoleCommand("open AE-MenuMap");
 		}
 	}
 	if(blueTeamScore <= 0)
 	{
+		//ConsoleCommand("open MenuMap");
+		//ConsoleCommand("open AE-MenuMap");
 		if(Flee(1)){
 			`log("BLUE TEAM FLEE");
-			//ConsoleCommand("quit");
+			//ConsoleCommand("open AE-MenuMap");
 		}
 	}
 }
